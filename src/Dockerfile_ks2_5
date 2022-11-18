@@ -1,0 +1,40 @@
+# 
+FROM spikeinterface/kilosort2_5-compiled-base as ks25base
+
+# NVIDIA-ready Image
+FROM nvidia/cuda:11.6.2-base-ubuntu20.04
+
+# Installing Python with miniconda
+RUN apt-get update && \
+    apt-get install -y build-essential  && \
+    apt-get install -y wget && \
+    apt-get install -y git && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+ENV MINICONDA_VERSION 4.8.2
+ENV CONDA_DIR /home/miniconda3
+ENV LATEST_CONDA_SCRIPT "Miniconda3-py38_$MINICONDA_VERSION-Linux-x86_64.sh"
+
+RUN wget --quiet https://repo.anaconda.com/miniconda/$LATEST_CONDA_SCRIPT -O ~/miniconda.sh && \
+    bash ~/miniconda.sh -b -p $CONDA_DIR && \
+    rm ~/miniconda.sh
+ENV PATH=$CONDA_DIR/bin:$PATH
+
+# Copy requirements and script
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY run_script.py .
+RUN mkdir /data
+
+# Bring Sorter and matlab-related files
+COPY --from=ks25base /usr/bin/mlrtapp/ks2_5_compiled /usr/bin/mlrtapp/ks2_5_compiled
+ENV PATH="/usr/bin/mlrtapp:${PATH}"
+COPY --from=ks25base /opt/matlabruntime /opt/matlabruntime
+ENV PATH="/opt/matlabruntime:${PATH}"
+COPY --from=ks25base /usr/lib/x86_64-linux-gnu/libXt.so.6 /usr/lib/x86_64-linux-gnu/libXt.so.6
+COPY --from=ks25base /usr/lib/x86_64-linux-gnu/libSM.so.6 /usr/lib/x86_64-linux-gnu/libSM.so.6
+COPY --from=ks25base /usr/lib/x86_64-linux-gnu/libICE.so.6 /usr/lib/x86_64-linux-gnu/libICE.so.6
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/matlabruntime/v911/runtime/glnxa64:/opt/matlabruntime/v911/bin/glnxa64:/opt/matlabruntime/v911/sys/os/glnxa64:/opt/matlabruntime/v911/sys/opengl/lib/glnxa64:/opt/matlabruntime/v911/extern/bin/glnxa64
+
+ENTRYPOINT ["python", "run_script.py"]

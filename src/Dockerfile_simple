@@ -1,0 +1,15 @@
+FROM spikeinterface/kilosort3-compiled-base:0.1.0
+
+
+# RUN apt-get update && \
+#     apt-get install -y s3fs && \
+#     apt-get clean && \
+#     rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY run_script.py .
+
+RUN mkdir /data
+
+ENTRYPOINT ["python", "run_script.py"]

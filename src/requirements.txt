@@ -1,0 +1,4 @@
+# s3fs
+boto3
+spikeinterface[full]==0.96.1
+neo
