@@ -55,7 +55,7 @@ if __name__ == '__main__':
     bucket_folder = os.environ["AWS_S3_BUCKET_FOLDER"]
 
     # Download data
-    print(f"Downloading dataset: {os.environ['AWS_S3_BUCKET']}/{os.environ['AWS_S3_BUCKET_FOLDER']}")
+    print(f"Downloading dataset: {bucket_name}/{bucket_folder}")
     download_all_files_from_bucket_folder(
         client=client,
         bucket_name=bucket_name, 
