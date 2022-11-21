@@ -99,12 +99,12 @@ if __name__ == '__main__':
     test_run = os.environ.get("TEST_RUN", False)
 
 
-    if (bucket_name is None or bucket_folder is None) and (dandiset_s3_file_url is None) and (not test_run):
+    if (source_bucket_name is None or source_bucket_folder is None) and (dandiset_s3_file_url is None) and (not test_run):
         raise Exception("Missing either: \n- AWS_S3_BUCKET and AWS_S3_BUCKET_FOLDER, or \n- DANDISET_S3_FILE_URL")
 
     s3_client = boto3.client('s3')
 
-    if bucket_name and bucket_folder:
+    if source_bucket_name and source_bucket_folder:
         print(f"Downloading dataset: {source_bucket_name}/{source_bucket_folder}")
         download_all_files_from_bucket_folder(
             client=s3_client,
@@ -126,7 +126,7 @@ if __name__ == '__main__':
             raise Exception(f"DANDISET_S3_FILE_URL should be a valid Dandiset S3 url. Value received was: {dandiset_s3_file_url}")
 
         print(f"Downloading dataset: {dandiset_s3_file_url}")
-        response = requests.get(URL)
+        response = requests.get(dandiset_s3_file_url)
         with open("data/filename.nwb", "wb") as f:
             f.write(response.content)
         
