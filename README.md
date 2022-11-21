@@ -24,8 +24,9 @@ $ docker run -it --gpus all --entrypoint /bin/bash <image-name:version>
 
 Push image to ECR:
 ```bash
-# Login to ECR
-$ aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin <aws_id>.dkr.ecr.us-east-1.amazonaws.com
+# Login to ECR - one of the two options should work
+$ aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin <aws_id>.dkr.ecr.us-east-2.amazonaws.com
+$ docker login -u AWS -p $(aws ecr get-login-password --region us-east-2) <aws_id>.dkr.ecr.the-region-you-are-in.amazonaws.com
 
 # Tag image to comply with ECR
 $ docker tag <image-name:version> <aws_id>.dkr.ecr.us-east-2.amazonaws.com/<image-name:version>
@@ -33,7 +34,6 @@ $ docker tag <image-name:version> <aws_id>.dkr.ecr.us-east-2.amazonaws.com/<imag
 # Push image
 $ docker push <aws_id>.dkr.ecr.us-east-2.amazonaws.com/<image-name:version>
 ```
-
 
 # AWS Batch configuration
 
