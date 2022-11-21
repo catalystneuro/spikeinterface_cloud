@@ -1,11 +1,31 @@
 import boto3
 import botocore
 import os
+import json
+import ast
 from pathlib import Path
 import spikeinterface.extractors as se
 from spikeinterface.sorters import run_sorter_local
 import spikeinterface.comparison as sc
 
+
+# TODO - complete with more data types
+DATA_TYPE_TO_READER = {
+    "spikeglx": se.read_spikeglx,
+    "nwb": se.read_nwb_recording,
+}
+
+# # TODO - create data models for inputs of each data type reader
+# DATA_TYPE_READER_DATA_MODELS = {
+#     "spikeglx": ,
+#     "nwb": ,
+# }
+
+# # TODO - complete with more sorters
+# SORTER_DATA_MODELS = {
+#     "kilosort3": ,
+#     "kilosort2_5":,
+# }
 
 def download_all_files_from_bucket_folder(
     client:botocore.client.BaseClient, 
@@ -42,86 +62,121 @@ def upload_all_files_to_bucket_folder(
 
 
 if __name__ == '__main__':
-    # S3 client
-    client = boto3.client(
-        's3', 
-        # region_name=os.environ["AWS_REGION_NAME"], 
-        # aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
-        # aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"]
-    )
+    """
+    This script should run in an ephemeral Docker container and will:
+    1. download a dataset with raw electrophysiology traces from a specfied location
+    2. run a SpikeInterface pipeline on the raw traces
+    3. save the results in a target S3 bucket
 
-    # Run-specific arguments are retireved from ENV vars
-    bucket_name = os.environ["AWS_S3_BUCKET"]
-    bucket_folder = os.environ["AWS_S3_BUCKET_FOLDER"]
+    The arguments for this script are passsed as ENV variables:
+    - SOURCE_AWS_S3_BUCKET : S3 bucket name for source data.
+    - SOURCE_AWS_S3_BUCKET_FOLDER : Folder path within bucket for source data.
+    - DANDISET_S3_FILE_URL : Url for S3 path of input data, if it comes from a NWB file hosted in DANDI archive.
+    - TARGET_AWS_S3_BUCKET : S3 bucket name for saving results.
+    - TARGET_AWS_S3_BUCKET_FOLDER : Folder path within bucket for saving results.
+    - DATA_TYPE : Data type to be read.
+    - READ_RECORDING_KWARGS : Keyword arguments specific to chosen dataset type.
+    - SORTERS : List of sorters to run on source data.
+    - TEST_RUN : Runs script with a toy dataset.
 
-    # Download data
-    print(f"Downloading dataset: {bucket_name}/{bucket_folder}")
-    download_all_files_from_bucket_folder(
-        client=client,
-        bucket_name=bucket_name, 
-        bucket_folder=bucket_folder
-    )
+    If running this in any AWS service (e.g. Batch, ECS, EC2...) the access to other AWS services 
+    such as S3 storage can be given to the container by an IAM role.
+    Otherwise, if running this outside of AWS, these ENV variables should be present in the running container:
+    - AWS_REGION_NAME
+    - AWS_ACCESS_KEY_ID
+    - AWS_SECRET_ACCESS_KEY
+    """
 
-    # Read SpikeGLX data into recording
-    print("Reading recording...")
-    recording = se.read_spikeglx(folder_path="/data", stream_id="imec.ap")
+    # Arguments are retrieved from ENV vars
+    source_bucket_name = os.environ.get("SOURCE_AWS_S3_BUCKET", None)
+    source_bucket_folder = os.environ.get("SOURCE_AWS_S3_BUCKET_FOLDER", None)
+    dandiset_s3_file_url = os.environ.get("DANDISET_S3_FILE_URL", None)
+    data_type = os.environ.get("DATA_TYPE", "nwb")
+    read_recording_kwargs = json.loads(os.environ.get("READ_RECORDING_KWARGS", "{}"))
+    target_bucket_name = os.environ.get("TARGET_AWS_S3_BUCKET", None)
+    target_bucket_folder = os.environ.get("TARGET_AWS_S3_BUCKET_FOLDER", None)
+    sorters_names_list = ast.literal_eval(os.environ.get("SORTERS", "[]"))
+    test_run = os.environ.get("TEST_RUN", False)
 
 
-    # recording, _ = se.toy_example(
-    #     duration=10,
-    #     seed=0,
-    #     num_channels=64,
-    #     num_segments=1
-    # )
+    if (bucket_name is None or bucket_folder is None) and (dandiset_s3_file_url is None) and (not test_run):
+        raise Exception("Missing either: \n- AWS_S3_BUCKET and AWS_S3_BUCKET_FOLDER, or \n- DANDISET_S3_FILE_URL")
 
-    # Run sorter
-    print("Running Kilosort 3...")
+    s3_client = boto3.client('s3')
+
+    if bucket_name and bucket_folder:
+        print(f"Downloading dataset: {source_bucket_name}/{source_bucket_folder}")
+        download_all_files_from_bucket_folder(
+            client=s3_client,
+            bucket_name=source_bucket_name, 
+            bucket_folder=source_bucket_folder
+        )
+
+        print("Reading recording...")
+        # E.g.: se.read_spikeglx(folder_path="/data", stream_id="imec.ap")
+        recording = DATA_TYPE_TO_READER.get(data_type)(
+            folder_path="/data",
+            **read_recording_kwargs
+        )
+
+    elif dandiset_s3_file_url:
+        import requests
+
+        if not dandiset_s3_file_url.startswith("https://dandiarchive.s3.amazonaws.com")
+            raise Exception(f"DANDISET_S3_FILE_URL should be a valid Dandiset S3 url. Value received was: {dandiset_s3_file_url}")
+
+        print(f"Downloading dataset: {dandiset_s3_file_url}")
+        response = requests.get(URL)
+        with open("data/filename.nwb", "wb") as f:
+            f.write(response.content)
+        
+        print("Reading recording from NWB...")
+        recording = se.read_nwb_recording(
+            file_path="data/filename.nwb",
+            **read_recording_kwargs
+        )
+
+    else:
+        recording, _ = se.toy_example(
+            duration=10,
+            seed=0,
+            num_channels=64,
+            num_segments=1
+        )
+
+    # Run sorters
     output_folder = '/results/sorting'
-    sorting_ks3 = run_sorter_local(
-        'kilosort3', 
-        recording, 
-        output_folder=output_folder,
-        remove_existing_folder=True, 
-        delete_output_folder=True,
-        verbose=True, 
-        raise_error=True, 
-        with_output=True
-    )
-    sorting_ks3.save_to_folder(folder='/results/sorter_exported_ks3')
+    sorting_list = list()
+    for sorter_name in sorters_names_list:
+        print(f"Running {sorter_name}...")
+        sorting = run_sorter_local(
+            sorter_name, 
+            recording, 
+            output_folder=output_folder,
+            remove_existing_folder=True, 
+            delete_output_folder=True,
+            verbose=True, 
+            raise_error=True, 
+            with_output=True
+        )
+        sorting_list.append(sorting)
+        sorting.save_to_folder(folder=f'/results/sorter_exported_{sorter_name}')
 
-    print("Running Kilosort 2.5...")
-    output_folder = '/results/sorting'
-    sorting_ks25 = run_sorter_local(
-        'kilosort2_5', 
-        recording, 
-        output_folder=output_folder,
-        remove_existing_folder=True, 
-        delete_output_folder=True,
-        verbose=True, 
-        raise_error=True, 
-        with_output=True
-    )
-    sorting_ks25.save_to_folder(folder='/results/sorter_exported_ks25')
-
+    # Post sorting operations
     print("Running sorters comparison...")
     mcmp = sc.compare_multiple_sorters(
-        sorting_list=[sorting_ks3, sorting_ks25],
-        name_list=['KS3', 'KS25'],
+        sorting_list=sorting_list,
+        name_list=sorters_names_list,
         verbose=True,
     )
     print("Matching results:")
-    print(mcmp.comparisons[('KS3', 'KS25')].get_matching())
+    print(mcmp.comparisons[sorters_names_list].get_matching())
 
     # Upload sorting results to S3
-    upload_all_files_to_bucket_folder(
-        client=client, 
-        bucket_name=bucket_name, 
-        bucket_folder=bucket_folder,
-        local_folder="results/sorter_exported_ks3"
-    )
-    upload_all_files_to_bucket_folder(
-        client=client, 
-        bucket_name=bucket_name, 
-        bucket_folder=bucket_folder,
-        local_folder="results/sorter_exported_ks25"
-    )
+    for sorter_name in sorters_names_list:
+        upload_all_files_to_bucket_folder(
+            client=s3_client, 
+            bucket_name=target_bucket_name, 
+            bucket_folder=target_bucket_folder,
+            local_folder=f'/results/sorter_exported_{sorter_name}'
+        )
