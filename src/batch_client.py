@@ -31,7 +31,7 @@ class AWSBatch(object):
             jobName=job_name,
             jobQueue=job_queue,
             jobDefinition=job_definition,
-            timeout={'attemptDurationSeconds': attempt_duration_secods},
+            timeout={'attemptDurationSeconds': attempt_duration_seconds},
         )
 
         if job_kwargs:

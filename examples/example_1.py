@@ -7,15 +7,18 @@ batch = AWSBatch()
 my_job_queues = batch.list_job_queues()
 my_job_definitions = batch.list_job_definitions()
 
+print(f"Existing Job Queues: {[j.get('jobQueueName') for j in my_job_queues]}")
+print(f"Existing Job Definitions: {[j.get('jobDefinitionName') for j in my_job_definitions]}")
+
 # Define job arguments
 job_kwargs = {
-    "SOURCE_AWS_S3_BUCKET": "my-bucket",
-    "SOURCE_AWS_S3_BUCKET_FOLDER": "dataset-spikeglx",
-    "TARGET_AWS_S3_BUCKET": "my-bucket",
-    "TARGET_AWS_S3_BUCKET_FOLDER": "dataset-spikeglx/results",
+    "SOURCE_AWS_S3_BUCKET": "my-bucket-source",
+    "SOURCE_AWS_S3_BUCKET_FOLDER": "my-folder",
+    "TARGET_AWS_S3_BUCKET": "my-bucket-target",
+    "TARGET_AWS_S3_BUCKET_FOLDER": "my-folder",
     "DATA_TYPE": "spikeglx",
     "READ_RECORDING_KWARGS": {"stream_id": "imec.ap"},
-    "SORTERS": ["kilosort2_5", "kilosort3"]
+    "SORTERS": "kilosort2_5,kilosort3"
 }
 
 # Submit job

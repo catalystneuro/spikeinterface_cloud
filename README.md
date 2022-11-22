@@ -1,3 +1,16 @@
+# SpikeInterface Cloud
+
+A repository for scripts, configurations, Dockerfiles and documentation to run SpikeInterface sorters on the Cloud
+
+
+Basic infrastructure makes use of the following AWS services:
+- AWS Batch for queueing and serverless execution of computing jobs
+- AWS ECR for hosting Docker images
+- AWS S3 for storing jobs results
+
+![infrastructure](/media/diagram.jpg)
+
+
 # Build and deploy the Docker images
 
 Build docker image:
@@ -9,13 +22,19 @@ Run locally:
 ```bash
 # With mounted volume
 $ docker run \
-    -v <host_path>:/results \
     --gpus all \
-    --env AWS_S3_BUCKET=${AWS_S3_BUCKET} \
-    --env AWS_S3_BUCKET_FOLDER=${AWS_S3_BUCKET_FOLDER}  \
+    --env AWS_S3_BUCKET=${SOURCE_AWS_S3_BUCKET} \
+    --env AWS_S3_BUCKET_FOLDER=${SOURCE_AWS_S3_BUCKET_FOLDER}  \
+    --env DANDISET_S3_FILE_URL=${DANDISET_S3_FILE_URL}  \
+    --env TARGET_AWS_S3_BUCKET=${TARGET_AWS_S3_BUCKET}  \
+    --env TARGET_AWS_S3_BUCKET_FOLDER=${TARGET_AWS_S3_BUCKET_FOLDER}  \
+    --env DATA_TYPE=${DATA_TYPE}  \
+    --env READ_RECORDING_KWARGS=${READ_RECORDING_KWARGS}  \
+    --env SORTERS=${SORTERS}  \
     --env AWS_REGION_NAME=${AWS_REGION_NAME}  \
     --env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}  \
     --env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}  \
+    -v <host_path>:/results \
     <image-name:version>
 
 # Run with access to a bash terminal inside the running container
@@ -74,3 +93,18 @@ The job submission must include the function arguments, which are passed and ENV
 - https://medium.com/@michael.smith.qs2/how-to-use-gpus-quickly-and-cheaply-with-aws-batch-and-pytorch-1209320c4e6b
 - https://github.com/michael-smith-qs2/aws_gpu_batch_setup_2021
 - https://github.com/NVIDIA/nvidia-container-runtime#environment-variables-oci-spec
+
+
+
+
+export AWS_S3_BUCKET=
+export AWS_S3_BUCKET_FOLDER=
+export DANDISET_S3_FILE_URL=
+export TARGET_AWS_S3_BUCKET=
+export TARGET_AWS_S3_BUCKET_FOLDER=
+export DATA_TYPE=
+export READ_RECORDING_KWARGS=
+export SORTERS=
+export AWS_REGION_NAME=
+export AWS_ACCESS_KEY_ID=
+export AWS_SECRET_ACCESS_KEY=

@@ -76,7 +76,7 @@ if __name__ == '__main__':
     - TARGET_AWS_S3_BUCKET_FOLDER : Folder path within bucket for saving results.
     - DATA_TYPE : Data type to be read.
     - READ_RECORDING_KWARGS : Keyword arguments specific to chosen dataset type.
-    - SORTERS : List of sorters to run on source data.
+    - SORTERS : List of sorters to run on source data, stored as comma-separated values.
     - TEST_RUN : Runs script with a toy dataset.
 
     If running this in any AWS service (e.g. Batch, ECS, EC2...) the access to other AWS services 
@@ -95,7 +95,7 @@ if __name__ == '__main__':
     read_recording_kwargs = json.loads(os.environ.get("READ_RECORDING_KWARGS", "{}"))
     target_bucket_name = os.environ.get("TARGET_AWS_S3_BUCKET", None)
     target_bucket_folder = os.environ.get("TARGET_AWS_S3_BUCKET_FOLDER", None)
-    sorters_names_list = ast.literal_eval(os.environ.get("SORTERS", "[]"))
+    sorters_names_list = os.environ.get("SORTERS", "kilosort3").split(",")
     test_run = os.environ.get("TEST_RUN", False)
 
 
@@ -122,7 +122,7 @@ if __name__ == '__main__':
     elif dandiset_s3_file_url:
         import requests
 
-        if not dandiset_s3_file_url.startswith("https://dandiarchive.s3.amazonaws.com")
+        if not dandiset_s3_file_url.startswith("https://dandiarchive.s3.amazonaws.com"):
             raise Exception(f"DANDISET_S3_FILE_URL should be a valid Dandiset S3 url. Value received was: {dandiset_s3_file_url}")
 
         print(f"Downloading dataset: {dandiset_s3_file_url}")
