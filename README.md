@@ -55,6 +55,10 @@ $ docker tag <image-name:version> <aws_id>.dkr.ecr.us-east-2.amazonaws.com/<imag
 $ docker push <aws_id>.dkr.ecr.us-east-2.amazonaws.com/<image-name:version>
 ```
 
+If having difficulties pushing the image to ECR:
+- make sure you created an ECR repository with the same name of the image you're pushing
+- create a Permissions statement on ECR [ref](https://stackoverflow.com/a/72621029/11483674)
+
 # AWS Batch configuration
 
 1. Create a Compute environment (EC2)

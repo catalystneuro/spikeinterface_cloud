@@ -1,5 +1,5 @@
 # s3fs
-boto3
+boto3>=1.26
 requests
 spikeinterface[full]==0.96.1
 neo
