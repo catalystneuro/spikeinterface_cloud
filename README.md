@@ -7,6 +7,7 @@ Basic infrastructure makes use of the following AWS services:
 - AWS Batch for queueing and serverless execution of computing jobs
 - AWS ECR for hosting Docker images
 - AWS S3 for storing jobs results
+- AWS CloudWatch for logging
 
 ![infrastructure](/media/diagram.jpg)
 
@@ -93,18 +94,3 @@ The job submission must include the function arguments, which are passed and ENV
 - https://medium.com/@michael.smith.qs2/how-to-use-gpus-quickly-and-cheaply-with-aws-batch-and-pytorch-1209320c4e6b
 - https://github.com/michael-smith-qs2/aws_gpu_batch_setup_2021
 - https://github.com/NVIDIA/nvidia-container-runtime#environment-variables-oci-spec
-
-
-
-
-export AWS_S3_BUCKET=
-export AWS_S3_BUCKET_FOLDER=
-export DANDISET_S3_FILE_URL=
-export TARGET_AWS_S3_BUCKET=
-export TARGET_AWS_S3_BUCKET_FOLDER=
-export DATA_TYPE=
-export READ_RECORDING_KWARGS=
-export SORTERS=
-export AWS_REGION_NAME=
-export AWS_ACCESS_KEY_ID=
-export AWS_SECRET_ACCESS_KEY=

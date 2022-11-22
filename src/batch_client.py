@@ -35,7 +35,8 @@ class AWSBatch(object):
         )
 
         if job_kwargs:
-            kwargs['containerOverrides']['environment'] = [{k:str(v).replace("'", "\"")} for k, v in job_kwargs.items()]
+            kwargs['containerOverrides'] = dict()
+            kwargs['containerOverrides']['environment'] = [{'name': k, 'value': str(v).replace("'", "\"")} for k, v in job_kwargs.items()]
 
         response = self.client.submit_job(**kwargs)
         return response
