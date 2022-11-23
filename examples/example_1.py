@@ -37,3 +37,6 @@ while not out:
     print(f"Job status: {status}")
     if status == "SUCCEEDED":
         out = True
+
+# Get Job logs
+batch.get_job_logs(job_id=response_job["jobId"])

@@ -63,6 +63,7 @@ If having difficulties pushing the image to ECR:
 
 1. Create a Compute environment (EC2)
     - Use the standard IAMs: Service Role = AWSServiceRoleForBatch ([ref](https://docs.aws.amazon.com/batch/latest/userguide/service_IAM_role.html)) and Instance Role = ecsInstanceRole ([ref](https://docs.aws.amazon.com/batch/latest/userguide/instance_IAM_role.html))
+    - Optionally, attach another policy to the ecsInstanceRole to allow it to write logs to CloudWatch [ref](https://docs.aws.amazon.com/batch/latest/userguide/using_cloudwatch_logs.html)
     - Configure the instances available to be used by the environment. Instances with access to GPU instances (e.g. g3s.xlarge) might require you to request AWS to increase the quota limit for such machines, which by default is 0.
     - If you choose Spot instances, choose a value between 30~50% for the `Maximum % on-demand price`
 2. Create a Job Queue (EC2) associated with the compute environment
@@ -92,6 +93,7 @@ If having difficulties pushing the image to ECR:
 # Submiting jobs
 
 The job submission must include the function arguments, which are passed and ENV vars to the running container.
+See [examples](https://github.com/catalystneuro/spikeinterface_cloud/tree/main/examples) of how to submit jobs with Python scripts.
 
 
 # Useful refs:

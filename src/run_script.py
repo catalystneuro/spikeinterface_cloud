@@ -77,7 +77,8 @@ if __name__ == '__main__':
     - DATA_TYPE : Data type to be read.
     - READ_RECORDING_KWARGS : Keyword arguments specific to chosen dataset type.
     - SORTERS : List of sorters to run on source data, stored as comma-separated values.
-    - TEST_RUN : Runs script with a toy dataset.
+    - TEST_WITH_TOY_RECORDING : Runs script with a toy dataset.
+    - TEST_WITH_SUB_RECORDING : Runs script with the first 4 seconds of target dataset.
 
     If running this in any AWS service (e.g. Batch, ECS, EC2...) the access to other AWS services 
     such as S3 storage can be given to the container by an IAM role.
@@ -96,10 +97,11 @@ if __name__ == '__main__':
     target_bucket_name = os.environ.get("TARGET_AWS_S3_BUCKET", None)
     target_bucket_folder = os.environ.get("TARGET_AWS_S3_BUCKET_FOLDER", None)
     sorters_names_list = os.environ.get("SORTERS", "kilosort3").split(",")
-    test_run = os.environ.get("TEST_RUN", False)
+    test_toy = bool(os.environ.get("TEST_WITH_TOY_RECORDING", False))
+    test_subrecording = bool(os.environ.get("TEST_WITH_SUB_RECORDING", False))
 
 
-    if (source_bucket_name is None or source_bucket_folder is None) and (dandiset_s3_file_url is None) and (not test_run):
+    if (source_bucket_name is None or source_bucket_folder is None) and (dandiset_s3_file_url is None) and (not test_toy):
         raise Exception("Missing either: \n- AWS_S3_BUCKET and AWS_S3_BUCKET_FOLDER, or \n- DANDISET_S3_FILE_URL")
 
     s3_client = boto3.client('s3')
@@ -120,23 +122,31 @@ if __name__ == '__main__':
         )
 
     elif dandiset_s3_file_url:
-        import requests
-
-        if not dandiset_s3_file_url.startswith("https://dandiarchive.s3.amazonaws.com"):
+                if not dandiset_s3_file_url.startswith("https://dandiarchive.s3.amazonaws.com"):
             raise Exception(f"DANDISET_S3_FILE_URL should be a valid Dandiset S3 url. Value received was: {dandiset_s3_file_url}")
 
-        print(f"Downloading dataset: {dandiset_s3_file_url}")
-        response = requests.get(dandiset_s3_file_url)
-        with open("data/filename.nwb", "wb") as f:
-            f.write(response.content)
-        
-        print("Reading recording from NWB...")
-        recording = se.read_nwb_recording(
-            file_path="data/filename.nwb",
-            **read_recording_kwargs
-        )
+        if not test_subrecording:
+            import requests
+            
+            print(f"Downloading dataset: {dandiset_s3_file_url}")
+            response = requests.get(dandiset_s3_file_url)
+            with open("data/filename.nwb", "wb") as f:
+                f.write(response.content)
+            
+            print("Reading recording from NWB...")
+            recording = se.read_nwb_recording(
+                file_path="data/filename.nwb",
+                **read_recording_kwargs
+            )
+        else:
+            print("Reading recording from NWB...")
+            recording = se.read_nwb_recording(
+                file_path=dandiset_s3_file_url,
+                stream_mode="fsspec",
+                **read_recording_kwargs
+            )
 
-    else:
+    elif test_toy:
         recording, _ = se.toy_example(
             duration=10,
             seed=0,
@@ -144,11 +154,15 @@ if __name__ == '__main__':
             num_segments=1
         )
 
+    if test_subrecording:
+        n_frames = int(min(120000, recording.get_num_frames()))
+        recording = recording.frame_slice(start_frame=0, end_frame=n_frames)
+
     # Run sorters
-    output_folder = '/results/sorting'
     sorting_list = list()
     for sorter_name in sorters_names_list:
         print(f"Running {sorter_name}...")
+        output_folder = f"/results/sorting/{sorter_name}"
         sorting = run_sorter_local(
             sorter_name, 
             recording, 
@@ -170,7 +184,7 @@ if __name__ == '__main__':
         verbose=True,
     )
     print("Matching results:")
-    print(mcmp.comparisons[sorters_names_list].get_matching())
+    print(mcmp.comparisons[tuple(sorters_names_list)].get_matching())
 
     # Upload sorting results to S3
     for sorter_name in sorters_names_list:

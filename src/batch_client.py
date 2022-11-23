@@ -1,5 +1,16 @@
 import boto3
 import json
+import enum
+
+
+class JobStatus(enum.Enum):
+    SUBMITTED = 'SUBMITTED'
+    PENDING = 'PENDING'
+    RUNNABLE = 'RUNNABLE'
+    STARTING = 'STARTING'
+    RUNNING = 'RUNNING'
+    SUCCEEDED = 'SUCCEEDED'
+    FAILED = 'FAILED'
 
 
 class AWSBatch(object):
@@ -9,6 +20,7 @@ class AWSBatch(object):
         Reference: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/batch.html
         """
         self.client = boto3.client("batch")
+        self.client_logs = boto3.client('logs')
 
 
     def list_job_queues(self):
@@ -17,6 +29,10 @@ class AWSBatch(object):
 
     def list_job_definitions(self):
         return self.client.describe_job_definitions(status='ACTIVE')['jobDefinitions']
+    
+
+    def list_jobs(self, job_queue: str, job_status: JobStatus):
+        return self.client.list_jobs(jobQueue=job_queue, jobStatus=job_status)['jobSummaryList']
 
 
     def submit_job(
@@ -44,4 +60,12 @@ class AWSBatch(object):
 
     def describe_job(self, job_id: str):
         return self.client.describe_jobs(jobs=[job_id])["jobs"][0]
+
+    
+    def get_job_logs(self, job_id: str):
+        log_stream_name = self.describe_job(job_id=job_id)["container"]["logStreamName"]
+        return self.client_logs.get_log_events(
+            logGroupName="/aws/batch/job",
+            logStreamName=log_stream_name,
+        )
  

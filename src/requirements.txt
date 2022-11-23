@@ -1,5 +1,8 @@
 # s3fs
 boto3>=1.26
 requests
+fsspec
+aiohttp
 spikeinterface[full]==0.96.1
 neo
+pynwb
