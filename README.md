@@ -61,6 +61,9 @@ If having difficulties pushing the image to ECR:
 
 # AWS Batch configuration
 
+0. (Optional) If dealing with larger files (> 20 Gb) and need a large storage:
+    - Create a custom Launch Template on `EC2 > Launch Templates` [ref](https://docs.aws.amazon.com/batch/latest/userguide/launch-templates.html)
+    - Use this custom Launch Template when creating a new Compute Environment
 1. Create a Compute environment (EC2)
     - Use the standard IAMs: Service Role = AWSServiceRoleForBatch ([ref](https://docs.aws.amazon.com/batch/latest/userguide/service_IAM_role.html)) and Instance Role = ecsInstanceRole ([ref](https://docs.aws.amazon.com/batch/latest/userguide/instance_IAM_role.html))
     - Optionally, attach another policy to the ecsInstanceRole to allow it to write logs to CloudWatch [ref](https://docs.aws.amazon.com/batch/latest/userguide/using_cloudwatch_logs.html)

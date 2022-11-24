@@ -67,5 +67,5 @@ class AWSBatch(object):
         return self.client_logs.get_log_events(
             logGroupName="/aws/batch/job",
             logStreamName=log_stream_name,
-        )
+        )["events"]
  

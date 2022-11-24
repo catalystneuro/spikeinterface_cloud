@@ -2,7 +2,8 @@ import boto3
 import botocore
 import os
 import json
-import ast
+import shutil
+import requests
 from pathlib import Path
 import spikeinterface.extractors as se
 from spikeinterface.sorters import run_sorter_local
@@ -26,6 +27,15 @@ DATA_TYPE_TO_READER = {
 #     "kilosort3": ,
 #     "kilosort2_5":,
 # }
+
+
+def download_file_from_url(url):
+    # ref: https://stackoverflow.com/a/39217788/11483674
+    local_filename = "data/filename.nwb"
+    with requests.get(url, stream=True) as r:
+        with open(local_filename, 'wb') as f:
+            shutil.copyfileobj(r.raw, f)
+
 
 def download_all_files_from_bucket_folder(
     client:botocore.client.BaseClient, 
@@ -122,16 +132,12 @@ if __name__ == '__main__':
         )
 
     elif dandiset_s3_file_url:
-                if not dandiset_s3_file_url.startswith("https://dandiarchive.s3.amazonaws.com"):
+        if not dandiset_s3_file_url.startswith("https://dandiarchive.s3.amazonaws.com"):
             raise Exception(f"DANDISET_S3_FILE_URL should be a valid Dandiset S3 url. Value received was: {dandiset_s3_file_url}")
 
-        if not test_subrecording:
-            import requests
-            
+        if not test_subrecording:            
             print(f"Downloading dataset: {dandiset_s3_file_url}")
-            response = requests.get(dandiset_s3_file_url)
-            with open("data/filename.nwb", "wb") as f:
-                f.write(response.content)
+            download_file_from_url(dandiset_s3_file_url)
             
             print("Reading recording from NWB...")
             recording = se.read_nwb_recording(

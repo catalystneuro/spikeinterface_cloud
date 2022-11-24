@@ -39,4 +39,7 @@ while not out:
         out = True
 
 # Get Job logs
-batch.get_job_logs(job_id=response_job["jobId"])
+log_events = batch.get_job_logs(job_id=response_job["jobId"])
+for e in log_events:
+    msg = datetime.fromtimestamp(e["timestamp"]/1000.).strftime("%d/%m/%Y, %H:%M:%S") + ' - ' + e["message"]
+    print(msg)

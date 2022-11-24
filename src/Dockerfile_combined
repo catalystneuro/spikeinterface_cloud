@@ -39,6 +39,8 @@ RUN pip install -r requirements.txt
 
 RUN pip install git+https://github.com/catalystneuro/spikeinterface.git@fsspec
 
+ENV PYTHONUNBUFFERED=1
+
 COPY run_script.py .
 RUN mkdir /data
 
