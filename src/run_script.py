@@ -165,6 +165,12 @@ if __name__ == '__main__':
         recording = recording.frame_slice(start_frame=0, end_frame=n_frames)
 
     # Run sorters
+    sorter_job_kwargs = {
+        "n_jobs": int(os.cpu_count()), 
+        "chunk_duration": "1s", 
+        "progress_bar": True
+    }
+    
     sorting_list = list()
     for sorter_name in sorters_names_list:
         print(f"Running {sorter_name}...")
@@ -177,7 +183,8 @@ if __name__ == '__main__':
             delete_output_folder=True,
             verbose=True, 
             raise_error=True, 
-            with_output=True
+            with_output=True,
+            **sorter_job_kwargs
         )
         sorting_list.append(sorting)
         sorting.save_to_folder(folder=f'/results/sorter_exported_{sorter_name}')

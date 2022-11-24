@@ -71,7 +71,7 @@ If having difficulties pushing the image to ECR:
     - If you choose Spot instances, choose a value between 30~50% for the `Maximum % on-demand price`
 2. Create a Job Queue (EC2) associated with the compute environment
 3. Create a Job Definition (EC2)
-    - choose suitable Execution Timeout, Job Attempts and Retry Strategies, if suitable
+    - Choose suitable Execution Timeout, Job Attempts and Retry Strategies
     - Select the base image
     - Command = `python run_script.py`
     - For the Job role configuration, choose an IAM role with permissions to read and write to S3 buckets and with Trusted entities configured like this:
@@ -89,7 +89,7 @@ If having difficulties pushing the image to ECR:
         ]
     }
     ```
-    - Configure the hardware specs
+    - Configure the resource requirements. Remember to choose a value for Memory slightly smaller than the value for the machines you're hoping to use, otherwise ECS might not find suitable instances.
     - Add any fixed ENV variables that should be used by any Jobs using this definition
 
 
@@ -97,6 +97,15 @@ If having difficulties pushing the image to ECR:
 
 The job submission must include the function arguments, which are passed and ENV vars to the running container.
 See [examples](https://github.com/catalystneuro/spikeinterface_cloud/tree/main/examples) of how to submit jobs with Python scripts.
+
+
+# Debugging AWS Batch
+
+AWS Batch uses a series of other AWS services under the hood. If something doesn't work as expected (e.g. a job gets stuck as RUNNABLE), there are several places to find the possible causes of failure:
+- AWS Batch > Jobs > specific-job-details
+- EC2 > Auto Scaling groups > specific-asg-details
+- EC2 > Instances > specific-instance-details > Monitoring
+- CloudTrail > Event history
 
 
 # Useful refs:

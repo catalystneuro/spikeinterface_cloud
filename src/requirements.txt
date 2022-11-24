@@ -6,3 +6,4 @@ aiohttp
 spikeinterface[full]==0.96.1
 neo
 pynwb
+threadpoolctl==3.1.0   # https://stackoverflow.com/a/72840515/11483674
