@@ -163,6 +163,10 @@ if __name__ == '__main__':
     if test_subrecording:
         n_frames = int(min(120000, recording.get_num_frames()))
         recording = recording.frame_slice(start_frame=0, end_frame=n_frames)
+    
+    # Preprocessing ----------------------------------------------------------------------
+    #  TODO
+    # ------------------------------------------------------------------------------------
 
     # Run sorters
     sorter_job_kwargs = {

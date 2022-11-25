@@ -33,13 +33,14 @@ COPY --from=ks25base /usr/lib/x86_64-linux-gnu/libSM.so.6 /usr/lib/x86_64-linux-
 COPY --from=ks25base /usr/lib/x86_64-linux-gnu/libICE.so.6 /usr/lib/x86_64-linux-gnu/libICE.so.6
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/matlabruntime/v911/runtime/glnxa64:/opt/matlabruntime/v911/bin/glnxa64:/opt/matlabruntime/v911/sys/os/glnxa64:/opt/matlabruntime/v911/sys/opengl/lib/glnxa64:/opt/matlabruntime/v911/extern/bin/glnxa64
 
+# Get Python stdout logs
+ENV PYTHONUNBUFFERED=1
+
 # Copy requirements and script
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 RUN pip install git+https://github.com/catalystneuro/spikeinterface.git@fsspec
-
-ENV PYTHONUNBUFFERED=1
 
 COPY run_script.py .
 RUN mkdir /data
