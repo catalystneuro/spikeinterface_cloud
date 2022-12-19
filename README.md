@@ -65,16 +65,14 @@ If having difficulties pushing the image to ECR:
     - Create a custom Launch Template on `EC2 > Launch Templates` [ref](https://docs.aws.amazon.com/batch/latest/userguide/launch-templates.html)
     - Use this custom Launch Template when creating a new Compute Environment
 1. Create a Compute environment (EC2)
-    - Use the standard IAMs: Service Role = AWSServiceRoleForBatch ([ref](https://docs.aws.amazon.com/batch/latest/userguide/service_IAM_role.html)) and Instance Role = ecsInstanceRole ([ref](https://docs.aws.amazon.com/batch/latest/userguide/instance_IAM_role.html))
+    - Use the standard IAMs: Service Role = AWSServiceRoleForBatch ([ref](https://docs.aws.amazon.com/batch/latest/userguide/service_IAM_role.html)) and Instance Role = ecsInstanceRole ([ref](https://docs.aws.amazon.com/batch/latest/userguide/instance_IAM_role.html)). The `ecsInstanceRole` should contain the `AmazonEC2ContainerServiceforEC2Role` permission.
     - Optionally, attach another policy to the ecsInstanceRole to allow it to write logs to CloudWatch [ref](https://docs.aws.amazon.com/batch/latest/userguide/using_cloudwatch_logs.html)
-    - Configure the instances available to be used by the environment. Instances with access to GPU instances (e.g. g3s.xlarge) might require you to request AWS to increase the quota limit for such machines, which by default is 0.
+    - Configure the instances available to be used by the environment. Instances with access to GPU (e.g. g4dn.2xlarge) might require you to request AWS to increase the quota limit for such machines, which by default is 0.
     - If you choose Spot instances, choose a value between 30~50% for the `Maximum % on-demand price`
 2. Create a Job Queue (EC2) associated with the compute environment
-3. Create a Job Definition (EC2)
-    - Choose suitable Execution Timeout, Job Attempts and Retry Strategies
-    - Select the base image
-    - Command = `python run_script.py`
-    - For the Job role configuration, choose an IAM role with permissions to read and write to S3 buckets and with Trusted entities configured like this:
+3. Create an IAM role to be used by the Batch Jobs:
+    - Add permissions to read and write to S3 buckets, e.g. `AmazonS3FullAccess`
+    - Configure the **Trusted entities** like this:
     ```
     {
     "Version": "2012-10-17",
@@ -89,6 +87,11 @@ If having difficulties pushing the image to ECR:
         ]
     }
     ```
+4. Create a Job Definition (EC2)
+    - Choose suitable Execution Timeout, Job Attempts and Retry Strategies
+    - Select the base image
+    - Command = `python run_script.py`
+    - For the Job role configuration, choose the IAM role created in the previous step
     - Configure the resource requirements. Remember to choose a value for Memory slightly smaller than the value for the machines you're hoping to use, otherwise ECS might not find suitable instances.
     - Add any fixed ENV variables that should be used by any Jobs using this definition
 
