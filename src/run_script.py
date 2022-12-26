@@ -5,10 +5,32 @@ import json
 import shutil
 import requests
 from pathlib import Path
+
+import spikeinterface as si
 import spikeinterface.extractors as se
-from spikeinterface.sorters import run_sorter_local
+import spikeinterface.preprocessing as spre
+import spikeinterface.sorters as ss
+import spikeinterface.qualitymetrics as sqm
+import spikeinterface.postprocessing as spost
 import spikeinterface.comparison as sc
 
+job_kwargs = dict(
+    n_jobs=int(os.cpu_count()),
+    chunk_duration="1s",
+    progress_bar=True
+)
+processing_params = dict(
+    preprocessing=dict(highpass_filter=dict(freq_min=300),
+                       common_reference=dict(reference='local', operator='median',
+                                             local_radius=(30, 200))),
+    postprocessing=dict(),
+    consensus=dict(match_score=0.9,
+                   verbose=True)
+)
+sorter_params = dict(
+    kilosort2=dict(car=False),
+    kilosort3=dict(car=False),
+)
 
 # TODO - complete with more data types
 DATA_TYPE_TO_READER = {
@@ -38,27 +60,27 @@ def download_file_from_url(url):
 
 
 def download_all_files_from_bucket_folder(
-    client:botocore.client.BaseClient, 
-    bucket_name:str, 
-    bucket_folder:str
-):    
+    client: botocore.client.BaseClient,
+    bucket_name: str,
+    bucket_folder: str
+):
     # List files in folder, download all files with content
     res = client.list_objects_v2(Bucket=bucket_name, Prefix=bucket_folder)
     for f in res["Contents"]:
         if f["Size"] > 0:
             file_name = f["Key"].split("/")[-1]
             client.download_file(
-                Bucket=bucket_name, 
-                Key=f["Key"], 
+                Bucket=bucket_name,
+                Key=f["Key"],
                 Filename=f"data/{file_name}"
             )
 
 
 def upload_all_files_to_bucket_folder(
-    client:botocore.client.BaseClient, 
-    bucket_name:str, 
-    bucket_folder:str,
-    local_folder:str
+    client: botocore.client.BaseClient,
+    bucket_name: str,
+    bucket_folder: str,
+    local_folder: str
 ):
     # List files from results, upload them to S3
     files_list = [f for f in Path(local_folder).rglob("*") if f.is_file()]
@@ -103,24 +125,26 @@ if __name__ == '__main__':
     source_bucket_folder = os.environ.get("SOURCE_AWS_S3_BUCKET_FOLDER", None)
     dandiset_s3_file_url = os.environ.get("DANDISET_S3_FILE_URL", None)
     data_type = os.environ.get("DATA_TYPE", "nwb")
-    read_recording_kwargs = json.loads(os.environ.get("READ_RECORDING_KWARGS", "{}"))
+    read_recording_kwargs = json.loads(
+        os.environ.get("READ_RECORDING_KWARGS", "{}"))
     target_bucket_name = os.environ.get("TARGET_AWS_S3_BUCKET", None)
     target_bucket_folder = os.environ.get("TARGET_AWS_S3_BUCKET_FOLDER", None)
     sorters_names_list = os.environ.get("SORTERS", "kilosort3").split(",")
     test_toy = bool(os.environ.get("TEST_WITH_TOY_RECORDING", False))
     test_subrecording = bool(os.environ.get("TEST_WITH_SUB_RECORDING", False))
 
-
     if (source_bucket_name is None or source_bucket_folder is None) and (dandiset_s3_file_url is None) and (not test_toy):
-        raise Exception("Missing either: \n- AWS_S3_BUCKET and AWS_S3_BUCKET_FOLDER, or \n- DANDISET_S3_FILE_URL")
+        raise Exception(
+            "Missing either: \n- AWS_S3_BUCKET and AWS_S3_BUCKET_FOLDER, or \n- DANDISET_S3_FILE_URL")
 
     s3_client = boto3.client('s3')
 
     if source_bucket_name and source_bucket_folder:
-        print(f"Downloading dataset: {source_bucket_name}/{source_bucket_folder}")
+        print(
+            f"Downloading dataset: {source_bucket_name}/{source_bucket_folder}")
         download_all_files_from_bucket_folder(
             client=s3_client,
-            bucket_name=source_bucket_name, 
+            bucket_name=source_bucket_name,
             bucket_folder=source_bucket_folder
         )
 
@@ -133,12 +157,13 @@ if __name__ == '__main__':
 
     elif dandiset_s3_file_url:
         if not dandiset_s3_file_url.startswith("https://dandiarchive.s3.amazonaws.com"):
-            raise Exception(f"DANDISET_S3_FILE_URL should be a valid Dandiset S3 url. Value received was: {dandiset_s3_file_url}")
+            raise Exception(
+                f"DANDISET_S3_FILE_URL should be a valid Dandiset S3 url. Value received was: {dandiset_s3_file_url}")
 
-        if not test_subrecording:            
+        if not test_subrecording:
             print(f"Downloading dataset: {dandiset_s3_file_url}")
             download_file_from_url(dandiset_s3_file_url)
-            
+
             print("Reading recording from NWB...")
             recording = se.read_nwb_recording(
                 file_path="data/filename.nwb",
@@ -163,51 +188,90 @@ if __name__ == '__main__':
     if test_subrecording:
         n_frames = int(min(120000, recording.get_num_frames()))
         recording = recording.frame_slice(start_frame=0, end_frame=n_frames)
-    
+
     # Preprocessing ----------------------------------------------------------------------
-    #  TODO
-    # ------------------------------------------------------------------------------------
+
+    # pahse shift (for NP data)
+    if "inter_sample_shift" in recording.get_property_keys():
+        recording_processed = spre.phase_shift(recording)
+    else:
+        recording_processed = recording
+
+    # highpass
+    recording_processed = spre.highpass_filter(recording_processed,
+                                               **processing_params["highpass_filter"])
+    # cmr
+    recording_processed = spre.common_reference(recording_processed,
+                                                **processing_params["common_reference"])
+    # cast back to int16
+    recording_processed = spre.scale(dtype="int16")
 
     # Run sorters
-    sorter_job_kwargs = {
-        "n_jobs": int(os.cpu_count()), 
-        "chunk_duration": "1s", 
-        "progress_bar": True
-    }
-    
-    sorting_list = list()
+    sorting_output = dict()
+    we_output = dict()
     for sorter_name in sorters_names_list:
         print(f"Running {sorter_name}...")
         output_folder = f"/results/sorting/{sorter_name}"
-        sorting = run_sorter_local(
-            sorter_name, 
-            recording, 
+        sorting = ss.run_sorter(
+            sorter_name,
+            recording_processed,
             output_folder=output_folder,
-            remove_existing_folder=True, 
+            remove_existing_folder=True,
             delete_output_folder=True,
-            verbose=True, 
-            raise_error=True, 
-            with_output=True,
-            **sorter_job_kwargs
+            verbose=True,
+            raise_error=True,
+            **sorter_params[sorter_name],
+            **job_kwargs
         )
-        sorting_list.append(sorting)
-        sorting.save_to_folder(folder=f'/results/sorter_exported_{sorter_name}')
+        sorting = sorting.remove_empty_units()
+        sorting = sorting.save(folder=f'/results/sorting_{sorter_name}')
+        sorting_output[sorter_name] = sorting
+
+        # extract waveforms and postprocess
+        we = si.extract_waveforms(recording_processed, sorting,
+                                  folder=f'/results/waveforms_{sorter_name}',
+                                  **processing_params["postprocessing"],
+                                  **job_kwargs)
+        _ = spost.compute_template_metrics(we)
+        _ = spost.compute_template_similarity(we)
+        _ = spost.compute_spike_amplitudes(we, **job_kwargs)
+        _ = spost.compute_correlograms(we)
+        _ = spost.compute_unit_locations(we)
+
+        # quality metrics (no-pca)
+        _ = sqm.compute_quality_metrics(we)
+
+        we_output[sorter_name] = we
 
     # Post sorting operations
     print("Running sorters comparison...")
-    mcmp = sc.compare_multiple_sorters(
-        sorting_list=sorting_list,
-        name_list=sorters_names_list,
-        verbose=True,
-    )
-    print("Matching results:")
-    print(mcmp.comparisons[tuple(sorters_names_list)].get_matching())
+    consensus = None
+    if len(sorters_names_list) > 1:
+        mcmp = sc.compare_multiple_sorters(
+            sorting_list=sorting_output.values(),
+            name_list=sorting_output.keys(),
+            **processing_params["consensus"]
+        )
+        print("Matching results:")
+        print(mcmp.comparisons[tuple(sorters_names_list)].get_matching())
+
+        consensus = mcmp.get_agreement_sorting(minimum_consensus=2)
+        consensus = consensus.save(folder=f'/results/sorting_consensus')
 
     # Upload sorting results to S3
+    # TODO: save we or add visualization
     for sorter_name in sorters_names_list:
         upload_all_files_to_bucket_folder(
-            client=s3_client, 
-            bucket_name=target_bucket_name, 
+            client=s3_client,
+            bucket_name=target_bucket_name,
             bucket_folder=target_bucket_folder,
-            local_folder=f'/results/sorter_exported_{sorter_name}'
+            local_folder=f'/results/sorting_{sorter_name}'
+        )
+    if consensus is not None:
+        # upload consensus
+        upload_all_files_to_bucket_folder(
+            client=s3_client,
+            bucket_name=target_bucket_name,
+            bucket_folder=target_bucket_folder,
+            local_folder=f'/results/sorting_consensus'
         )
