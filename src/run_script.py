@@ -87,8 +87,10 @@ if __name__ == '__main__':
     - DATA_TYPE : Data type to be read.
     - READ_RECORDING_KWARGS : Keyword arguments specific to chosen dataset type.
     - SORTERS : List of sorters to run on source data, stored as comma-separated values.
+    - SORTERS_PARAMS : Parameters for each sorter, stored as a dictionary.
     - TEST_WITH_TOY_RECORDING : Runs script with a toy dataset.
     - TEST_WITH_SUB_RECORDING : Runs script with the first 4 seconds of target dataset.
+    - SUB_RECORDING_N_FRAMES : Number of frames to use for sub-recording.
 
     If running this in any AWS service (e.g. Batch, ECS, EC2...) the access to other AWS services 
     such as S3 storage can be given to the container by an IAM role.
@@ -107,8 +109,10 @@ if __name__ == '__main__':
     target_bucket_name = os.environ.get("TARGET_AWS_S3_BUCKET", None)
     target_bucket_folder = os.environ.get("TARGET_AWS_S3_BUCKET_FOLDER", None)
     sorters_names_list = os.environ.get("SORTERS", "kilosort3").split(",")
+    sorters_params = eval(os.environ.get("SORTERS_PARAMS", "{}"))
     test_toy = bool(os.environ.get("TEST_WITH_TOY_RECORDING", False))
     test_subrecording = bool(os.environ.get("TEST_WITH_SUB_RECORDING", False))
+    test_subrecording_n_frames = int(os.environ.get("SUB_RECORDING_N_FRAMES", 300000))
 
 
     if (source_bucket_name is None or source_bucket_folder is None) and (dandiset_s3_file_url is None) and (not test_toy):
@@ -161,7 +165,7 @@ if __name__ == '__main__':
         )
 
     if test_subrecording:
-        n_frames = int(min(120000, recording.get_num_frames()))
+        n_frames = int(min(test_subrecording_n_frames, recording.get_num_frames()))
         recording = recording.frame_slice(start_frame=0, end_frame=n_frames)
     
     # Preprocessing ----------------------------------------------------------------------
@@ -169,45 +173,60 @@ if __name__ == '__main__':
     # ------------------------------------------------------------------------------------
 
     # Run sorters
-    sorter_job_kwargs = {
-        "n_jobs": int(os.cpu_count()), 
-        "chunk_duration": "1s", 
-        "progress_bar": True
-    }
-    
+    n_jobs = int(os.cpu_count())
     sorting_list = list()
     for sorter_name in sorters_names_list:
-        print(f"Running {sorter_name}...")
-        output_folder = f"/results/sorting/{sorter_name}"
-        sorting = run_sorter_local(
-            sorter_name, 
-            recording, 
-            output_folder=output_folder,
-            remove_existing_folder=True, 
-            delete_output_folder=True,
-            verbose=True, 
-            raise_error=True, 
-            with_output=True,
-            **sorter_job_kwargs
-        )
-        sorting_list.append(sorting)
-        sorting.save_to_folder(folder=f'/results/sorter_exported_{sorter_name}')
+        try:
+            print(f"Running {sorter_name}...")
+            sorter_job_kwargs = sorters_params.get(sorter_name, {})
+            sorter_job_kwargs["n_jobs"] = min(n_jobs, sorter_job_kwargs.get("n_jobs", n_jobs))
+            output_folder = f"/results/sorting/{sorter_name}"
+            sorting = run_sorter_local(
+                sorter_name, 
+                recording, 
+                output_folder=output_folder,
+                remove_existing_folder=True, 
+                delete_output_folder=True,
+                verbose=True, 
+                raise_error=True, 
+                with_output=True,
+                **sorter_job_kwargs
+            )
+            sorting_list.append(sorting)
+            sorting.save_to_folder(folder=f'/results/sorter_exported_{sorter_name}')
+
+            # Upload sorting results to S3
+            upload_all_files_to_bucket_folder(
+                client=s3_client, 
+                bucket_name=target_bucket_name, 
+                bucket_folder=target_bucket_folder,
+                local_folder=f'/results/sorter_exported_{sorter_name}'
+            )
+        except Exception as e:
+            print(f"Error running sorter {sorter_name}: {e}")
+            # upload error logs to S3
+            upload_all_files_to_bucket_folder(
+                client=s3_client,
+                bucket_name=target_bucket_name,
+                bucket_folder=target_bucket_folder,
+                local_folder=output_folder
+            )
+
 
     # Post sorting operations
-    print("Running sorters comparison...")
-    mcmp = sc.compare_multiple_sorters(
-        sorting_list=sorting_list,
-        name_list=sorters_names_list,
-        verbose=True,
-    )
-    print("Matching results:")
-    print(mcmp.comparisons[tuple(sorters_names_list)].get_matching())
-
-    # Upload sorting results to S3
-    for sorter_name in sorters_names_list:
-        upload_all_files_to_bucket_folder(
-            client=s3_client, 
-            bucket_name=target_bucket_name, 
-            bucket_folder=target_bucket_folder,
-            local_folder=f'/results/sorter_exported_{sorter_name}'
+    if len(sorters_names_list) > 1:
+        print("Running sorters comparison...")
+        mcmp = sc.compare_multiple_sorters(
+            sorting_list=sorting_list,
+            name_list=sorters_names_list,
+            verbose=True,
         )
+        print("Matching results:")
+        print(mcmp.comparisons[tuple(sorters_names_list)].get_matching())
+
+
+# Known issues:
+#
+# Kilosort3:
+# Error using accumarray - First input SUBS must contain positive integer subscripts.
+# https://github.com/MouseLand/Kilosort/issues/463

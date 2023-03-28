@@ -15,12 +15,13 @@ class JobStatus(enum.Enum):
 
 class AWSBatch(object):
  
-    def __init__(self):
+    def __init__(self, profile_name: str="default"):
         """
         Reference: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/batch.html
         """
-        self.client = boto3.client("batch")
-        self.client_logs = boto3.client('logs')
+        self.session = boto3.Session(profile_name=profile_name)
+        self.client = self.session.client("batch")
+        self.client_logs = self.session.client("logs")
 
 
     def list_job_queues(self):
