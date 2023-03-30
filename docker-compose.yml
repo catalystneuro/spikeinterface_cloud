@@ -1,0 +1,23 @@
+# docker-compose.yml
+version: "3"
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    image: si-sorting-frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+
+  rest:
+    build:
+      context: .
+      dockerfile: rest/Dockerfile
+    image: si-sorting-rest
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./rest:/app
