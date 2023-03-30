@@ -10,7 +10,7 @@ const App: React.FC = () => {
 
   const fetchDandisets = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/dandi/get-dandisets-labels');
+      const response = await axios.get('http://localhost:8000/api/dandi/get-dandisets-labels');
       setDandisets(response.data.labels);
     } catch (error) {
       console.error('Failed to fetch DANDIsets:', error);

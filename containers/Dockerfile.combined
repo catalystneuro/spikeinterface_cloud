@@ -41,6 +41,7 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 COPY run_script.py .
+COPY light_server.py .
 RUN mkdir /data
 
-ENTRYPOINT ["python", "run_script.py"]
+ENTRYPOINT ["python", "light_server.py"]

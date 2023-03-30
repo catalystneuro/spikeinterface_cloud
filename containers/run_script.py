@@ -71,7 +71,20 @@ def upload_all_files_to_bucket_folder(
         )
 
 
-if __name__ == '__main__':
+def main(
+    source_aws_s3_bucket:str = None,
+    source_aws_s3_bucket_folder:str = None,
+    dandiset_s3_file_url:str = None,
+    target_aws_s3_bucket:str = None,
+    target_aws_s3_bucket_folder:str = None,
+    data_type:str = None,
+    recording_kwargs:dict = None,
+    sorters_names_list:list = None,
+    sorters_kwargs:dict = None,
+    test_with_toy_recording:bool = False,
+    test_with_sub_recording:bool = False,
+    test_subrecording_n_frames:int = 1000,
+):
     """
     This script should run in an ephemeral Docker container and will:
     1. download a dataset with raw electrophysiology traces from a specfied location
@@ -100,63 +113,75 @@ if __name__ == '__main__':
     - AWS_SECRET_ACCESS_KEY
     """
 
-    # Arguments are retrieved from ENV vars
-    source_bucket_name = os.environ.get("SOURCE_AWS_S3_BUCKET", None)
-    source_bucket_folder = os.environ.get("SOURCE_AWS_S3_BUCKET_FOLDER", None)
-    dandiset_s3_file_url = os.environ.get("DANDISET_S3_FILE_URL", None)
-    data_type = os.environ.get("DATA_TYPE", "nwb")
-    read_recording_kwargs = json.loads(os.environ.get("READ_RECORDING_KWARGS", "{}"))
-    target_bucket_name = os.environ.get("TARGET_AWS_S3_BUCKET", None)
-    target_bucket_folder = os.environ.get("TARGET_AWS_S3_BUCKET_FOLDER", None)
-    sorters_names_list = os.environ.get("SORTERS", "kilosort3").split(",")
-    sorters_params = eval(os.environ.get("SORTERS_PARAMS", "{}"))
-    test_toy = bool(os.environ.get("TEST_WITH_TOY_RECORDING", False))
-    test_subrecording = bool(os.environ.get("TEST_WITH_SUB_RECORDING", False))
-    test_subrecording_n_frames = int(os.environ.get("SUB_RECORDING_N_FRAMES", 300000))
+    # Arguments are passed by function or retrieved from ENV vars
+    if not source_aws_s3_bucket:
+        source_aws_s3_bucket = os.environ.get("SOURCE_AWS_S3_BUCKET", None)
+    if not source_aws_s3_bucket_folder:
+        source_aws_s3_bucket_folder = os.environ.get("SOURCE_AWS_S3_BUCKET_FOLDER", None)
+    if not dandiset_s3_file_url:
+        dandiset_s3_file_url = os.environ.get("DANDISET_S3_FILE_URL", None)
+    if not target_aws_s3_bucket:
+        target_aws_s3_bucket = os.environ.get("TARGET_AWS_S3_BUCKET", None)
+    if not target_aws_s3_bucket_folder:
+        target_aws_s3_bucket_folder = os.environ.get("TARGET_AWS_S3_BUCKET_FOLDER", None)
+    if not data_type:
+        data_type = os.environ.get("DATA_TYPE", "nwb")
+    if not recording_kwargs:
+        recording_kwargs = json.loads(os.environ.get("RECORDING_KWARGS", "{}"))
+    if not sorters_names_list:
+        sorters_names_list = os.environ.get("SORTERS_NAMES_LIST", "kilosort3").split(",")
+    if not sorters_kwargs:
+        sorters_kwargs = eval(os.environ.get("SORTERS_KWARGS", "{}"))
+    if not test_with_toy_recording:
+        test_with_toy_recording = bool(os.environ.get("TEST_WITH_TOY_RECORDING", False))
+    if not test_with_sub_recording:
+        test_with_subrecording = bool(os.environ.get("TEST_WITH_SUB_RECORDING", False))
+    if not test_subrecording_n_frames:
+        test_subrecording_n_frames = int(os.environ.get("TEST_SUB_RECORDING_N_FRAMES", 300000))
 
 
-    if (source_bucket_name is None or source_bucket_folder is None) and (dandiset_s3_file_url is None) and (not test_toy):
-        raise Exception("Missing either: \n- AWS_S3_BUCKET and AWS_S3_BUCKET_FOLDER, or \n- DANDISET_S3_FILE_URL")
+    if (source_aws_s3_bucket is None or source_aws_s3_bucket_folder is None) and (dandiset_s3_file_url is None) and (not test_with_toy_recording):
+        raise Exception("Missing either: \n- SOURCE_AWS_S3_BUCKET and SOURCE_AWS_S3_BUCKET_FOLDER, or \n- DANDISET_S3_FILE_URL")
 
     s3_client = boto3.client('s3')
 
-    if source_bucket_name and source_bucket_folder:
-        print(f"Downloading dataset: {source_bucket_name}/{source_bucket_folder}")
+    if source_aws_s3_bucket and source_aws_s3_bucket_folder:
+        print(f"Downloading dataset: {source_aws_s3_bucket}/{source_aws_s3_bucket_folder}")
         download_all_files_from_bucket_folder(
             client=s3_client,
-            bucket_name=source_bucket_name, 
-            bucket_folder=source_bucket_folder
+            bucket_name=source_aws_s3_bucket, 
+            bucket_folder=source_aws_s3_bucket_folder
         )
 
         print("Reading recording...")
         # E.g.: se.read_spikeglx(folder_path="/data", stream_id="imec.ap")
         recording = DATA_TYPE_TO_READER.get(data_type)(
             folder_path="/data",
-            **read_recording_kwargs
+            **recording_kwargs
         )
 
     elif dandiset_s3_file_url:
         if not dandiset_s3_file_url.startswith("https://dandiarchive.s3.amazonaws.com"):
             raise Exception(f"DANDISET_S3_FILE_URL should be a valid Dandiset S3 url. Value received was: {dandiset_s3_file_url}")
 
-        if not test_subrecording:            
+        if not test_with_subrecording:            
             print(f"Downloading dataset: {dandiset_s3_file_url}")
             download_file_from_url(dandiset_s3_file_url)
             
             print("Reading recording from NWB...")
             recording = se.read_nwb_recording(
                 file_path="data/filename.nwb",
-                **read_recording_kwargs
+                **recording_kwargs
             )
         else:
             print("Reading recording from NWB...")
             recording = se.read_nwb_recording(
                 file_path=dandiset_s3_file_url,
                 stream_mode="fsspec",
-                **read_recording_kwargs
+                **recording_kwargs
             )
 
-    elif test_toy:
+    elif test_with_toy_recording:
         recording, _ = se.toy_example(
             duration=10,
             seed=0,
@@ -164,7 +189,7 @@ if __name__ == '__main__':
             num_segments=1
         )
 
-    if test_subrecording:
+    if test_with_subrecording:
         n_frames = int(min(test_subrecording_n_frames, recording.get_num_frames()))
         recording = recording.frame_slice(start_frame=0, end_frame=n_frames)
     
@@ -178,7 +203,7 @@ if __name__ == '__main__':
     for sorter_name in sorters_names_list:
         try:
             print(f"Running {sorter_name}...")
-            sorter_job_kwargs = sorters_params.get(sorter_name, {})
+            sorter_job_kwargs = sorters_kwargs.get(sorter_name, {})
             sorter_job_kwargs["n_jobs"] = min(n_jobs, sorter_job_kwargs.get("n_jobs", n_jobs))
             output_folder = f"/results/sorting/{sorter_name}"
             sorting = run_sorter_local(
@@ -198,8 +223,8 @@ if __name__ == '__main__':
             # Upload sorting results to S3
             upload_all_files_to_bucket_folder(
                 client=s3_client, 
-                bucket_name=target_bucket_name, 
-                bucket_folder=target_bucket_folder,
+                bucket_name=target_aws_s3_bucket, 
+                bucket_folder=target_aws_s3_bucket_folder,
                 local_folder=f'/results/sorter_exported_{sorter_name}'
             )
         except Exception as e:
@@ -207,8 +232,8 @@ if __name__ == '__main__':
             # upload error logs to S3
             upload_all_files_to_bucket_folder(
                 client=s3_client,
-                bucket_name=target_bucket_name,
-                bucket_folder=target_bucket_folder,
+                bucket_name=target_aws_s3_bucket,
+                bucket_folder=target_aws_s3_bucket_folder,
                 local_folder=output_folder
             )
 
@@ -224,6 +249,9 @@ if __name__ == '__main__':
         print("Matching results:")
         print(mcmp.comparisons[tuple(sorters_names_list)].get_matching())
 
+
+if __name__ == '__main__':
+    main()
 
 # Known issues:
 #

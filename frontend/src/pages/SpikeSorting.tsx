@@ -111,7 +111,7 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
 
         // Fetch file metadata
         try {
-            const response = await axios.get('http://localhost:5000/api/dandi/get-nwbfile-info',
+            const response = await axios.get('http://localhost:8000/api/dandi/get-nwbfile-info',
                 {
                     params: {
                         dandiset_id: dandiset_id,

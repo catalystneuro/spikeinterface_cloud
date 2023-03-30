@@ -9,7 +9,7 @@ interface IEndpoints {
  */
 const configEndpoints: Record<IApiEnv, IEndpoints> = {
     local: {
-        api: 'http://localhost:5000/api'
+        api: 'http://localhost:8000/api'
     },
     compose: {
         api: 'http://localhost/api'
