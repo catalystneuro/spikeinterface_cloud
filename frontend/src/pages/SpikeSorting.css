@@ -1,0 +1,107 @@
+/* SpikeSorting.module.css */
+
+.container {
+    display: flex;
+    justify-content: top;
+    align-items: center;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #f5f5f5;
+    width: 100%;
+    padding-top: 30px;
+}
+
+.heading {
+    color: #3f51b5;
+    font-weight: bold;
+    margin-bottom: 2rem;
+}
+
+.MarkdownSummary {
+    width: 100%;
+    background-color: #fff;
+    padding: 5px;
+    border-radius: 4px;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
+    margin-bottom: 1rem;
+}
+
+.menuItem {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+.form {
+    width: 80%;
+    background-color: #fff;
+    padding: 2rem;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.formItem {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.formItem .MuiTypography-root {
+    width: 200px;
+    margin-right: 1rem;
+}
+
+.formItemCompact {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.compactTextField {
+    height: 32px;
+}
+
+.compactTextField .MuiInputBase-root {
+    padding: 3px 6px;
+    height: 32px;
+    width: 100px;
+}
+
+.compactTextField .MuiInputLabel-root {
+    transform: translate(14px, 10px) scale(1);
+}
+
+.compactTextField .MuiInputLabel-shrink {
+    transform: translate(0, -1.5px) scale(0.75);
+}
+
+.compactSwitch {
+    margin-left: 0% !important;
+    margin-right: 0% !important;
+    width: 100px;
+}
+
+.label {
+    width: 200px;
+    margin-right: 1rem;
+}
+
+.MuiAccordionSummary-content {
+    font-weight: bold !important;
+}
+
+.formControl_1 {
+    width: 200px;
+    margin-right: 1rem !important;
+}
+
+.formControl_2 {
+    width: 100%;
+}
+
+.button {
+    margin-top: 1rem;
+}

@@ -1,0 +1,5 @@
+fastapi[all]==0.95.0
+dandi==0.51.0
+fsspec==2023.3.0
+requests==2.28.2
+aiohttp==3.8.4
