@@ -24,6 +24,7 @@ import axios from 'axios';
 
 import './SpikeSorting.css';
 import { SorterSchema, kilosort2_5, kilosort3 } from './sorterSchemas';
+import { restApiClient } from '../services/clients/restapi.client';
 
 
 const itemSchemas: { [itemName: string]: SorterSchema } = {
@@ -84,7 +85,11 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
 
         // Fetch metadata
         try {
-            const response = await axios.get('http://localhost:5000/api/dandi/get-dandiset-metadata', { params: { dandiset_id } });
+            // const response = await axios.get('http://localhost:5000/api/dandi/get-dandiset-metadata', { params: { dandiset_id } });
+            const response = await restApiClient.get(
+                '/dandi/get-dandiset-metadata',
+                { params: { dandiset_id } }
+            );
             setSelectedDandisetMetadata(response.data.metadata);
             setListOfFiles(response.data.list_of_files);
         } catch (error) {

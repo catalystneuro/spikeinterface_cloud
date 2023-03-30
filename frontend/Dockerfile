@@ -8,6 +8,8 @@ RUN yarn install
 
 COPY frontend ./
 
+ENV SI_CLOUD_ENV production
+
 # RUN yarn build
 
 EXPOSE 3000

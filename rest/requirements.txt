@@ -3,3 +3,4 @@ dandi==0.51.0
 fsspec==2023.3.0
 requests==2.28.2
 aiohttp==3.8.4
+boto3==1.26.102

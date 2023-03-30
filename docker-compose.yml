@@ -7,8 +7,11 @@ services:
       context: .
       dockerfile: frontend/Dockerfile
     image: si-sorting-frontend
+    container_name: si-sorting-frontend
     ports:
       - "3000:3000"
+    environment:
+      DEPLOY_MODE: compose
     volumes:
       - ./frontend:/app
 
@@ -17,7 +20,10 @@ services:
       context: .
       dockerfile: rest/Dockerfile
     image: si-sorting-rest
+    container_name: si-sorting-rest
     ports:
       - "5000:5000"
+    environment:
+      DEPLOY_MODE: compose
     volumes:
       - ./rest:/app
