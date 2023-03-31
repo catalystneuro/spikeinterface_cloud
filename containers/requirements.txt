@@ -7,5 +7,5 @@ spikeinterface[full]==0.97.1
 neo
 pynwb
 threadpoolctl==3.1.0   # https://stackoverflow.com/a/72840515/11483674
-Flask==2.2.3
+Flask[async]==2.2.3
 uvicorn==0.21.1

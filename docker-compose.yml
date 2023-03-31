@@ -43,3 +43,7 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     volumes:
       - ./containers:/app
+      - ./results:/results
+    runtime: nvidia
+    devices:
+      - "/dev/nvidia0:/dev/nvidia0"

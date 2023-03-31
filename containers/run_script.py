@@ -4,11 +4,16 @@ import os
 import json
 import shutil
 import requests
+import logging
+from datetime import datetime
 from pathlib import Path
 import spikeinterface.extractors as se
 from spikeinterface.sorters import run_sorter_local
 import spikeinterface.comparison as sc
 
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # TODO - complete with more data types
 DATA_TYPE_TO_READER = {
@@ -76,6 +81,7 @@ def main(
     source_aws_s3_bucket_folder:str = None,
     dandiset_s3_file_url:str = None,
     dandiset_file_es_name:str = None,
+    target_output_type:str = None,
     target_aws_s3_bucket:str = None,
     target_aws_s3_bucket_folder:str = None,
     data_type:str = None,
@@ -126,6 +132,8 @@ def main(
         dandiset_s3_file_url = os.environ.get("DANDISET_S3_FILE_URL", None)
     if not dandiset_file_es_name:
         dandiset_file_es_name = os.environ.get("DANDISET_FILE_ES_NAME", "ElectricalSeries")
+    if not target_output_type:
+        target_output_type = os.environ.get("TARGET_OUTPUT_TYPE", "s3")
     if not target_aws_s3_bucket:
         target_aws_s3_bucket = os.environ.get("TARGET_AWS_S3_BUCKET", None)
     if not target_aws_s3_bucket_folder:
@@ -152,6 +160,7 @@ def main(
     s3_client = boto3.client('s3')
 
     if test_with_toy_recording:
+        logging.info("Generating toy recording...")
         recording, _ = se.toy_example(
             duration=10,
             seed=0,
@@ -206,14 +215,19 @@ def main(
     # ------------------------------------------------------------------------------------
 
     # Run sorters
-    n_jobs = int(os.cpu_count())
+    if test_with_toy_recording:
+        n_jobs = 1
+    else:
+        n_jobs = int(os.cpu_count())
     sorting_list = list()
+    sorters_names_list = [s.lower().strip() for s in sorters_names_list]
     for sorter_name in sorters_names_list:
         try:
             print(f"Running {sorter_name}...")
             sorter_job_kwargs = sorters_kwargs.get(sorter_name, {})
             sorter_job_kwargs["n_jobs"] = min(n_jobs, sorter_job_kwargs.get("n_jobs", n_jobs))
-            output_folder = f"/results/sorting/{sorter_name}"
+            now = datetime.now().strftime("%Y%m%d%H%M%S")
+            output_folder = f"/results/sorting/results_{now}_{sorter_name}"
             sorting = run_sorter_local(
                 sorter_name, 
                 recording, 
@@ -226,24 +240,32 @@ def main(
                 **sorter_job_kwargs
             )
             sorting_list.append(sorting)
-            sorting.save_to_folder(folder=f'/results/sorter_exported_{sorter_name}')
+            sorting.save_to_folder(folder=f'/results/sorter_exported_{now}_{sorter_name}')
 
-            # Upload sorting results to S3
-            upload_all_files_to_bucket_folder(
-                client=s3_client, 
-                bucket_name=target_aws_s3_bucket, 
-                bucket_folder=target_aws_s3_bucket_folder,
-                local_folder=f'/results/sorter_exported_{sorter_name}'
-            )
+            if target_output_type == "local":
+                # Copy sorting results to local - already done by mounted volume
+                pass
+            elif target_output_type == "s3":
+                # Upload sorting results to S3
+                upload_all_files_to_bucket_folder(
+                    client=s3_client, 
+                    bucket_name=target_aws_s3_bucket, 
+                    bucket_folder=target_aws_s3_bucket_folder,
+                    local_folder=f'/results/sorter_exported_{now}_{sorter_name}'
+                )
         except Exception as e:
             print(f"Error running sorter {sorter_name}: {e}")
-            # upload error logs to S3
-            upload_all_files_to_bucket_folder(
-                client=s3_client,
-                bucket_name=target_aws_s3_bucket,
-                bucket_folder=target_aws_s3_bucket_folder,
-                local_folder=output_folder
-            )
+            if target_output_type == "local":
+                # Copy error logs to local - already done by mounted volume
+                pass
+            elif target_output_type == "s3":
+                # upload error logs to S3
+                upload_all_files_to_bucket_folder(
+                    client=s3_client,
+                    bucket_name=target_aws_s3_bucket,
+                    bucket_folder=target_aws_s3_bucket_folder,
+                    local_folder=output_folder
+                )
 
 
     # Post sorting operations

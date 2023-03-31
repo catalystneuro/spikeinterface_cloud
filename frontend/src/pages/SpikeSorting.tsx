@@ -29,7 +29,7 @@ import { restApiClient } from '../services/clients/restapi.client';
 
 
 const itemSchemas: { [itemName: string]: SorterSchema } = {
-    'Kilosort2.5': kilosort2_5,
+    'Kilosort2_5': kilosort2_5,
     'Kilosort3': kilosort3,
 };
 
@@ -298,28 +298,30 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
         const es = selectedES as string;
 
         const data = {
-            source_aws_s3_bucket: '<your-source-aws-s3-bucket>',
-            source_aws_s3_bucket_folder: '<your-source-aws-s3-bucket-folder>',
+            source_aws_s3_bucket: null,
+            source_aws_s3_bucket_folder: null,
             dandiset_id: dandiset_id,
             dandiset_file_path: filepath,
             dandiset_file_es_name: es,
-            target_aws_s3_bucket: "<your-target-aws-s3-bucket>",
-            target_aws_s3_bucket_folder: "<your-target-aws-s3-bucket-folder>",
+            target_output_type: "local",
+            target_aws_s3_bucket: null,
+            target_aws_s3_bucket_folder: null,
             data_type: "nwb",
             recording_kwargs: null,
-            sorters_names_list: "kilosort3",
-            sorters_kwargs: null,
-            test_with_toy_recording: true,
-            test_with_subrecording: false,
-            test_subrecording_n_frames: 100
+            sorters_names_list: sorters,
+            sorters_kwargs: formDataSorters,
+            test_with_toy_recording: false,
+            test_with_subrecording: true,
+            test_subrecording_n_frames: 6000,
         };
 
-        // try {
-        //     const response = await restApiClient.post('/sorting/run', data);
-        //     console.log(response.data);
-        // } catch (error) {
-        //     console.error(error);
-        // }
+        console.log(data)
+        try {
+            const response = await restApiClient.post('/sorting/run', data);
+            console.log(response.data);
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     return (
@@ -465,7 +467,7 @@ ${selectedDandisetMetadata.description}`}
                     <FormControl fullWidth>
                         <InputLabel>Sorters</InputLabel>
                         <Select<string[]> multiple value={sorters} onChange={handleSorterChange}>
-                            <MenuItem value="Kilosort2.5">Kilosort2.5</MenuItem>
+                            <MenuItem value="Kilosort2_5">Kilosort2_5</MenuItem>
                             <MenuItem value="Kilosort3">Kilosort3</MenuItem>
                         </Select>
                     </FormControl>
