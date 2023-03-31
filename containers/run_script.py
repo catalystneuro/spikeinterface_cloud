@@ -75,15 +75,16 @@ def main(
     source_aws_s3_bucket:str = None,
     source_aws_s3_bucket_folder:str = None,
     dandiset_s3_file_url:str = None,
+    dandiset_file_es_name:str = None,
     target_aws_s3_bucket:str = None,
     target_aws_s3_bucket_folder:str = None,
     data_type:str = None,
     recording_kwargs:dict = None,
     sorters_names_list:list = None,
     sorters_kwargs:dict = None,
-    test_with_toy_recording:bool = False,
-    test_with_sub_recording:bool = False,
-    test_subrecording_n_frames:int = 1000,
+    test_with_toy_recording:bool = None,
+    test_with_subrecording:bool = None,
+    test_subrecording_n_frames:int = None,
 ):
     """
     This script should run in an ephemeral Docker container and will:
@@ -113,13 +114,18 @@ def main(
     - AWS_SECRET_ACCESS_KEY
     """
 
-    # Arguments are passed by function or retrieved from ENV vars
+    # Order of priority for definition of running arguments:
+    # 1. passed by function
+    # 2. retrieved from ENV vars
+    # 3. default value
     if not source_aws_s3_bucket:
         source_aws_s3_bucket = os.environ.get("SOURCE_AWS_S3_BUCKET", None)
     if not source_aws_s3_bucket_folder:
         source_aws_s3_bucket_folder = os.environ.get("SOURCE_AWS_S3_BUCKET_FOLDER", None)
     if not dandiset_s3_file_url:
         dandiset_s3_file_url = os.environ.get("DANDISET_S3_FILE_URL", None)
+    if not dandiset_file_es_name:
+        dandiset_file_es_name = os.environ.get("DANDISET_FILE_ES_NAME", "ElectricalSeries")
     if not target_aws_s3_bucket:
         target_aws_s3_bucket = os.environ.get("TARGET_AWS_S3_BUCKET", None)
     if not target_aws_s3_bucket_folder:
@@ -134,7 +140,7 @@ def main(
         sorters_kwargs = eval(os.environ.get("SORTERS_KWARGS", "{}"))
     if not test_with_toy_recording:
         test_with_toy_recording = bool(os.environ.get("TEST_WITH_TOY_RECORDING", False))
-    if not test_with_sub_recording:
+    if not test_with_subrecording:
         test_with_subrecording = bool(os.environ.get("TEST_WITH_SUB_RECORDING", False))
     if not test_subrecording_n_frames:
         test_subrecording_n_frames = int(os.environ.get("TEST_SUB_RECORDING_N_FRAMES", 300000))
@@ -145,7 +151,15 @@ def main(
 
     s3_client = boto3.client('s3')
 
-    if source_aws_s3_bucket and source_aws_s3_bucket_folder:
+    if test_with_toy_recording:
+        recording, _ = se.toy_example(
+            duration=10,
+            seed=0,
+            num_channels=64,
+            num_segments=1
+        )
+    
+    elif source_aws_s3_bucket and source_aws_s3_bucket_folder:
         print(f"Downloading dataset: {source_aws_s3_bucket}/{source_aws_s3_bucket_folder}")
         download_all_files_from_bucket_folder(
             client=s3_client,
@@ -171,23 +185,17 @@ def main(
             print("Reading recording from NWB...")
             recording = se.read_nwb_recording(
                 file_path="data/filename.nwb",
+                electrical_series_name=dandiset_file_es_name,
                 **recording_kwargs
             )
         else:
             print("Reading recording from NWB...")
             recording = se.read_nwb_recording(
                 file_path=dandiset_s3_file_url,
+                electrical_series_name=dandiset_file_es_name,
                 stream_mode="fsspec",
                 **recording_kwargs
             )
-
-    elif test_with_toy_recording:
-        recording, _ = se.toy_example(
-            duration=10,
-            seed=0,
-            num_channels=64,
-            num_segments=1
-        )
 
     if test_with_subrecording:
         n_frames = int(min(test_subrecording_n_frames, recording.get_num_frames()))

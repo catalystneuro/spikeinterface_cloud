@@ -3,10 +3,10 @@ FROM node:14-alpine
 
 WORKDIR /app
 
-COPY frontend/package*.json ./
+COPY package*.json ./
 RUN yarn install
 
-COPY frontend ./
+COPY . ./
 
 ENV SI_CLOUD_ENV production
 

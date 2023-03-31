@@ -3,10 +3,10 @@ FROM python:3.9-slim
 
 WORKDIR /app
 
-COPY rest/requirements.txt ./
+COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY rest ./
+COPY . ./
 
 ENV SI_CLOUD_ENV production
 

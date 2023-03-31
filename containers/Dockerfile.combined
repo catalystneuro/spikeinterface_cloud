@@ -40,8 +40,10 @@ ENV PYTHONUNBUFFERED=1
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
+WORKDIR /app
 COPY run_script.py .
 COPY light_server.py .
-RUN mkdir /data
+RUN mkdir ./data
 
-ENTRYPOINT ["python", "light_server.py"]
+# CMD ["python", "light_server.py"]
+CMD ["uvicorn", "light_server:app", "--host", "0.0.0.0", "--port", "5000"]
