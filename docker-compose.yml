@@ -4,8 +4,8 @@ version: "3"
 services:
   frontend:
     build:
-      context: .
-      dockerfile: frontend/Dockerfile
+      context: frontend
+      dockerfile: Dockerfile
     image: si-sorting-frontend
     container_name: si-sorting-frontend
     ports:
@@ -17,13 +17,33 @@ services:
 
   rest:
     build:
-      context: .
-      dockerfile: rest/Dockerfile
+      context: rest
+      dockerfile: Dockerfile
     image: si-sorting-rest
     container_name: si-sorting-rest
     ports:
-      - "5000:5000"
+      - "8000:8000"
     environment:
       DEPLOY_MODE: compose
     volumes:
       - ./rest:/app
+
+  worker:
+    build:
+      context: containers
+      dockerfile: Dockerfile.combined
+    image: si-sorting-worker
+    container_name: si-sorting-worker
+    ports:
+      - "5000:5000"
+    environment:
+      DEPLOY_MODE: compose
+      AWS_REGION_NAME: ${AWS_REGION_NAME}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    volumes:
+      - ./containers:/app
+      - ./results:/results
+    runtime: nvidia
+    devices:
+      - "/dev/nvidia0:/dev/nvidia0"

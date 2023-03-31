@@ -27,14 +27,20 @@ import { SorterSchema, kilosort2_5, kilosort3 } from './sorterSchemas';
 import { restApiClient } from '../services/clients/restapi.client';
 
 
+
 const itemSchemas: { [itemName: string]: SorterSchema } = {
-    'Kilosort2.5': kilosort2_5,
+    'Kilosort2_5': kilosort2_5,
     'Kilosort3': kilosort3,
 };
 
 interface SpikeSortingProps {
     dandisets_labels: string[];
 }
+
+interface FormValues {
+    [key: string]: any;
+}
+
 
 const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
     const [source, setSource] = useState<string>('DANDI');
@@ -59,10 +65,11 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
         duration?: number;
         n_traces?: number;
     }>({});
-    const [subformsProcessing, setSubformsProcessing] = useState<React.ReactNode[]>([]);
     const [processing, setProcessing] = useState<string[]>([]);
+    const [subformsProcessing, setSubformsProcessing] = useState<React.ReactNode[]>([]);
+    const [sorters, setSorters] = useState<string[]>([]);
     const [subformsSorters, setSubformsSorters] = useState<React.ReactNode[]>([]);
-    const [sorter, setSorter] = useState<string[]>([]);
+    const [formDataSorters, setFormDataSorters] = useState<FormValues>({});
     const [outputDestination, setOutputDestination] = useState<string>('');
 
     const [loadingDataset, setLoadingDataset] = useState(false)
@@ -111,7 +118,7 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
 
         // Fetch file metadata
         try {
-            const response = await axios.get('http://localhost:5000/api/dandi/get-nwbfile-info',
+            const response = await axios.get('http://localhost:8000/api/dandi/get-nwbfile-info',
                 {
                     params: {
                         dandiset_id: dandiset_id,
@@ -147,7 +154,7 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
     // Change Sorter items
     const handleSorterChange = (event: SelectChangeEvent<string[]>) => {
         const selectedSorters = event.target.value as string[];
-        setSorter(selectedSorters);
+        setSorters(selectedSorters);
         updateSorterSubforms(selectedSorters);
     };
 
@@ -167,7 +174,12 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
                                 {field.type === 'boolean' ? (
                                     <FormControlLabel
                                         className="compactSwitch"
-                                        control={<Switch defaultChecked={field.default} />}
+                                        control={
+                                            <Switch
+                                                defaultChecked={field.default}
+                                                onChange={e => handleInputChange(selectedItem, key, e.target.checked)}
+                                            />
+                                        }
                                         label=""
                                     />
                                 ) : (
@@ -176,6 +188,7 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
                                         type={field.type === 'float' ? 'number' : field.type}
                                         inputProps={field.type === 'int' ? { step: 1 } : undefined}
                                         defaultValue={field.default}
+                                        onChange={e => handleInputChange(selectedItem, key, e.target.value)}
                                     />
                                 )}
                                 <Tooltip title={field.description} arrow>
@@ -192,6 +205,49 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
 
         setSubformsSorters(newSubforms);
     };
+
+    // Whenever the selection of sorters changes, update the store of subforms data
+    useEffect(() => {
+        // Find the schema names that are new or removed
+        const newSchemaNames = sorters.filter(schemaName => !formDataSorters[schemaName]);
+        const removedSchemaNames = Object.keys(formDataSorters).filter(schemaName => !sorters.includes(schemaName));
+
+        // Copy the existing formDataSorters
+        const updatedFormDataSorters = { ...formDataSorters };
+
+        // Remove the data for removed schema names
+        removedSchemaNames.forEach(schemaName => {
+            delete updatedFormDataSorters[schemaName];
+        });
+
+        // Add the default data for new schema names
+        newSchemaNames.forEach(schemaName => {
+            const schema = itemSchemas[schemaName];
+            updatedFormDataSorters[schemaName] = {};
+            Object.entries(schema).forEach(([key, field]) => {
+                updatedFormDataSorters[schemaName][key] = field.default;
+            });
+        });
+
+        setFormDataSorters(updatedFormDataSorters);
+    }, [sorters]);
+
+    // Whenerver the form data changes, update the store of subforms data
+    const handleInputChange = (subformName: string, key: string, value: boolean | number | string) => {
+        setFormDataSorters((prevData: { [key: string]: SorterSchema }) => {
+            const subformData = prevData[subformName];
+            const updatedSchemaData = {
+                ...subformData,
+                [key]: value
+            };
+            const updatedFormDataSorters = {
+                ...prevData,
+                [subformName]: updatedSchemaData
+            };
+            return updatedFormDataSorters;
+        });
+    };
+
 
     // Change Preprocessing items
     const handleProcessingChange = (event: SelectChangeEvent<string[]>) => {
@@ -234,6 +290,39 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
         const selectedOutput = event.target.value as string;
         setOutputDestination(selectedOutput);
     };
+
+    // Run local job
+    const handleRunLocalJob = async () => {
+        const dandiset_id = selectedDandiset.split(' - ')[0];
+        const filepath = selectedFile as string;
+        const es = selectedES as string;
+
+        const data = {
+            source_aws_s3_bucket: null,
+            source_aws_s3_bucket_folder: null,
+            dandiset_id: dandiset_id,
+            dandiset_file_path: filepath,
+            dandiset_file_es_name: es,
+            target_output_type: "local",
+            target_aws_s3_bucket: null,
+            target_aws_s3_bucket_folder: null,
+            data_type: "nwb",
+            recording_kwargs: null,
+            sorters_names_list: sorters,
+            sorters_kwargs: formDataSorters,
+            test_with_toy_recording: false,
+            test_with_subrecording: true,
+            test_subrecording_n_frames: 6000,
+        };
+
+        console.log(data)
+        try {
+            const response = await restApiClient.post('/sorting/run', data);
+            console.log(response.data);
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
     return (
         <Box className="container">
@@ -377,8 +466,8 @@ ${selectedDandisetMetadata.description}`}
                     <Typography sx={{ marginRight: 2 }}>Choose sorters:</Typography>
                     <FormControl fullWidth>
                         <InputLabel>Sorters</InputLabel>
-                        <Select<string[]> multiple value={sorter} onChange={handleSorterChange}>
-                            <MenuItem value="Kilosort2.5">Kilosort2.5</MenuItem>
+                        <Select<string[]> multiple value={sorters} onChange={handleSorterChange}>
+                            <MenuItem value="Kilosort2_5">Kilosort2_5</MenuItem>
                             <MenuItem value="Kilosort3">Kilosort3</MenuItem>
                         </Select>
                     </FormControl>
@@ -404,8 +493,17 @@ ${selectedDandisetMetadata.description}`}
             </Box>
 
             <Box component="form">
+                <Button
+                    variant="contained"
+                    color="primary"
+                    className="button"
+                    style={{ marginRight: "1rem" }}
+                    onClick={handleRunLocalJob}
+                >
+                    Run local
+                </Button>
                 <Button variant="contained" color="primary" className="button" style={{ marginRight: "1rem" }}>
-                    Run
+                    Run AWS
                 </Button>
                 <Button variant="contained" color="primary" className="button">
                     Save Template

@@ -3,13 +3,16 @@ FROM python:3.9-slim
 
 WORKDIR /app
 
-COPY rest/requirements.txt ./
+COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY rest ./
+COPY . ./
 
 ENV SI_CLOUD_ENV production
 
-EXPOSE 5000
+# Get Python stdout logs
+ENV PYTHONUNBUFFERED=1
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "5000"]
+EXPOSE 8000
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

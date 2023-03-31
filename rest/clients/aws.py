@@ -14,7 +14,7 @@ class JobStatus(enum.Enum):
     FAILED = 'FAILED'
 
 
-class AWSBatch(object):
+class AWSClient(object):
  
     def __init__(self, profile_name: str="default"):
         """

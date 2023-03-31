@@ -1,4 +1,4 @@
-from fastapi import APIRouter, File, UploadFile, HTTPException
+from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 from typing import List
 

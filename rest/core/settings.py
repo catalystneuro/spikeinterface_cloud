@@ -10,7 +10,7 @@ class Settings:
 class DevSettings(Settings):
     DEBUG = True
     HOST = '0.0.0.0'
-    PORT = 5000
+    PORT = 8000
 
 class ProdSettings(Settings):
     DEBUG = False
