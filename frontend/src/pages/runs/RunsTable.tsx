@@ -45,7 +45,7 @@ const RunsTable: React.FC = () => {
     return (
         <>
             <TableContainer component={Paper}>
-                <Table className={classes.table}>
+                <Table className={classes.table} sx={{ minWidth: 650 }} size="small">
                     <TableHead>
                         <TableRow>
                             <TableCell />

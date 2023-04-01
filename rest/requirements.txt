@@ -4,3 +4,5 @@ fsspec==2023.3.0
 requests==2.28.2
 aiohttp==3.8.4
 boto3==1.26.102
+SQLAlchemy==2.0.8
+psycopg2

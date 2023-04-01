@@ -12,6 +12,11 @@ Running with docker compose (also works for dev, with hot reaload):
 docker-compose up
 ``` 
 
+If you did any changes in `requirements.tx`, `package.json` or `Dockerfile`, you should stop the containers and run again with an extra `--build` flag:
+```shell
+docker-compose up --build
+``` 
+
 Run rest api standalone (dev):
 ```shell
 cd rest

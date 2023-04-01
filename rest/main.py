@@ -2,9 +2,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 
+from routes.user import router as router_user
 from routes.dandi import router as router_dandi
 from routes.sorting import router as router_sorting
 from clients.dandi import DandiClient
+from db.initialize_db import initialize_db
 
 
 app = FastAPI()
@@ -19,9 +21,17 @@ app.add_middleware(
 )
 
 # Include routers
+app.include_router(router_user, prefix="/api/user", tags=["user"])
 app.include_router(router_dandi, prefix="/api/dandi", tags=["dandi"])
 app.include_router(router_sorting, prefix="/api/sorting", tags=["sorting"])
 
+
+# Create Database, if not yet created
+try:
+    print("############  Initializing the database - if needed  ############")
+    initialize_db(db='postgresql+psycopg2://postgres:postgres@database/si-sorting-db')
+except Exception as e:
+    print(f"Error initializing the database: {e}")
 
 # Load Dandisets metadata - run only at the startup, and if metadat is not yet present
 metadata_path = Path().cwd().joinpath("data/dandisets_metadata.json")

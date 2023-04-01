@@ -13,6 +13,8 @@ services:
       DEPLOY_MODE: compose
     volumes:
       - ./frontend:/app
+    depends_on:
+      - rest
 
   rest:
     build:
@@ -26,6 +28,8 @@ services:
       DEPLOY_MODE: compose
     volumes:
       - ./rest:/app
+    depends_on:
+      - database
 
   worker:
     build:
@@ -46,3 +50,18 @@ services:
     runtime: nvidia
     devices:
       - "/dev/nvidia0:/dev/nvidia0"
+
+  database:
+    image: postgres:latest
+    container_name: si-sorting-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: si-sorting-db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  pgdata:

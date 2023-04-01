@@ -7,6 +7,8 @@ class Settings:
     AWS_REGION = os.environ.get("AWS_REGION", None)
     DANDI_VAR = os.environ.get("DANDI_VAR")
 
+    db_connection_string = 'postgresql+psycopg2://postgres:postgres@database/si-sorting-db'
+
 class DevSettings(Settings):
     DEBUG = True
     HOST = '0.0.0.0'
