@@ -3,15 +3,20 @@ import { Link } from 'react-router-dom';
 import { Box, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
 import { Home, Settings, Logout, BarChart, History } from '@mui/icons-material';
 
+
 const Sidebar: React.FC = () => {
     return (
         <Box sx={{ width: 240 }}>
             <List>
                 <ListItem>
                     <ListItemIcon>
-                        <Home />
+                        <img
+                            src={'/logo.png'}
+                            alt="Logo"
+                            style={{ width: 40, height: 40 }}
+                        />
                     </ListItemIcon>
-                    <ListItemText primary="Logo" />
+                    <ListItemText primary={<span style={{ fontWeight: 'bold' }}>SpikeInterface</span>} />
                 </ListItem>
                 <ListItem button component={Link} to="/datasets">
                     <ListItemIcon>
@@ -25,11 +30,11 @@ const Sidebar: React.FC = () => {
                     </ListItemIcon>
                     <ListItemText primary="Spike Sorting" />
                 </ListItem>
-                <ListItem button component={Link} to="/history">
+                <ListItem button component={Link} to="/runs">
                     <ListItemIcon>
                         <History />
                     </ListItemIcon>
-                    <ListItemText primary="History" />
+                    <ListItemText primary="Runs" />
                 </ListItem>
                 <ListItem button component={Link} to="/settings">
                     <ListItemIcon>

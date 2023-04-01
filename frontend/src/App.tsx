@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import axios from 'axios';
 
-import SpikeSorting from './pages/SpikeSorting';
+import SpikeSorting from './pages/spikesorting/SpikeSorting';
+import RunsPage from './pages/runs/RunsPage';
 import Sidebar from './components/Sidebar';
 
 const App: React.FC = () => {
@@ -27,6 +28,7 @@ const App: React.FC = () => {
         <Sidebar />
         <Routes>
           <Route path="/sorting" element={<SpikeSorting dandisets_labels={dandisets} />} />
+          <Route path="/runs" element={<RunsPage />} />
         </Routes>
       </div>
     </Router>

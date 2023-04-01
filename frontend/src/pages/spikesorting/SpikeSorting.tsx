@@ -24,7 +24,7 @@ import axios from 'axios';
 
 import './SpikeSorting.css';
 import { SorterSchema, kilosort2_5, kilosort3 } from './sorterSchemas';
-import { restApiClient } from '../services/clients/restapi.client';
+import { restApiClient } from '../../services/clients/restapi.client';
 
 
 

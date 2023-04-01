@@ -156,4 +156,6 @@ yarn-debug.log*
 yarn-error.log*
 
 
+# Miscellaneous
+*.fuse_hidden*
 results/
