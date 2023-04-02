@@ -1,27 +1,21 @@
 import requests
 import aiohttp
 import asyncio
+import os
 
 from core.logger import logger
 
 
 class LocalWorkerClient:
 
-    def __init__(self, endpoint: str = "http://worker:5000/worker/run"):
+    def __init__(self, endpoint: str = "http://worker:5000/worker"):
         self.endpoint = endpoint
         self.logger = logger
 
 
-    async def make_request(self, payload: dict) -> None:
-        async with aiohttp.ClientSession() as session:
-            async with session.post(self.endpoint, json=payload) as response:
-                if response.status == 200:
-                    self.logger.info("Success!")
-                else:
-                    self.logger.info(f"Error {response.status}: {await response.text()}")
-
     async def run_sorting(
         self,
+        run_id: str,
         source_aws_s3_bucket: str,
         source_aws_s3_bucket_folder: str,
         dandiset_s3_file_url: str,
@@ -38,6 +32,7 @@ class LocalWorkerClient:
         test_subrecording_n_frames: int,
     ) -> None:
         payload = {
+            "run_id": run_id,
             "source_aws_s3_bucket": source_aws_s3_bucket,
             "source_aws_s3_bucket_folder": source_aws_s3_bucket_folder,
             "dandiset_s3_file_url": dandiset_s3_file_url,
@@ -53,14 +48,18 @@ class LocalWorkerClient:
             "test_with_subrecording": test_with_subrecording,
             "test_subrecording_n_frames": test_subrecording_n_frames,
         }
-
-        # task = asyncio.create_task(self.make_request(payload=payload))
-
-        # loop = asyncio.get_event_loop()
-        # loop.run_until_complete(self.make_request(payload=payload))
-
-        response = requests.post(self.endpoint, json=payload)
+        response = requests.post(self.endpoint + "/run", json=payload)
         if response.status_code == 200:
             self.logger.info("Success!")
         else:
             self.logger.info(f"Error {response.status_code}: {response.content}")
+    
+
+    def get_run_logs(self, run_id):
+        self.logger.info("Getting logs...")
+        response = requests.get(self.endpoint + "/logs", params={"run_id": run_id})
+        if response.status_code == 200:
+            return response.content
+        else:
+            self.logger.info(f"Error {response.status_code}: {response.content}")
+            return f"Logs couldn't be retrieved. Error {response.status_code}: {response.content}"

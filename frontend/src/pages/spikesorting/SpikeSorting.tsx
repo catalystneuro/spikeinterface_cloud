@@ -15,7 +15,10 @@ import {
     IconButton,
     Accordion,
     AccordionSummary,
-    LinearProgress
+    LinearProgress,
+    Snackbar,
+    Alert,
+    AlertColor
 } from '@mui/material';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -74,6 +77,11 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
 
     const [loadingDataset, setLoadingDataset] = useState(false)
     const [loadingFile, setLoadingFile] = useState(false)
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState<AlertColor | undefined>(undefined);
+
+    const handleSnackbarClose = () => setSnackbarOpen(false);
 
     // Change Data Source
     const handleSourceChange = (event: SelectChangeEvent<string>) => {
@@ -310,18 +318,20 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
             recording_kwargs: null,
             sorters_names_list: sorters,
             sorters_kwargs: formDataSorters,
-            test_with_toy_recording: false,
-            test_with_subrecording: true,
+            test_with_toy_recording: true,
+            test_with_subrecording: false,
             test_subrecording_n_frames: 6000,
         };
-
-        console.log(data)
         try {
             const response = await restApiClient.post('/sorting/run', data);
-            console.log(response.data);
-        } catch (error) {
+            setSnackbarMessage(response.data);
+            setSnackbarSeverity('success');
+        } catch (error: unknown) {
+            setSnackbarMessage((error as Error).message);
+            setSnackbarSeverity('error');
             console.error(error);
         }
+        setSnackbarOpen(true);
     }
 
     return (
@@ -509,6 +519,12 @@ ${selectedDandisetMetadata.description}`}
                     Save Template
                 </Button>
             </Box>
+
+            <Snackbar open={snackbarOpen} autoHideDuration={10000} onClose={handleSnackbarClose} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
+                <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
 
             <div style={{ height: '50px' }} />
 

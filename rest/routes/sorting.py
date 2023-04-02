@@ -2,17 +2,21 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import List
+from datetime import datetime
 import asyncio
 
 from core.logger import logger
+from core.settings import settings
 from clients.dandi import DandiClient
 from clients.aws import AWSClient
 from clients.local_worker import LocalWorkerClient
+from clients.database import DatabaseClient
 
 router = APIRouter()
 
 
 class SortingData(BaseModel):
+    run_id: str = None
     source_aws_s3_bucket: str = None
     source_aws_s3_bucket_folder: str = None
     dandiset_id: str = None
@@ -32,6 +36,10 @@ class SortingData(BaseModel):
 
 @router.post("/run", response_description="Run Sorting", tags=["sorting"])
 def route_run_sorting(data: SortingData) -> JSONResponse:
+    if not data.run_id:
+        run_id = datetime.now().strftime("%Y%m%d%H%M%S")
+    else:
+        run_id = data.run_id
     # Get file url from dandi
     dandi_client = DandiClient()
     dandiset_s3_file_url = dandi_client.get_file_url(
@@ -39,6 +47,7 @@ def route_run_sorting(data: SortingData) -> JSONResponse:
         file_path=data.dandiset_file_path
     )
     payload = dict(
+        run_id=run_id,
         source_aws_s3_bucket=data.source_aws_s3_bucket,
         source_aws_s3_bucket_folder=data.source_aws_s3_bucket_folder,
         dandiset_s3_file_url=dandiset_s3_file_url,
@@ -55,8 +64,31 @@ def route_run_sorting(data: SortingData) -> JSONResponse:
         test_subrecording_n_frames=data.test_subrecording_n_frames,
     )
     try:
+        # Run sorting job
         client_local_worker = LocalWorkerClient()
         asyncio.run(client_local_worker.run_sorting(**payload))
+
+        # Create Database entries
+        db_client = DatabaseClient(connection_string=settings.db_connection_string)
+        dataset_id = db_client.create_dataset(
+            name=data.dandiset_id + " - " + data.dandiset_file_path,
+            description="",
+            user_id=0,
+            source="dandi",
+            source_metadata=str({
+                "dandiset_id": data.dandiset_id,
+                "dandiset_file_path": data.dandiset_file_path,
+                "dandiset_file_es_name": data.dandiset_file_es_name,
+            }),
+        )
+        run_id = db_client.create_run(
+            run_id=run_id,
+            name=data.dandiset_id,
+            last_run=datetime.now().strftime("%Y/%m/%d %H:%M:%S"),
+            status="running",
+            dataset_id=dataset_id,
+            metadata=str(payload),
+        )
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail="Internal server error")

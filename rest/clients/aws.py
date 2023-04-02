@@ -27,6 +27,8 @@ class AWSClient(object):
         self.client_s3 = self.session.client("s3")
         self.client_logs = self.session.client("logs")
 
+        self.sorting_logs_bucket = settings.sorting_logs_bucket
+
 
     def list_job_queues(self):
         return self.client.describe_job_queues()['jobQueues']
@@ -73,4 +75,17 @@ class AWSClient(object):
             logGroupName="/aws/batch/job",
             logStreamName=log_stream_name,
         )["events"]
- 
+    
+
+    def get_run_logs_s3(self, run_id: str) -> str:
+        """Get the logs for a specific run ID from the S3 bucket"""
+        log_key = f"{run_id}.log"
+
+        # Download the log file as a stream
+        response = self.client_s3.get_object(Bucket=self.bucket_name, Key=log_key)
+        log_stream = response["Body"]
+
+        # Read the contents of the stream as text
+        log_text = log_stream.read().decode("utf-8")
+
+        return log_text

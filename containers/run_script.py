@@ -5,15 +5,14 @@ import json
 import shutil
 import requests
 import logging
+import sys
+from io import StringIO
 from datetime import datetime
 from pathlib import Path
 import spikeinterface.extractors as se
 from spikeinterface.sorters import run_sorter_local
 import spikeinterface.comparison as sc
 
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 # TODO - complete with more data types
 DATA_TYPE_TO_READER = {
@@ -32,6 +31,45 @@ DATA_TYPE_TO_READER = {
 #     "kilosort3": ,
 #     "kilosort2_5":,
 # }
+
+
+class Tee(object):
+    def __init__(self, *files):
+        self.files = files
+    def write(self, obj):
+        for f in self.files:
+            f.write(obj)
+            f.flush()
+    def flush(self) :
+        for f in self.files:
+            f.flush()
+
+
+def make_logger(run_id:str):
+    logging.basicConfig()
+    logger = logging.getLogger("sorting_worker")
+    logFileFormatter = logging.Formatter(
+        fmt="%(asctime)s %(levelname)s -- %(name)s %(levelname)s %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+    fileHandler = logging.FileHandler(
+        filename=f"/logs/sorting_worker_{run_id}.log",
+        mode="a",
+    )
+    fileHandler.setFormatter(logFileFormatter)
+    fileHandler.setLevel(level=logging.DEBUG)
+    logger.addHandler(fileHandler)
+
+    # Add a logging handler for stdout
+    stdoutHandler = logging.StreamHandler(sys.stdout)
+    stdoutHandler.setLevel(logging.DEBUG)
+    stdoutHandler.setFormatter(logFileFormatter)
+    logger.addHandler(stdoutHandler)
+    
+    # Redirect stdout to a file-like object that writes to both stdout and the log file
+    stdout_log_file = open(f"/logs/sorting_worker_{run_id}.log", "a")
+    sys.stdout = Tee(sys.stdout, stdout_log_file)
+    return logger
 
 
 def download_file_from_url(url):
@@ -60,6 +98,7 @@ def download_all_files_from_bucket_folder(
 
 
 def upload_all_files_to_bucket_folder(
+    # logger:logging.Logger,
     client:botocore.client.BaseClient, 
     bucket_name:str, 
     bucket_folder:str,
@@ -68,7 +107,7 @@ def upload_all_files_to_bucket_folder(
     # List files from results, upload them to S3
     files_list = [f for f in Path(local_folder).rglob("*") if f.is_file()]
     for f in files_list:
-        print(f"Uploading {str(f)}...")
+        logging.info(f"Uploading {str(f)}...")
         client.upload_file(
             Filename=str(f),
             Bucket=bucket_name,
@@ -77,6 +116,7 @@ def upload_all_files_to_bucket_folder(
 
 
 def main(
+    run_id:str = None,
     source_aws_s3_bucket:str = None,
     source_aws_s3_bucket_folder:str = None,
     dandiset_s3_file_url:str = None,
@@ -120,6 +160,12 @@ def main(
     - AWS_SECRET_ACCESS_KEY
     """
 
+    # Set up logging
+    if not run_id:
+        run_id = datetime.now().strftime("%Y%m%d%H%M%S")
+    
+    logger = make_logger(run_id)
+
     # Order of priority for definition of running arguments:
     # 1. passed by function
     # 2. retrieved from ENV vars
@@ -160,7 +206,7 @@ def main(
     s3_client = boto3.client('s3')
 
     if test_with_toy_recording:
-        logging.info("Generating toy recording...")
+        logger.info("Generating toy recording...")
         recording, _ = se.toy_example(
             duration=10,
             seed=0,
@@ -169,14 +215,14 @@ def main(
         )
     
     elif source_aws_s3_bucket and source_aws_s3_bucket_folder:
-        print(f"Downloading dataset: {source_aws_s3_bucket}/{source_aws_s3_bucket_folder}")
+        logger.info(f"Downloading dataset: {source_aws_s3_bucket}/{source_aws_s3_bucket_folder}")
         download_all_files_from_bucket_folder(
             client=s3_client,
             bucket_name=source_aws_s3_bucket, 
             bucket_folder=source_aws_s3_bucket_folder
         )
 
-        print("Reading recording...")
+        logger.info("Reading recording...")
         # E.g.: se.read_spikeglx(folder_path="/data", stream_id="imec.ap")
         recording = DATA_TYPE_TO_READER.get(data_type)(
             folder_path="/data",
@@ -188,17 +234,17 @@ def main(
             raise Exception(f"DANDISET_S3_FILE_URL should be a valid Dandiset S3 url. Value received was: {dandiset_s3_file_url}")
 
         if not test_with_subrecording:            
-            print(f"Downloading dataset: {dandiset_s3_file_url}")
+            logger.info(f"Downloading dataset: {dandiset_s3_file_url}")
             download_file_from_url(dandiset_s3_file_url)
             
-            print("Reading recording from NWB...")
+            logger.info("Reading recording from NWB...")
             recording = se.read_nwb_recording(
                 file_path="data/filename.nwb",
                 electrical_series_name=dandiset_file_es_name,
                 **recording_kwargs
             )
         else:
-            print("Reading recording from NWB...")
+            logger.info("Reading recording from NWB...")
             recording = se.read_nwb_recording(
                 file_path=dandiset_s3_file_url,
                 electrical_series_name=dandiset_file_es_name,
@@ -223,11 +269,10 @@ def main(
     sorters_names_list = [s.lower().strip() for s in sorters_names_list]
     for sorter_name in sorters_names_list:
         try:
-            print(f"Running {sorter_name}...")
+            logger.info(f"Running {sorter_name}...")
             sorter_job_kwargs = sorters_kwargs.get(sorter_name, {})
             sorter_job_kwargs["n_jobs"] = min(n_jobs, sorter_job_kwargs.get("n_jobs", n_jobs))
-            now = datetime.now().strftime("%Y%m%d%H%M%S")
-            output_folder = f"/results/sorting/results_{now}_{sorter_name}"
+            output_folder = f"/results/sorting/{run_id}_{sorter_name}"
             sorting = run_sorter_local(
                 sorter_name, 
                 recording, 
@@ -240,7 +285,7 @@ def main(
                 **sorter_job_kwargs
             )
             sorting_list.append(sorting)
-            sorting.save_to_folder(folder=f'/results/sorter_exported_{now}_{sorter_name}')
+            sorting.save_to_folder(folder=f'/results/sorting/{run_id}_{sorter_name}/sorter_exported')
 
             if target_output_type == "local":
                 # Copy sorting results to local - already done by mounted volume
@@ -248,19 +293,21 @@ def main(
             elif target_output_type == "s3":
                 # Upload sorting results to S3
                 upload_all_files_to_bucket_folder(
+                    # logger=logger,
                     client=s3_client, 
                     bucket_name=target_aws_s3_bucket, 
                     bucket_folder=target_aws_s3_bucket_folder,
-                    local_folder=f'/results/sorter_exported_{now}_{sorter_name}'
+                    local_folder=f'/results/sorting/{run_id}_{sorter_name}/sorter_exported'
                 )
         except Exception as e:
-            print(f"Error running sorter {sorter_name}: {e}")
+            logger.info(f"Error running sorter {sorter_name}: {e}")
             if target_output_type == "local":
                 # Copy error logs to local - already done by mounted volume
                 pass
             elif target_output_type == "s3":
                 # upload error logs to S3
                 upload_all_files_to_bucket_folder(
+                    # logger=logger,
                     client=s3_client,
                     bucket_name=target_aws_s3_bucket,
                     bucket_folder=target_aws_s3_bucket_folder,
@@ -270,14 +317,14 @@ def main(
 
     # Post sorting operations
     if len(sorters_names_list) > 1:
-        print("Running sorters comparison...")
+        logger.info("Running sorters comparison...")
         mcmp = sc.compare_multiple_sorters(
             sorting_list=sorting_list,
             name_list=sorters_names_list,
             verbose=True,
         )
-        print("Matching results:")
-        print(mcmp.comparisons[tuple(sorters_names_list)].get_matching())
+        logger.info("Matching results:")
+        logger.info(mcmp.comparisons[tuple(sorters_names_list)].get_matching())
 
 
 if __name__ == '__main__':

@@ -33,5 +33,3 @@ class Run(Base):
     dataset_id = Column(Integer, ForeignKey('dataset.id'))
     dataset = relationship('Dataset', back_populates='runs')
     metadata_ = Column("metadata", String)
-    user_id = Column(Integer, ForeignKey('user.id'))
-    user = relationship('User', back_populates='runs')

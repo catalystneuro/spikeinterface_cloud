@@ -5,6 +5,7 @@ from pathlib import Path
 from routes.user import router as router_user
 from routes.dandi import router as router_dandi
 from routes.sorting import router as router_sorting
+from routes.run import router as router_run
 from clients.dandi import DandiClient
 from db.initialize_db import initialize_db
 
@@ -24,6 +25,7 @@ app.add_middleware(
 app.include_router(router_user, prefix="/api/user", tags=["user"])
 app.include_router(router_dandi, prefix="/api/dandi", tags=["dandi"])
 app.include_router(router_sorting, prefix="/api/sorting", tags=["sorting"])
+app.include_router(router_run, prefix="/api/run", tags=["run"])
 
 
 # Create Database, if not yet created

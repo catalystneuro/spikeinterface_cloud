@@ -46,16 +46,19 @@ class DatabaseClient:
         user = User(username=username, password=password)
         with self.session_scope() as session:
             session.add(user)
+            return user.id
 
     def create_dataset(self, name, description, user_id, source, source_metadata):
         dataset = Dataset(name=name, description=description, user_id=user_id, source=source, source_metadata=source_metadata)
         with self.session_scope() as session:
             session.add(dataset)
+            return dataset.id
 
     def create_run(self, name, last_run, status, dataset_id, metadata, user_id):
         run = Run(name=name, last_run=last_run, status=status, dataset_id=dataset_id, metadata=metadata, user_id=user_id)
         with self.session_scope() as session:
             session.add(run)
+            return run.id
 
     def get_user_info(self, username):
         with self.session_scope() as session:
