@@ -9,12 +9,13 @@ export AWS_REGION_NAME=us-east-1
 
 Running with docker compose (also works for dev, with hot reaload):
 ```shell
-docker-compose up
+docker compose up
 ``` 
 
-If you did any changes in `requirements.tx`, `package.json` or `Dockerfile`, you should stop the containers and run again with an extra `--build` flag:
+If you did any changes in `requirements.txt`, `package.json` or `Dockerfile`, you should stop the containers and run again with an extra `--build` flag:
 ```shell
-docker-compose up --build
+docker compose down
+docker compose up --build
 ``` 
 
 Run rest api standalone (dev):
