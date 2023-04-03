@@ -2,7 +2,10 @@ version: "3"
 
 services:
   frontend:
-    image: ghcr.io/catalystneuro/si-sorting-frontend:latest
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    image: si-sorting-frontend
     container_name: si-sorting-frontend
     ports:
       - "3000:3000"
@@ -14,7 +17,10 @@ services:
       - rest
 
   rest:
-    image: ghcr.io/catalystneuro/si-sorting-rest:latest
+    build:
+      context: rest
+      dockerfile: Dockerfile
+    image: si-sorting-rest
     container_name: si-sorting-rest
     ports:
       - "8000:8000"
@@ -27,7 +33,10 @@ services:
       - database
 
   worker:
-    image: ghcr.io/catalystneuro/si-sorting-worker:latest
+    build:
+      context: containers
+      dockerfile: Dockerfile.combined
+    image: si-sorting-worker
     container_name: si-sorting-worker
     ports:
       - "5000:5000"

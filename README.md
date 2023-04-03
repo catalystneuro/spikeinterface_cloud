@@ -7,15 +7,20 @@ export AWS_SECRET_ACCESS_KEY=XXXXXXXXXXXXXXXXXXXX
 export AWS_REGION_NAME=us-east-1
 ```
 
-Running with docker compose (also works for dev, with hot reaload):
+Running with docker compose pulling images from github packages:
 ```shell
 docker compose up
 ``` 
 
+Running with docker compose building images locally (for dev, with hot reaload):
+```shell
+docker compose -f docker-compose-dev.yml up
+```
+
 If you did any changes in `requirements.txt`, `package.json` or `Dockerfile`, you should stop the containers and run again with an extra `--build` flag:
 ```shell
-docker compose down
-docker compose up --build
+docker compose -f docker-compose-dev.yml
+docker compose -f docker-compose-dev.yml --build
 ``` 
 
 Run rest api standalone (dev):
