@@ -30,3 +30,12 @@ cd frontend
 yarn start
 ```
 
+# App components
+
+The app is composed of four components:
+- `rest` - the rest api, which is a FastAPI app
+- `frontend` - the frontend, which is a React app
+- `db` - the database, which is a Postgres database
+- `worker` - the worker, which is a sorter container with a Flask app
+
+![app sketch](/media/app_sketch.jpg)
