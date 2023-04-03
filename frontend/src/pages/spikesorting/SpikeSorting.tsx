@@ -324,7 +324,7 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
         };
         try {
             const response = await restApiClient.post('/sorting/run', data);
-            setSnackbarMessage(response.data);
+            setSnackbarMessage(response.data.message + '\nrun_id: ' + response.data.run_id);
             setSnackbarSeverity('success');
         } catch (error: unknown) {
             setSnackbarMessage((error as Error).message);
@@ -521,7 +521,11 @@ ${selectedDandisetMetadata.description}`}
             </Box>
 
             <Snackbar open={snackbarOpen} autoHideDuration={10000} onClose={handleSnackbarClose} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
-                <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
+                <Alert
+                    onClose={handleSnackbarClose}
+                    severity={snackbarSeverity}
+                    sx={{ width: '100%', border: '1px solid green;', borderRadius: "3px" }}
+                >
                     {snackbarMessage}
                 </Alert>
             </Snackbar>

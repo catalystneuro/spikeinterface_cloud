@@ -41,7 +41,7 @@ WORKDIR /app
 COPY run_script.py .
 COPY light_server.py .
 RUN mkdir ./data
-RUN mkdir /worker_logs
+RUN mkdir /logs
 
 # Get Python stdout logs
 ENV PYTHONUNBUFFERED=1

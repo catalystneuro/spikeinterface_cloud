@@ -13,7 +13,7 @@ class LocalWorkerClient:
         self.logger = logger
 
 
-    async def run_sorting(
+    def run_sorting(
         self,
         run_id: str,
         source_aws_s3_bucket: str,

@@ -11,7 +11,6 @@ class User(Base):
     username = Column(String)
     password = Column(String)
     datasets = relationship('Dataset', back_populates='user', cascade='all, delete-orphan')
-    runs = relationship('Run', back_populates='user', cascade='all, delete-orphan')
 
 class Dataset(Base):
     __tablename__ = 'dataset'

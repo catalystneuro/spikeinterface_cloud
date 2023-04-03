@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, BackgroundTasks
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import List
@@ -35,7 +35,7 @@ class SortingData(BaseModel):
 
 
 @router.post("/run", response_description="Run Sorting", tags=["sorting"])
-def route_run_sorting(data: SortingData) -> JSONResponse:
+async def route_run_sorting(data: SortingData, background_tasks: BackgroundTasks) -> JSONResponse:
     if not data.run_id:
         run_id = datetime.now().strftime("%Y%m%d%H%M%S")
     else:
@@ -66,14 +66,15 @@ def route_run_sorting(data: SortingData) -> JSONResponse:
     try:
         # Run sorting job
         client_local_worker = LocalWorkerClient()
-        asyncio.run(client_local_worker.run_sorting(**payload))
+        background_tasks.add_task(client_local_worker.run_sorting, **payload)
 
         # Create Database entries
         db_client = DatabaseClient(connection_string=settings.db_connection_string)
-        dataset_id = db_client.create_dataset(
+        user = db_client.get_user_info(username="admin")
+        dataset = db_client.create_dataset(
             name=data.dandiset_id + " - " + data.dandiset_file_path,
             description="",
-            user_id=0,
+            user_id=user.id,
             source="dandi",
             source_metadata=str({
                 "dandiset_id": data.dandiset_id,
@@ -81,15 +82,17 @@ def route_run_sorting(data: SortingData) -> JSONResponse:
                 "dandiset_file_es_name": data.dandiset_file_es_name,
             }),
         )
-        run_id = db_client.create_run(
-            run_id=run_id,
+        run = db_client.create_run(
             name=data.dandiset_id,
             last_run=datetime.now().strftime("%Y/%m/%d %H:%M:%S"),
             status="running",
-            dataset_id=dataset_id,
+            dataset_id=dataset.id,
             metadata=str(payload),
         )
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail="Internal server error")
-    return JSONResponse(content={"message": "Sorting job submitted"})
+    return JSONResponse(content={
+        "message": "Sorting job submitted",
+        "run_id": run.id,
+    })

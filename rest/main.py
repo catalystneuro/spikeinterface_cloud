@@ -7,7 +7,7 @@ from routes.dandi import router as router_dandi
 from routes.sorting import router as router_sorting
 from routes.run import router as router_run
 from clients.dandi import DandiClient
-from db.initialize_db import initialize_db
+from db.utils import initialize_db
 
 
 app = FastAPI()
@@ -35,7 +35,7 @@ try:
 except Exception as e:
     print(f"Error initializing the database: {e}")
 
-# Load Dandisets metadata - run only at the startup, and if metadat is not yet present
+# Load Dandisets metadata - run only at the startup, and if metadata is not yet present
 metadata_path = Path().cwd().joinpath("data/dandisets_metadata.json")
 if not metadata_path.exists():
     print("Loading dandisets metadata...")
