@@ -16,7 +16,8 @@ router = APIRouter()
 
 
 class SortingData(BaseModel):
-    run_id: str = None
+    run_identifier: str = None
+    run_description: str = None
     source_aws_s3_bucket: str = None
     source_aws_s3_bucket_folder: str = None
     dandiset_id: str = None
@@ -36,10 +37,10 @@ class SortingData(BaseModel):
 
 @router.post("/run", response_description="Run Sorting", tags=["sorting"])
 async def route_run_sorting(data: SortingData, background_tasks: BackgroundTasks) -> JSONResponse:
-    if not data.run_id:
-        run_id = datetime.now().strftime("%Y%m%d%H%M%S")
+    if not data.run_identifier:
+        run_identifier = datetime.now().strftime("%Y%m%d%H%M%S")
     else:
-        run_id = data.run_id
+        run_identifier = data.run_identifier
     # Get file url from dandi
     dandi_client = DandiClient()
     dandiset_s3_file_url = dandi_client.get_file_url(
@@ -47,7 +48,8 @@ async def route_run_sorting(data: SortingData, background_tasks: BackgroundTasks
         file_path=data.dandiset_file_path
     )
     payload = dict(
-        run_id=run_id,
+        run_identifier=run_identifier,
+        run_description=data.run_description,
         source_aws_s3_bucket=data.source_aws_s3_bucket,
         source_aws_s3_bucket_folder=data.source_aws_s3_bucket_folder,
         dandiset_s3_file_url=dandiset_s3_file_url,
@@ -83,10 +85,12 @@ async def route_run_sorting(data: SortingData, background_tasks: BackgroundTasks
             }),
         )
         run = db_client.create_run(
-            name=data.dandiset_id,
+            identifier=run_identifier,
+            description=data.run_description,
             last_run=datetime.now().strftime("%Y/%m/%d %H:%M:%S"),
             status="running",
             dataset_id=dataset.id,
+            user_id=user.id,
             metadata=str(payload),
         )
     except Exception as e:
@@ -94,5 +98,5 @@ async def route_run_sorting(data: SortingData, background_tasks: BackgroundTasks
         raise HTTPException(status_code=500, detail="Internal server error")
     return JSONResponse(content={
         "message": "Sorting job submitted",
-        "run_id": run.id,
+        "run_identifier": run.identifier,
     })

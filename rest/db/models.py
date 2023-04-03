@@ -11,6 +11,7 @@ class User(Base):
     username = Column(String)
     password = Column(String)
     datasets = relationship('Dataset', back_populates='user', cascade='all, delete-orphan')
+    runs = relationship('Run', back_populates='user', cascade='all, delete-orphan')
 
 class Dataset(Base):
     __tablename__ = 'dataset'
@@ -26,9 +27,12 @@ class Dataset(Base):
 class Run(Base):
     __tablename__ = 'run'
     id = Column(Integer, primary_key=True)
-    name = Column(String)
+    identifier = Column(String)
+    description = Column(String)
     last_run = Column(String)
     status = Column(Enum('running', 'success', 'fail', name='status'))
     dataset_id = Column(Integer, ForeignKey('dataset.id'))
     dataset = relationship('Dataset', back_populates='runs')
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship('User', back_populates='runs')
     metadata_ = Column("metadata", String)

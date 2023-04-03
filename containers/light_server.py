@@ -29,7 +29,7 @@ async def run():
     # data = await request.get_json()
     data = request.get_json()
     kwargs = dict(
-        run_id=data.get('run_id'),
+        run_identifier=data.get('run_identifier'),
         source_aws_s3_bucket=data.get('source_aws_s3_bucket'),
         source_aws_s3_bucket_folder=data.get('source_aws_s3_bucket_folder'),
         dandiset_s3_file_url=data.get('dandiset_s3_file_url'),
@@ -61,10 +61,11 @@ async def run():
 
 @app.route('/worker/logs', methods=['GET'])
 def get_logs():
-    run_id = request.args.get('run_id')
-    log_filename = f"logs/{run_id}.log"
+    run_identifier = request.args.get('run_identifier')
+    log_filename = f"/logs/sorting_worker_{run_identifier}.log"
     with open(log_filename, 'r') as f:
-        return f.read()
+        logs = str(f.read())
+    return logs
 
 
 @app.route('/worker/hello')

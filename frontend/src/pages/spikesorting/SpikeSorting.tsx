@@ -306,6 +306,8 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
         const es = selectedES as string;
 
         const data = {
+            run_identifier: null,
+            run_description: null,
             source_aws_s3_bucket: null,
             source_aws_s3_bucket_folder: null,
             dandiset_id: dandiset_id,
@@ -324,7 +326,7 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
         };
         try {
             const response = await restApiClient.post('/sorting/run', data);
-            setSnackbarMessage(response.data.message + '\nrun_id: ' + response.data.run_id);
+            setSnackbarMessage(response.data.message + '\nRun identifier: ' + response.data.run_identifier);
             setSnackbarSeverity('success');
         } catch (error: unknown) {
             setSnackbarMessage((error as Error).message);

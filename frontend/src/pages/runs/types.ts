@@ -1,8 +1,9 @@
 export interface TableRowDataType {
-    id: number;
-    name: string;
+    identifier: string;
+    description: string;
     lastRun: string;
-    status: string;
-    data: Record<string, string>;
+    status: 'running' | 'success' | 'fail';
+    datasetName: string;
+    metadata: Record<string, string>;
     logs: string;
 }

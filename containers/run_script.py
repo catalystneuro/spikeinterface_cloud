@@ -45,7 +45,7 @@ class Tee(object):
             f.flush()
 
 
-def make_logger(run_id:str):
+def make_logger(run_identifier:str):
     logging.basicConfig()
     logger = logging.getLogger("sorting_worker")
     logFileFormatter = logging.Formatter(
@@ -53,7 +53,7 @@ def make_logger(run_id:str):
         datefmt="%Y-%m-%d %H:%M:%S",
     )
     fileHandler = logging.FileHandler(
-        filename=f"/logs/sorting_worker_{run_id}.log",
+        filename=f"/logs/sorting_worker_{run_identifier}.log",
         mode="a",
     )
     fileHandler.setFormatter(logFileFormatter)
@@ -67,7 +67,7 @@ def make_logger(run_id:str):
     logger.addHandler(stdoutHandler)
     
     # Redirect stdout to a file-like object that writes to both stdout and the log file
-    stdout_log_file = open(f"/logs/sorting_worker_{run_id}.log", "a")
+    stdout_log_file = open(f"/logs/sorting_worker_{run_identifier}.log", "a")
     sys.stdout = Tee(sys.stdout, stdout_log_file)
     return logger
 
@@ -116,7 +116,7 @@ def upload_all_files_to_bucket_folder(
 
 
 def main(
-    run_id:str = None,
+    run_identifier:str = None,
     source_aws_s3_bucket:str = None,
     source_aws_s3_bucket_folder:str = None,
     dandiset_s3_file_url:str = None,
@@ -161,10 +161,10 @@ def main(
     """
 
     # Set up logging
-    if not run_id:
-        run_id = datetime.now().strftime("%Y%m%d%H%M%S")
+    if not run_identifier:
+        run_identifier = datetime.now().strftime("%Y%m%d%H%M%S")
     
-    logger = make_logger(run_id)
+    logger = make_logger(run_identifier)
 
     # Order of priority for definition of running arguments:
     # 1. passed by function
@@ -272,7 +272,7 @@ def main(
             logger.info(f"Running {sorter_name}...")
             sorter_job_kwargs = sorters_kwargs.get(sorter_name, {})
             sorter_job_kwargs["n_jobs"] = min(n_jobs, sorter_job_kwargs.get("n_jobs", n_jobs))
-            output_folder = f"/results/sorting/{run_id}_{sorter_name}"
+            output_folder = f"/results/sorting/{run_identifier}_{sorter_name}"
             sorting = run_sorter_local(
                 sorter_name, 
                 recording, 
@@ -285,7 +285,7 @@ def main(
                 **sorter_job_kwargs
             )
             sorting_list.append(sorting)
-            sorting.save_to_folder(folder=f'/results/sorting/{run_id}_{sorter_name}/sorter_exported')
+            sorting.save_to_folder(folder=f'/results/sorting/{run_identifier}_{sorter_name}/sorter_exported')
 
             if target_output_type == "local":
                 # Copy sorting results to local - already done by mounted volume
@@ -297,7 +297,7 @@ def main(
                     client=s3_client, 
                     bucket_name=target_aws_s3_bucket, 
                     bucket_folder=target_aws_s3_bucket_folder,
-                    local_folder=f'/results/sorting/{run_id}_{sorter_name}/sorter_exported'
+                    local_folder=f'/results/sorting/{run_identifier}_{sorter_name}/sorter_exported'
                 )
         except Exception as e:
             logger.info(f"Error running sorter {sorter_name}: {e}")

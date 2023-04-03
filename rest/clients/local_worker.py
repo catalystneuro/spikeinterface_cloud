@@ -15,7 +15,8 @@ class LocalWorkerClient:
 
     def run_sorting(
         self,
-        run_id: str,
+        run_identifier: str,
+        run_description: str,
         source_aws_s3_bucket: str,
         source_aws_s3_bucket_folder: str,
         dandiset_s3_file_url: str,
@@ -32,7 +33,8 @@ class LocalWorkerClient:
         test_subrecording_n_frames: int,
     ) -> None:
         payload = {
-            "run_id": run_id,
+            "run_identifier": run_identifier,
+            "run_description": run_description,
             "source_aws_s3_bucket": source_aws_s3_bucket,
             "source_aws_s3_bucket_folder": source_aws_s3_bucket_folder,
             "dandiset_s3_file_url": dandiset_s3_file_url,
@@ -55,11 +57,12 @@ class LocalWorkerClient:
             self.logger.info(f"Error {response.status_code}: {response.content}")
     
 
-    def get_run_logs(self, run_id):
+    def get_run_logs(self, run_identifier):
         self.logger.info("Getting logs...")
-        response = requests.get(self.endpoint + "/logs", params={"run_id": run_id})
+        response = requests.get(self.endpoint + "/logs", params={"run_identifier": run_identifier})
         if response.status_code == 200:
-            return response.content
+            print(response.content.decode('utf-8'))
+            return response.content.decode('utf-8')
         else:
             self.logger.info(f"Error {response.status_code}: {response.content}")
             return f"Logs couldn't be retrieved. Error {response.status_code}: {response.content}"

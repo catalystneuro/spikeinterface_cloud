@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Box,
     Radio,
@@ -17,6 +17,8 @@ import {
 import { makeStyles } from "@mui/styles";
 import { TableRowDataType } from "./types";
 import { exampleData } from "./placeholders"
+import { restApiClient } from '../../services/clients/restapi.client';
+
 
 const useStyles = makeStyles({
     table: {
@@ -27,15 +29,29 @@ const useStyles = makeStyles({
 const RunsTable: React.FC = () => {
     const classes = useStyles();
     const [selectedRow, setSelectedRow] = useState<TableRowDataType | null>(null);
-    const [placeholderData, setPlaceholderData] = useState(exampleData);
+    const [tableData, setTableData] = useState<TableRowDataType[]>(exampleData);
     const [tabValue, setTabValue] = useState(0);
+
+    // Fetch data from backend
+    const fetchData = async () => {
+        try {
+            const response = await restApiClient.get('/runs/list');
+            setTableData(response.data.runs);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, []);
 
     const handleSelectRow = (row: TableRowDataType): void => {
         setSelectedRow(row);
     };
 
     const handleDeleteRow = (index: number): void => {
-        setPlaceholderData((prevData) => {
+        setTableData((prevData) => {
             const newData = [...prevData];
             newData.splice(index, 1);
             return newData;
@@ -49,22 +65,22 @@ const RunsTable: React.FC = () => {
                     <TableHead>
                         <TableRow>
                             <TableCell />
-                            <TableCell>Name</TableCell>
+                            <TableCell>Description</TableCell>
                             <TableCell>Last run</TableCell>
                             <TableCell>Status</TableCell>
                             <TableCell>Delete</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {placeholderData.map((row, index) => (
-                            <TableRow key={row.id}>
+                        {tableData.map((row, index) => (
+                            <TableRow key={row.identifier}>
                                 <TableCell>
                                     <Radio
-                                        checked={selectedRow?.id === row.id}
+                                        checked={selectedRow?.identifier === row.identifier}
                                         onChange={() => handleSelectRow(row)}
                                     />
                                 </TableCell>
-                                <TableCell>{row.name}</TableCell>
+                                <TableCell>{row.description}</TableCell>
                                 <TableCell>{row.lastRun}</TableCell>
                                 <TableCell>{row.status}</TableCell>
                                 <TableCell>
@@ -92,7 +108,7 @@ const RunsTable: React.FC = () => {
                         <TextField
                             multiline
                             fullWidth
-                            value={JSON.stringify(selectedRow.data, null, 2)}
+                            value={JSON.stringify(selectedRow.metadata, null, 2)}
                             InputProps={{
                                 readOnly: true,
                             }}

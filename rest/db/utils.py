@@ -15,13 +15,15 @@ def initialize_db(db: str):
     clear_db = False
     if 'user' in existing_tables and clear_db:
         print("Clearing tables...")
-        clear_db(db)
+        run_clear_db(db)
 
     # Check if the user table exists
     if 'user' not in existing_tables:
         # Create table schema
         print("Create new tables...")
         Base.metadata.create_all(engine)
+        existing_tables = inspect(engine).get_table_names()
+        print(existing_tables)
         # meta.create_all(engine)
 
         # Create a session and add the admin user to the database
@@ -32,7 +34,7 @@ def initialize_db(db: str):
             session.add(admin_user)
 
 
-def clear_db(db: str):
+def run_clear_db(db: str):
     # Check if the user table exists
     engine = create_engine(db)
     Run.__table__.drop(engine)

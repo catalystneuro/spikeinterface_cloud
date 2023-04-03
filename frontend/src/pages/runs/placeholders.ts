@@ -3,19 +3,21 @@ import { TableRowDataType } from "./types";
 
 export const exampleData: TableRowDataType[] = [
     {
-        id: 1,
-        name: "Item 1",
+        identifier: "abc",
+        description: "Description 1",
         lastRun: "2021-10-01",
-        status: "Success",
-        data: { key: "value", anotherKey: "anotherValue" },
+        status: "success",
+        datasetName: "Dataset 1",
+        metadata: { key: "value", anotherKey: "anotherValue" },
         logs: "Log message 1\nLog message 2\nLog message 3",
     },
     {
-        id: 2,
-        name: "Item 2",
+        identifier: "123",
+        description: "description 2",
         lastRun: "2021-10-05",
-        status: "Failure",
-        data: { foo: "bar", baz: "bat" },
+        status: "fail",
+        datasetName: "Dataset 2",
+        metadata: { foo: "bar", baz: "bat" },
         logs: "Error: Something happened\nWarning: Watch out\nInfo: Just FYI",
     },
 ];

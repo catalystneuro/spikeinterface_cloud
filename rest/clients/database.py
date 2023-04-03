@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from contextlib import contextmanager
+import ast
 
 from db.models import User, Dataset, Run
 
@@ -29,6 +30,10 @@ class DatabaseClient:
     def user_exists(self, username):
         with self.session_scope() as session:
             return session.query(User).filter(User.username == username).count() > 0
+        
+    def query_runs(self):
+        with self.session_scope() as session:
+            return session.query(Run).all()
 
     def query_datasets_by_user(self, user_id):
         with self.session_scope() as session:
@@ -54,8 +59,8 @@ class DatabaseClient:
             session.add(dataset)
             return dataset
 
-    def create_run(self, name, last_run, status, dataset_id, metadata):
-        run = Run(name=name, last_run=last_run, status=status, dataset_id=dataset_id, metadata=metadata)
+    def create_run(self, identifier, description, last_run, status, dataset_id, metadata, user_id):
+        run = Run(identifier=identifier, description=description, last_run=last_run, status=status, dataset_id=dataset_id, metadata_=metadata, user_id=user_id)
         with self.session_scope() as session:
             session.add(run)
             return run
@@ -70,4 +75,18 @@ class DatabaseClient:
 
     def get_run_info(self, run_id):
         with self.session_scope() as session:
-            return session.query(Run).filter(Run.id == run_id).one_or_none()
+            obj = session.query(Run).filter(Run.id == run_id).one_or_none()
+            dataset = self.get_dataset_info(dataset_id=obj.dataset_id)
+            return {
+                "identifier": obj.identifier,
+                "description": obj.description,
+                "lastRun": obj.last_run,
+                "status": obj.status,
+                "datasetName": dataset.name,
+                "metadata": ast.literal_eval(obj.metadata_),
+            }
+    
+    def get_all_runs_info(self):
+        with self.session_scope() as session:
+            runs = session.query(Run).all()
+            return [self.get_run_info(run_id=obj.id) for obj in runs]
