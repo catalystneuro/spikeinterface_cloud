@@ -8,7 +8,10 @@ class Settings:
     DANDI_VAR = os.environ.get("DANDI_VAR")
 
     WORKER_DEPLOY_MODE = os.environ.get("WORKER_DEPLOY_MODE", "compose")
+    
     db_connection_string = 'postgresql+psycopg2://postgres:postgres@database/si-sorting-db'
+    aws_batch_job_queue = 'si-sorting-batch-queue'
+    aws_batch_job_definition = 'si-sorting-batch-job-definition'
 
 class DevSettings(Settings):
     DEBUG = True

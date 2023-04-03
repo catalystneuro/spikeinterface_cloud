@@ -299,13 +299,20 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
         setOutputDestination(selectedOutput);
     };
 
-    // Run local job
-    const handleRunLocalJob = async () => {
+    // Run sorting job
+    const handleRunSortingJob = async (runAt: "local" | "aws") => {
         const dandiset_id = selectedDandiset.split(' - ')[0];
         const filepath = selectedFile as string;
         const es = selectedES as string;
+        let target_output_type: string;
+        if (runAt === "aws") {
+            target_output_type = "s3";
+        } else {
+            target_output_type = "local";
+        }
 
         const data = {
+            run_at: runAt,
             run_identifier: null,
             run_description: null,
             source_aws_s3_bucket: null,
@@ -313,7 +320,7 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
             dandiset_id: dandiset_id,
             dandiset_file_path: filepath,
             dandiset_file_es_name: es,
-            target_output_type: "local",
+            target_output_type: target_output_type,
             target_aws_s3_bucket: null,
             target_aws_s3_bucket_folder: null,
             data_type: "nwb",
@@ -510,11 +517,21 @@ ${selectedDandisetMetadata.description}`}
                     color="primary"
                     className="button"
                     style={{ marginRight: "1rem" }}
-                    onClick={handleRunLocalJob}
+                    onClick={() => handleRunSortingJob('local')}
                 >
-                    Run
+                    Run local
                 </Button>
-                <Button variant="contained" color="primary" className="button">
+                <Button
+                    disabled
+                    variant="contained"
+                    color="primary"
+                    className="button"
+                    style={{ marginRight: "1rem" }}
+                    onClick={() => handleRunSortingJob('aws')}
+                >
+                    Run AWS
+                </Button>
+                <Button disabled variant="contained" color="primary" className="button">
                     Save Template
                 </Button>
             </Box>

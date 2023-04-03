@@ -16,6 +16,7 @@ router = APIRouter()
 
 
 class SortingData(BaseModel):
+    run_at: str = "local"
     run_identifier: str = None
     run_description: str = None
     source_aws_s3_bucket: str = None
@@ -35,12 +36,22 @@ class SortingData(BaseModel):
     test_subrecording_n_frames: int = None
 
 
-def sorting_background_task(payload, run_id):
+def sorting_background_task(payload, run_id, run_at):
     # Run sorting and update db entry status
     db_client = DatabaseClient(connection_string=settings.db_connection_string)
     try:
-        client_local_worker = LocalWorkerClient()
-        client_local_worker.run_sorting(**payload)
+        if run_at == "local":
+            client_local_worker = LocalWorkerClient()
+            client_local_worker.run_sorting(**payload)
+        elif run_at == "aws":
+            job_kwargs = {k.upper(): v for k, v in payload.items()}
+            client_aws = AWSClient()
+            client_aws.submit_job(
+                job_name=f"sorting-{run_id}",
+                job_queue=settings.aws_batch_job_queue,
+                job_definition=settings.aws_batch_job_definition,
+                job_kwargs=job_kwargs,
+            )
         db_client.update_run(run_id=run_id, key="status", value="success")
     except:
         db_client.update_run(run_id=run_id, key="status", value="fail")
@@ -102,7 +113,7 @@ async def route_run_sorting(data: SortingData, background_tasks: BackgroundTasks
         )
 
         # Run sorting job
-        background_tasks.add_task(sorting_background_task, payload, run_id=run.id)
+        background_tasks.add_task(sorting_background_task, payload, run_id=run.id, run_at=data.run_at)
 
     except Exception as e:
         print(e)

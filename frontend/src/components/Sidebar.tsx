@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Box, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
-import { Home, Settings, Logout, BarChart, History } from '@mui/icons-material';
+import { Home, Settings, Logout, BarChart, History, QueryStats } from '@mui/icons-material';
 
 
 interface NavItemProps {
@@ -41,7 +41,7 @@ const Sidebar: React.FC = () => {
                 />
                 <NavItem
                     to="/sorting"
-                    icon={<BarChart />}
+                    icon={<QueryStats />}
                     text="Spike Sorting"
                 />
                 <NavItem

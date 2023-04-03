@@ -6,6 +6,7 @@ import shutil
 import requests
 import logging
 import sys
+from uuid import uuid4
 from io import StringIO
 from datetime import datetime
 from pathlib import Path
@@ -160,16 +161,12 @@ def main(
     - AWS_SECRET_ACCESS_KEY
     """
 
-    # Set up logging
-    if not run_identifier:
-        run_identifier = datetime.now().strftime("%Y%m%d%H%M%S")
-    
-    logger = make_logger(run_identifier)
-
     # Order of priority for definition of running arguments:
     # 1. passed by function
     # 2. retrieved from ENV vars
     # 3. default value
+    if not run_identifier:
+        run_identifier = os.environ.get("RUN_IDENTIFIER", datetime.now().strftime("%Y%m%d%H%M%S"))
     if not source_aws_s3_bucket:
         source_aws_s3_bucket = os.environ.get("SOURCE_AWS_S3_BUCKET", None)
     if not source_aws_s3_bucket_folder:
@@ -199,7 +196,10 @@ def main(
     if not test_subrecording_n_frames:
         test_subrecording_n_frames = int(os.environ.get("TEST_SUB_RECORDING_N_FRAMES", 300000))
 
+    # Set up logging
+    logger = make_logger(run_identifier)
 
+    # Data source
     if (source_aws_s3_bucket is None or source_aws_s3_bucket_folder is None) and (dandiset_s3_file_url is None) and (not test_with_toy_recording):
         raise Exception("Missing either: \n- SOURCE_AWS_S3_BUCKET and SOURCE_AWS_S3_BUCKET_FOLDER, or \n- DANDISET_S3_FILE_URL")
 

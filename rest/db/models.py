@@ -35,6 +35,7 @@ class Dataset(Base):
 class Run(Base):
     __tablename__ = 'run'
     id = Column(Integer, primary_key=True)
+    run_at = Column(Enum('local', 'aws', name='run_at'))
     identifier = Column(String)
     description = Column(String)
     last_run = Column(String)
