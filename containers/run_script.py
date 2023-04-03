@@ -74,7 +74,7 @@ def make_logger(run_identifier:str):
 
 def download_file_from_url(url):
     # ref: https://stackoverflow.com/a/39217788/11483674
-    local_filename = "data/filename.nwb"
+    local_filename = "/data/filename.nwb"
     with requests.get(url, stream=True) as r:
         with open(local_filename, 'wb') as f:
             shutil.copyfileobj(r.raw, f)
@@ -93,7 +93,7 @@ def download_all_files_from_bucket_folder(
             client.download_file(
                 Bucket=bucket_name, 
                 Key=f["Key"], 
-                Filename=f"data/{file_name}"
+                Filename=f"/data/{file_name}"
             )
 
 
@@ -239,7 +239,7 @@ def main(
             
             logger.info("Reading recording from NWB...")
             recording = se.read_nwb_recording(
-                file_path="data/filename.nwb",
+                file_path="/data/filename.nwb",
                 electrical_series_name=dandiset_file_es_name,
                 **recording_kwargs
             )

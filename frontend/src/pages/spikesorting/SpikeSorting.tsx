@@ -322,7 +322,7 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
             sorters_kwargs: formDataSorters,
             test_with_toy_recording: true,
             test_with_subrecording: false,
-            test_subrecording_n_frames: 6000,
+            test_subrecording_n_frames: 30000,
         };
         try {
             const response = await restApiClient.post('/sorting/run', data);
@@ -512,10 +512,7 @@ ${selectedDandisetMetadata.description}`}
                     style={{ marginRight: "1rem" }}
                     onClick={handleRunLocalJob}
                 >
-                    Run local
-                </Button>
-                <Button variant="contained" color="primary" className="button" style={{ marginRight: "1rem" }}>
-                    Run AWS
+                    Run
                 </Button>
                 <Button variant="contained" color="primary" className="button">
                     Save Template

@@ -13,6 +13,10 @@ class User(Base):
     datasets = relationship('Dataset', back_populates='user', cascade='all, delete-orphan')
     runs = relationship('Run', back_populates='user', cascade='all, delete-orphan')
 
+    def update(self, key, value):
+        setattr(self, key, value)
+
+
 class Dataset(Base):
     __tablename__ = 'dataset'
     id = Column(Integer, primary_key=True)
@@ -23,6 +27,10 @@ class Dataset(Base):
     runs = relationship('Run', back_populates='dataset', cascade='all, delete-orphan')
     source = Column(Enum('dandi', 's3', 'local', name='source'))
     source_metadata = Column(String)
+
+    def update(self, key, value):
+        setattr(self, key, value)
+
 
 class Run(Base):
     __tablename__ = 'run'
@@ -36,3 +44,6 @@ class Run(Base):
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship('User', back_populates='runs')
     metadata_ = Column("metadata", String)
+
+    def update(self, key, value):
+        setattr(self, key, value)

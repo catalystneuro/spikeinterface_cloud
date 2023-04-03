@@ -35,6 +35,17 @@ class SortingData(BaseModel):
     test_subrecording_n_frames: int = None
 
 
+def sorting_background_task(payload, run_id):
+    # Run sorting and update db entry status
+    db_client = DatabaseClient(connection_string=settings.db_connection_string)
+    try:
+        client_local_worker = LocalWorkerClient()
+        client_local_worker.run_sorting(**payload)
+        db_client.update_run(run_id=run_id, key="status", value="success")
+    except:
+        db_client.update_run(run_id=run_id, key="status", value="fail")
+
+
 @router.post("/run", response_description="Run Sorting", tags=["sorting"])
 async def route_run_sorting(data: SortingData, background_tasks: BackgroundTasks) -> JSONResponse:
     if not data.run_identifier:
@@ -66,10 +77,6 @@ async def route_run_sorting(data: SortingData, background_tasks: BackgroundTasks
         test_subrecording_n_frames=data.test_subrecording_n_frames,
     )
     try:
-        # Run sorting job
-        client_local_worker = LocalWorkerClient()
-        background_tasks.add_task(client_local_worker.run_sorting, **payload)
-
         # Create Database entries
         db_client = DatabaseClient(connection_string=settings.db_connection_string)
         user = db_client.get_user_info(username="admin")
@@ -93,6 +100,10 @@ async def route_run_sorting(data: SortingData, background_tasks: BackgroundTasks
             user_id=user.id,
             metadata=str(payload),
         )
+
+        # Run sorting job
+        background_tasks.add_task(sorting_background_task, payload, run_id=run.id)
+
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail="Internal server error")

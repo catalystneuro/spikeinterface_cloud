@@ -14,6 +14,7 @@ import {
     Tabs,
     Tab,
 } from "@mui/material";
+import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
 import { makeStyles } from "@mui/styles";
 import { TableRowDataType } from "./types";
 import { exampleData } from "./placeholders"
@@ -72,7 +73,9 @@ const RunsTable: React.FC = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {tableData.map((row, index) => (
+                        {tableData.sort((a, b) => {
+                            return new Date(b.lastRun).getTime() - new Date(a.lastRun).getTime();
+                        }).map((row, index) => (
                             <TableRow key={row.identifier}>
                                 <TableCell>
                                     <Radio
@@ -82,14 +85,25 @@ const RunsTable: React.FC = () => {
                                 </TableCell>
                                 <TableCell>{row.description}</TableCell>
                                 <TableCell>{row.lastRun}</TableCell>
-                                <TableCell>{row.status}</TableCell>
+                                <TableCell
+                                    style={{
+                                        fontWeight: 'bold',
+                                        color:
+                                            row.status === 'running' ? 'blue' :
+                                                row.status === 'success' ? 'green' :
+                                                    row.status === 'fail' ? 'red' :
+                                                        'inherit' // fallback color if none of the conditions match
+                                    }}
+                                >
+                                    {row.status}
+                                </TableCell>
                                 <TableCell>
                                     <Button
-                                        variant="contained"
-                                        color="error"
+                                        style={{ borderWidth: 0, color: "#3b3b3b" }}
+                                        variant="outlined"
+                                        startIcon={<DeleteOutlinedIcon />}
                                         onClick={() => handleDeleteRow(index)}
                                     >
-                                        Delete
                                     </Button>
                                 </TableCell>
                             </TableRow>

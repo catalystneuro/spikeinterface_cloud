@@ -46,6 +46,10 @@ class DatabaseClient:
     def query_runs_by_dataset(self, dataset_id):
         with self.session_scope() as session:
             return session.query(Run).filter(Run.dataset_id == dataset_id).all()
+        
+    def query_run_by_id(self, run_id):
+        with self.session_scope() as session:
+            return session.query(Run).filter(Run.id == run_id).one_or_none()
 
     def create_user(self, username, password):
         user = User(username=username, password=password)
@@ -90,3 +94,33 @@ class DatabaseClient:
         with self.session_scope() as session:
             runs = session.query(Run).all()
             return [self.get_run_info(run_id=obj.id) for obj in runs]
+
+
+    def update_user(self, user_id, key, value):
+        with self.session_scope() as session:
+            user = session.query(User).filter(User.id == user_id).one_or_none()
+            if user:
+                user.update(key, value)
+                session.add(user)
+                return user
+            return None
+    
+
+    def update_dataset(self, dataset_id, key, value):
+        with self.session_scope() as session:
+            dataset = session.query(Dataset).filter(Dataset.id == dataset_id).one_or_none()
+            if dataset:
+                dataset.update(key, value)
+                session.add(dataset)
+                return dataset
+            return None
+    
+
+    def update_run(self, run_id, key, value):
+        with self.session_scope() as session:
+            dataset = session.query(Run).filter(Run.id == run_id).one_or_none()
+            if dataset:
+                dataset.update(key, value)
+                session.add(dataset)
+                return dataset
+            return None

@@ -61,7 +61,6 @@ class LocalWorkerClient:
         self.logger.info("Getting logs...")
         response = requests.get(self.endpoint + "/logs", params={"run_identifier": run_identifier})
         if response.status_code == 200:
-            print(response.content.decode('utf-8'))
             return response.content.decode('utf-8')
         else:
             self.logger.info(f"Error {response.status_code}: {response.content}")
