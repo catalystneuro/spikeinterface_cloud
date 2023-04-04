@@ -185,7 +185,8 @@ def main(
     if not recording_kwargs:
         recording_kwargs = json.loads(os.environ.get("RECORDING_KWARGS", "{}"))
     if not sorters_names_list:
-        sorters_names_list = os.environ.get("SORTERS_NAMES_LIST", "kilosort3").split(",")
+        sorters_names_list = os.environ.get("SORTERS_NAMES_LIST", "kilosort3")
+    sorters_names_list = sorters_names_list.split(",")
     if not sorters_kwargs:
         sorters_kwargs = eval(os.environ.get("SORTERS_KWARGS", "{}"))
     if not test_with_toy_recording:
