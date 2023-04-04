@@ -70,25 +70,27 @@ class AWSClient(object):
         return self.client_batch.describe_jobs(jobs=[job_id])["jobs"][0]
 
     
-    def get_job_logs(self, job_id: str):
-        log_stream_name = self.describe_job(job_id=job_id)["container"].get("logStreamName", None)
+    def get_job_status_and_logs(self, job_id: str):
+        job = self.describe_job(job_id=job_id)
+        job_status = job["status"]
+        log_stream_name = job["container"].get("logStreamName", None)
         try:
             logs = self.client_logs.get_log_events(
                 logGroupName="/aws/batch/job",
                 logStreamName=log_stream_name,
             )["events"]
-            return "\n".join([log["message"] for log in logs])
+            return job_status, "\n".join([log["message"] for log in logs])
         except:
-            return "Logs not available yet for this job."
+            return job_status, "Logs not available yet for this job."
     
 
-    def get_job_logs_by_name(self, job_name: str, job_queue: str):
+    def get_job_status_and_logs_by_name(self, job_name: str, job_queue: str):
         response = self.client_batch.list_jobs(
             jobQueue=job_queue,
             filters=[{'name': 'JOB_NAME', 'values': [job_name]}]
         )
         job_id = response['jobSummaryList'][0]['jobId']
-        return self.get_job_logs(job_id=job_id)
+        return self.get_job_status_and_logs(job_id=job_id)
     
 
     def get_run_logs_s3(self, run_id: str) -> str:

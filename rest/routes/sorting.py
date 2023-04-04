@@ -55,7 +55,7 @@ def sorting_background_task(payload, run_identifier):
                 job_definition=settings.AWS_BATCH_JOB_DEFINITION,
                 job_kwargs=job_kwargs,
             )
-        db_client.update_run(run_identifier=run_identifier, key="status", value="success")
+        db_client.update_run(run_identifier=run_identifier, key="status", value="running")
     except Exception as e:
         logger.exception(f"Error running sorting job: {run_identifier}.\n {e}")
         db_client.update_run(run_identifier=run_identifier, key="status", value="fail")
