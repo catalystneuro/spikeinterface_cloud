@@ -202,8 +202,18 @@ def main(
     if log_to_file:
         logger = make_logger(run_identifier)
     else:
+        print("Logging to stdout")
         logger = logging.getLogger("sorting_worker")
         logger.setLevel(logging.DEBUG)
+        handler = logging.StreamHandler(sys.stdout)
+        handler.setLevel(logging.DEBUG)
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+
+    print("############################################################")
+    print("THIS IS A REGULAR PYTHON PRINT, TO CHECK FOR CLOUDWATCH LOGGING")
+    print("############################################################")
 
     # Data source
     if (source_aws_s3_bucket is None or source_aws_s3_bucket_folder is None) and (dandiset_s3_file_url is None) and (not test_with_toy_recording):
