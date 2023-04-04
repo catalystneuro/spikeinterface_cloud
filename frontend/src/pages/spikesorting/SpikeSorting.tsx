@@ -123,6 +123,8 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
         const dandiset_id = selectedDandiset.split(' - ')[0];
 
         setLoadingFile(true);
+        setSelectedES('');
+        setSelectedESMetadata({});
 
         // Fetch file metadata
         try {
@@ -327,7 +329,7 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
             recording_kwargs: {},
             sorters_names_list: sorters,
             sorters_kwargs: formDataSorters,
-            test_with_toy_recording: true,
+            test_with_toy_recording: false,
             test_with_subrecording: false,
             test_subrecording_n_frames: 30000,
             log_to_file: true,

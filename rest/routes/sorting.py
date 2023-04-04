@@ -28,7 +28,7 @@ class SortingData(BaseModel):
     target_aws_s3_bucket: str = None
     target_aws_s3_bucket_folder: str = None
     data_type: str = None
-    recording_kwargs: str = None
+    recording_kwargs: dict = None
     sorters_names_list: list = None
     sorters_kwargs: dict = None
     test_with_toy_recording: bool = None

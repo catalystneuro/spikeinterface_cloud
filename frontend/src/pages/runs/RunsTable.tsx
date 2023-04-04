@@ -17,7 +17,6 @@ import {
 import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
 import { makeStyles } from "@mui/styles";
 import { TableRowDataType } from "./types";
-import { exampleData } from "./placeholders"
 import { restApiClient } from '../../services/clients/restapi.client';
 
 
@@ -30,7 +29,7 @@ const useStyles = makeStyles({
 const RunsTable: React.FC = () => {
     const classes = useStyles();
     const [selectedRow, setSelectedRow] = useState<TableRowDataType | null>(null);
-    const [tableData, setTableData] = useState<TableRowDataType[]>(exampleData);
+    const [tableData, setTableData] = useState<TableRowDataType[]>([]);
     const [tabValue, setTabValue] = useState(0);
 
     // Fetch data from backend
