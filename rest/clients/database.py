@@ -82,6 +82,7 @@ class DatabaseClient:
             obj = session.query(Run).filter(Run.id == run_id).one_or_none()
             dataset = self.get_dataset_info(dataset_id=obj.dataset_id)
             return {
+                "run_at": obj.run_at,
                 "identifier": obj.identifier,
                 "description": obj.description,
                 "lastRun": obj.last_run,
@@ -116,9 +117,9 @@ class DatabaseClient:
             return None
     
 
-    def update_run(self, run_id, key, value):
+    def update_run(self, run_identifier, key, value):
         with self.session_scope() as session:
-            dataset = session.query(Run).filter(Run.id == run_id).one_or_none()
+            dataset = session.query(Run).filter(Run.identifier == run_identifier).one_or_none()
             if dataset:
                 dataset.update(key, value)
                 session.add(dataset)

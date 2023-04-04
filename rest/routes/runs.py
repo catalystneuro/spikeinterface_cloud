@@ -16,10 +16,10 @@ def get_run_info(run_id: str):
     db_client = DatabaseClient(connection_string=settings.DB_CONNECTION_STRING)
     run_info = db_client.get_run_info(run_id=run_id)
     logger.info(f"Getting run logs: {run_info['identifier']}")
-    if settings.WORKER_DEPLOY_MODE == "aws":
+    if run_info.run_at == "aws":
         aws_client = AWSClient()
-        run_logs = aws_client.get_run_logs_s3(run_id=run_id)
-    elif settings.WORKER_DEPLOY_MODE == "compose":
+        run_logs = aws_client.get_job_logs_by_name(job_name=run_info.identifier, job_queue=settings.AWS_BATCH_JOB_QUEUE)
+    elif run_info.run_at == "local":
         local_worker_client = LocalWorkerClient()
         run_logs = local_worker_client.get_run_logs(run_identifier=run_info['identifier'])
     return {

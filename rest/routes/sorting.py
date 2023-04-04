@@ -36,7 +36,7 @@ class SortingData(BaseModel):
     test_subrecording_n_frames: int = None
 
 
-def sorting_background_task(payload, run_id, run_at):
+def sorting_background_task(payload, run_identifier, run_at):
     # Run sorting and update db entry status
     db_client = DatabaseClient(connection_string=settings.DB_CONNECTION_STRING)
     try:
@@ -47,14 +47,14 @@ def sorting_background_task(payload, run_id, run_at):
             job_kwargs = {k.upper(): v for k, v in payload.items()}
             client_aws = AWSClient()
             client_aws.submit_job(
-                job_name=f"sorting-{run_id}",
+                job_name=f"sorting-{run_identifier}",
                 job_queue=settings.AWS_BATCH_JOB_QUEUE,
                 job_definition=settings.AWS_BATCH_JOB_DEFINITION,
                 job_kwargs=job_kwargs,
             )
-        db_client.update_run(run_id=run_id, key="status", value="success")
+        db_client.update_run(run_identifier=run_identifier, key="status", value="success")
     except:
-        db_client.update_run(run_id=run_id, key="status", value="fail")
+        db_client.update_run(run_identifier=run_identifier, key="status", value="fail")
 
 
 @router.post("/run", response_description="Run Sorting", tags=["sorting"])
@@ -113,7 +113,7 @@ async def route_run_sorting(data: SortingData, background_tasks: BackgroundTasks
         )
 
         # Run sorting job
-        background_tasks.add_task(sorting_background_task, payload, run_id=run.id, run_at=data.run_at)
+        background_tasks.add_task(sorting_background_task, payload, run_identifier=run_identifier, run_at=data.run_at)
 
     except Exception as e:
         print(e)
