@@ -44,7 +44,7 @@ class Tee(object):
             f.flush()
 
 
-def make_logger(run_identifier:str):
+def make_logger(run_identifier: str):
     logging.basicConfig()
     logger = logging.getLogger("sorting_worker")
     logFileFormatter = logging.Formatter(
@@ -130,6 +130,7 @@ def main(
     test_with_toy_recording:bool = None,
     test_with_subrecording:bool = None,
     test_subrecording_n_frames:int = None,
+    log_to_file:bool = None,
 ):
     """
     This script should run in an ephemeral Docker container and will:
@@ -193,9 +194,15 @@ def main(
         test_with_subrecording = bool(os.environ.get("TEST_WITH_SUB_RECORDING", False))
     if not test_subrecording_n_frames:
         test_subrecording_n_frames = int(os.environ.get("TEST_SUBRECORDING_N_FRAMES", 300000))
+    if not log_to_file:
+        log_to_file = bool(os.environ.get("LOG_TO_FILE", False))
 
     # Set up logging
-    logger = make_logger(run_identifier)
+    if log_to_file:
+        logger = make_logger(run_identifier)
+    else:
+        logger = logging.getLogger("sorting_worker")
+        logger.setLevel(logging.DEBUG)
 
     # Data source
     if (source_aws_s3_bucket is None or source_aws_s3_bucket_folder is None) and (dandiset_s3_file_url is None) and (not test_with_toy_recording):

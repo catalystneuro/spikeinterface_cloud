@@ -9,6 +9,7 @@ class Settings:
     
     AWS_BATCH_JOB_QUEUE = os.environ.get("AWS_BATCH_JOB_QUEUE", None)
     AWS_BATCH_JOB_DEFINITION = os.environ.get("AWS_BATCH_JOB_DEFINITION", None)
+    SORTING_LOGS_S3_BUCKET = os.environ.get("SORTING_LOGS_S3_BUCKET", None)
 
     WORKER_DEPLOY_MODE = os.environ.get("WORKER_DEPLOY_MODE", "compose")
 
