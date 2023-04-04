@@ -324,12 +324,13 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
             target_aws_s3_bucket: null,
             target_aws_s3_bucket_folder: null,
             data_type: "nwb",
-            recording_kwargs: null,
+            recording_kwargs: {},
             sorters_names_list: sorters,
             sorters_kwargs: formDataSorters,
             test_with_toy_recording: true,
             test_with_subrecording: false,
             test_subrecording_n_frames: 30000,
+            log_to_file: true,
         };
         try {
             const response = await restApiClient.post('/sorting/run', data);
@@ -522,7 +523,6 @@ ${selectedDandisetMetadata.description}`}
                     Run local
                 </Button>
                 <Button
-                    disabled
                     variant="contained"
                     color="primary"
                     className="button"

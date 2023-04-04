@@ -4,7 +4,7 @@ Set ENV variables:
 ```shell
 export AWS_ACCESS_KEY_ID=XXXXXXXXXXXXXXXXXXX
 export AWS_SECRET_ACCESS_KEY=XXXXXXXXXXXXXXXXXXXX
-export AWS_REGION_NAME=us-east-1
+export AWS_DEFAULT_REGION=us-east-1
 ```
 
 Running with docker compose pulling images from github packages:
@@ -44,3 +44,11 @@ The app is composed of four components:
 - `worker` - the worker, which is a sorter container with a Flask app
 
 ![app sketch](/media/app_sketch.jpg)
+
+
+# Building images separately
+
+```shell
+DOCKER_BUILDKIT=1 docker build -t ghcr.io/catalystneuro/si-sorting-worker:latest -f Dockerfile.combined .
+docker push ghcr.io/catalystneuro/si-sorting-worker:latest
+```

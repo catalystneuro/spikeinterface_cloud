@@ -15,6 +15,7 @@ class LocalWorkerClient:
 
     def run_sorting(
         self,
+        run_at: str,
         run_identifier: str,
         run_description: str,
         source_aws_s3_bucket: str,
@@ -31,8 +32,10 @@ class LocalWorkerClient:
         test_with_toy_recording: bool,
         test_with_subrecording: bool,
         test_subrecording_n_frames: int,
+        log_to_file: bool,
     ) -> None:
         payload = {
+            "run_at": run_at,
             "run_identifier": run_identifier,
             "run_description": run_description,
             "source_aws_s3_bucket": source_aws_s3_bucket,
@@ -49,6 +52,7 @@ class LocalWorkerClient:
             "test_with_toy_recording": test_with_toy_recording,
             "test_with_subrecording": test_with_subrecording,
             "test_subrecording_n_frames": test_subrecording_n_frames,
+            "log_to_file": log_to_file,
         }
         response = requests.post(self.endpoint + "/run", json=payload)
         if response.status_code == 200:

@@ -16,7 +16,7 @@ class JobStatus(enum.Enum):
 
 class AWSClient(object):
  
-    def __init__(self, profile_name: str="default"):
+    def __init__(self, profile_name: str=None):
         """
         References: 
         - https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/batch.html
@@ -28,7 +28,7 @@ class AWSClient(object):
         self.client_s3 = self.session.client("s3")
         self.client_logs = self.session.client("logs")
 
-        self.sorting_logs_s3_bucket = settings.SORTING_LOGS_S3_BUCKET
+        # self.sorting_logs_s3_bucket = settings.SORTING_LOGS_S3_BUCKET
 
 
     def list_job_queues(self):

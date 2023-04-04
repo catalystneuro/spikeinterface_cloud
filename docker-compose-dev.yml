@@ -25,8 +25,13 @@ services:
     ports:
       - "8000:8000"
     environment:
-      DEPLOY_MODE: compose
+      REST_DEPLOY_MODE: compose
       WORKER_DEPLOY_MODE: compose
+      AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_BATCH_JOB_QUEUE: ${AWS_BATCH_JOB_QUEUE}
+      AWS_BATCH_JOB_DEFINITION: ${AWS_BATCH_JOB_DEFINITION}
     volumes:
       - ./rest:/app
     depends_on:
@@ -42,7 +47,7 @@ services:
       - "5000:5000"
     environment:
       WORKER_DEPLOY_MODE: compose
-      AWS_REGION_NAME: ${AWS_REGION_NAME}
+      AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     volumes:

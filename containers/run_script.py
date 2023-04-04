@@ -1,7 +1,7 @@
 import boto3
 import botocore
 import os
-import json
+import ast
 import shutil
 import requests
 import logging
@@ -44,7 +44,7 @@ class Tee(object):
             f.flush()
 
 
-def make_logger(run_identifier: str):
+def make_logger(run_identifier: str, log_to_file: bool):
     logging.basicConfig()
     logger = logging.getLogger("sorting_worker")
     logger.handlers.clear()
@@ -54,30 +54,31 @@ def make_logger(run_identifier: str):
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 
-    # Add a logging handler for the log file
-    fileHandler = logging.FileHandler(
-        filename=f"/logs/sorting_worker_{run_identifier}.log",
-        mode="a",
-    )
-    fileHandler.setFormatter(log_formatter)
-    fileHandler.setLevel(level=logging.DEBUG)
-    logger.addHandler(fileHandler)
+    if log_to_file:
+        # Add a logging handler for the log file
+        fileHandler = logging.FileHandler(
+            filename=f"/logs/sorting_worker_{run_identifier}.log",
+            mode="a",
+        )
+        fileHandler.setFormatter(log_formatter)
+        fileHandler.setLevel(level=logging.DEBUG)
+        logger.addHandler(fileHandler)
 
-    # Add a logging handler for stdout
-    stdoutHandler = logging.StreamHandler(sys.stdout)
-    stdoutHandler.setLevel(logging.DEBUG)
-    stdoutHandler.setFormatter(log_formatter)
-    logger.addHandler(stdoutHandler)
-    
-    # Redirect stdout to a file-like object that writes to both stdout and the log file
-    stdout_log_file = open(f"/logs/sorting_worker_{run_identifier}.log", "a")
-    sys.stdout = Tee(sys.stdout, stdout_log_file)
-
-    # # Handler to print to console as well
-    # handler = logging.StreamHandler(sys.stdout)
-    # handler.setLevel(logging.DEBUG)
-    # handler.setFormatter(log_formatter)
-    # logger.addHandler(handler)
+        # Add a logging handler for stdout
+        stdoutHandler = logging.StreamHandler(sys.stdout)
+        stdoutHandler.setLevel(logging.DEBUG)
+        stdoutHandler.setFormatter(log_formatter)
+        logger.addHandler(stdoutHandler)
+        
+        # Redirect stdout to a file-like object that writes to both stdout and the log file
+        stdout_log_file = open(f"/logs/sorting_worker_{run_identifier}.log", "a")
+        sys.stdout = Tee(sys.stdout, stdout_log_file)
+    else:
+        # Handler to print to console as well
+        handler = logging.StreamHandler(sys.stdout)
+        handler.setLevel(logging.DEBUG)
+        handler.setFormatter(log_formatter)
+        logger.addHandler(handler)
     return logger
 
 
@@ -165,7 +166,7 @@ def main(
     If running this in any AWS service (e.g. Batch, ECS, EC2...) the access to other AWS services 
     such as S3 storage can be given to the container by an IAM role.
     Otherwise, if running this outside of AWS, these ENV variables should be present in the running container:
-    - AWS_REGION_NAME
+    - AWS_DEFAULT_REGION
     - AWS_ACCESS_KEY_ID
     - AWS_SECRET_ACCESS_KEY
     """
@@ -193,23 +194,23 @@ def main(
     if not data_type:
         data_type = os.environ.get("DATA_TYPE", "nwb")
     if not recording_kwargs:
-        recording_kwargs = json.loads(os.environ.get("RECORDING_KWARGS", "{}"))
+        recording_kwargs = ast.literal_eval(os.environ.get("RECORDING_KWARGS", "{}"))
     if not sorters_names_list:
         sorters_names_list = os.environ.get("SORTERS_NAMES_LIST", "kilosort3").split(",")
     if not sorters_kwargs:
         sorters_kwargs = eval(os.environ.get("SORTERS_KWARGS", "{}"))
-    if not test_with_toy_recording:
-        test_with_toy_recording = os.environ.get("TEST_WITH_TOY_RECORDING", False).lower() in ('true', '1', 't')
-    if not test_with_subrecording:
-        test_with_subrecording = os.environ.get("TEST_WITH_SUB_RECORDING", False).lower() in ('true', '1', 't')
+    if test_with_toy_recording is None:
+        test_with_toy_recording = os.environ.get("TEST_WITH_TOY_RECORDING", "False").lower() in ('true', '1', 't')
+    if test_with_subrecording is None:
+        test_with_subrecording = os.environ.get("TEST_WITH_SUB_RECORDING", "False").lower() in ('true', '1', 't')
     if not test_subrecording_n_frames:
         test_subrecording_n_frames = int(os.environ.get("TEST_SUBRECORDING_N_FRAMES", 300000))
-    if not log_to_file:
-        log_to_file = os.environ.get("LOG_TO_FILE", False).lower() in ('true', '1', 't')
+    if log_to_file is None:
+        log_to_file = os.environ.get("LOG_TO_FILE", "False").lower() in ('true', '1', 't')
 
     # Set up logging
-    # logger = make_logger(run_identifier)
-    logger = logging.getLogger("sorting_worker")
+    logger = make_logger(run_identifier=run_identifier, log_to_file=log_to_file)
+    # logger = logging.getLogger("sorting_worker")
 
     # Data source
     if (source_aws_s3_bucket is None or source_aws_s3_bucket_folder is None) and (dandiset_s3_file_url is None) and (not test_with_toy_recording):

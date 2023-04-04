@@ -4,7 +4,7 @@ import os
 class Settings:
     AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID", None)
     AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY", None)
-    AWS_REGION = os.environ.get("AWS_REGION", None)
+    AWS_DEFAULT_REGION = os.environ.get("AWS_DEFAULT_REGION", None)
     DANDI_VAR = os.environ.get("DANDI_VAR")
     
     AWS_BATCH_JOB_QUEUE = os.environ.get("AWS_BATCH_JOB_QUEUE", None)

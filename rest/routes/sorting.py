@@ -34,12 +34,15 @@ class SortingData(BaseModel):
     test_with_toy_recording: bool = None
     test_with_subrecording: bool = None
     test_subrecording_n_frames: int = None
+    log_to_file: bool = None
 
 
-def sorting_background_task(payload, run_identifier, run_at):
+def sorting_background_task(payload, run_identifier):
     # Run sorting and update db entry status
     db_client = DatabaseClient(connection_string=settings.DB_CONNECTION_STRING)
+    run_at = payload.get("run_at", None)
     try:
+        logger.info(f"Run job at: {run_at}")
         if run_at == "local":
             client_local_worker = LocalWorkerClient()
             client_local_worker.run_sorting(**payload)
@@ -53,7 +56,8 @@ def sorting_background_task(payload, run_identifier, run_at):
                 job_kwargs=job_kwargs,
             )
         db_client.update_run(run_identifier=run_identifier, key="status", value="success")
-    except:
+    except Exception as e:
+        logger.exception(f"Error running sorting job: {run_identifier}.\n {e}")
         db_client.update_run(run_identifier=run_identifier, key="status", value="fail")
 
 
@@ -70,6 +74,7 @@ async def route_run_sorting(data: SortingData, background_tasks: BackgroundTasks
         file_path=data.dandiset_file_path
     )
     payload = dict(
+        run_at=data.run_at,
         run_identifier=run_identifier,
         run_description=data.run_description,
         source_aws_s3_bucket=data.source_aws_s3_bucket,
@@ -86,6 +91,7 @@ async def route_run_sorting(data: SortingData, background_tasks: BackgroundTasks
         test_with_toy_recording=data.test_with_toy_recording,
         test_with_subrecording=data.test_with_subrecording,
         test_subrecording_n_frames=data.test_subrecording_n_frames,
+        log_to_file=data.log_to_file,
     )
     try:
         # Create Database entries
@@ -103,6 +109,7 @@ async def route_run_sorting(data: SortingData, background_tasks: BackgroundTasks
             }),
         )
         run = db_client.create_run(
+            run_at=data.run_at,
             identifier=run_identifier,
             description=data.run_description,
             last_run=datetime.now().strftime("%Y/%m/%d %H:%M:%S"),
@@ -113,7 +120,7 @@ async def route_run_sorting(data: SortingData, background_tasks: BackgroundTasks
         )
 
         # Run sorting job
-        background_tasks.add_task(sorting_background_task, payload, run_identifier=run_identifier, run_at=data.run_at)
+        background_tasks.add_task(sorting_background_task, payload, run_identifier=run_identifier)
 
     except Exception as e:
         print(e)

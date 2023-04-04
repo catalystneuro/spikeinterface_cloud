@@ -16,12 +16,18 @@ def get_run_info(run_id: str):
     db_client = DatabaseClient(connection_string=settings.DB_CONNECTION_STRING)
     run_info = db_client.get_run_info(run_id=run_id)
     logger.info(f"Getting run logs: {run_info['identifier']}")
-    if run_info["run_at"] == "aws":
-        aws_client = AWSClient()
-        run_logs = aws_client.get_job_logs_by_name(job_name=run_info['identifier'], job_queue=settings.AWS_BATCH_JOB_QUEUE)
-    elif run_info["run_at"] == "local":
-        local_worker_client = LocalWorkerClient()
-        run_logs = local_worker_client.get_run_logs(run_identifier=run_info['identifier'])
+    try:
+        if run_info["run_at"] == "aws":
+            aws_client = AWSClient()
+            run_logs = aws_client.get_job_logs_by_name(job_name=f"sorting-{run_info['identifier']}", job_queue=settings.AWS_BATCH_JOB_QUEUE)
+        elif run_info["run_at"] == "local":
+            local_worker_client = LocalWorkerClient()
+            run_logs = local_worker_client.get_run_logs(run_identifier=run_info['identifier'])
+        else:
+            run_logs = "No logs for this run"
+    except Exception as e:
+        logger.exception(f"Error getting run logs: {run_info['identifier']}. {e}")
+        run_logs = f"Error getting run logs: {run_info['identifier']}. {e}"
     return {
         "logs": run_logs,
         **run_info

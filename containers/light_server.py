@@ -44,6 +44,7 @@ async def run():
         test_with_toy_recording=data.get('test_with_toy_recording'),
         test_with_subrecording=data.get('test_with_subrecording'),
         test_subrecording_n_frames=data.get('test_subrecording_n_frames'),
+        log_to_file=data.get('log_to_file'),
     )
     # Use the Response object to return the async response
     # return Response(run_async(**kwargs), mimetype='text/plain')
