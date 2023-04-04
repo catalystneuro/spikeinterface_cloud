@@ -179,18 +179,28 @@ def main(
         run_identifier = os.environ.get("RUN_IDENTIFIER", datetime.now().strftime("%Y%m%d%H%M%S"))
     if not source_aws_s3_bucket:
         source_aws_s3_bucket = os.environ.get("SOURCE_AWS_S3_BUCKET", None)
+        if source_aws_s3_bucket == "None":
+            source_aws_s3_bucket = None
     if not source_aws_s3_bucket_folder:
         source_aws_s3_bucket_folder = os.environ.get("SOURCE_AWS_S3_BUCKET_FOLDER", None)
+        if source_aws_s3_bucket_folder == "None":
+            source_aws_s3_bucket_folder = None
     if not dandiset_s3_file_url:
         dandiset_s3_file_url = os.environ.get("DANDISET_S3_FILE_URL", None)
+        if dandiset_s3_file_url == "None":
+            dandiset_s3_file_url = None
     if not dandiset_file_es_name:
         dandiset_file_es_name = os.environ.get("DANDISET_FILE_ES_NAME", "ElectricalSeries")
     if not target_output_type:
         target_output_type = os.environ.get("TARGET_OUTPUT_TYPE", "s3")
     if not target_aws_s3_bucket:
         target_aws_s3_bucket = os.environ.get("TARGET_AWS_S3_BUCKET", None)
+        if target_aws_s3_bucket == "None":
+            target_aws_s3_bucket = None
     if not target_aws_s3_bucket_folder:
         target_aws_s3_bucket_folder = os.environ.get("TARGET_AWS_S3_BUCKET_FOLDER", None)
+        if target_aws_s3_bucket_folder == "None":
+            target_aws_s3_bucket_folder = None
     if not data_type:
         data_type = os.environ.get("DATA_TYPE", "nwb")
     if not recording_kwargs:
