@@ -199,9 +199,9 @@ def main(
     if not sorters_kwargs:
         sorters_kwargs = eval(os.environ.get("SORTERS_KWARGS", "{}"))
     if not test_with_toy_recording:
-        test_with_toy_recording = bool(os.environ.get("TEST_WITH_TOY_RECORDING", False))
+        test_with_toy_recording = os.environ.get("TEST_WITH_TOY_RECORDING", False).lower() in ('true', '1', 't')
     if not test_with_subrecording:
-        test_with_subrecording = bool(os.environ.get("TEST_WITH_SUB_RECORDING", False))
+        test_with_subrecording = os.environ.get("TEST_WITH_SUB_RECORDING", False).lower() in ('true', '1', 't')
     if not test_subrecording_n_frames:
         test_subrecording_n_frames = int(os.environ.get("TEST_SUBRECORDING_N_FRAMES", 300000))
     if not log_to_file:
