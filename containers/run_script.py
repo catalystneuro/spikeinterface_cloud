@@ -205,7 +205,7 @@ def main(
     if not test_subrecording_n_frames:
         test_subrecording_n_frames = int(os.environ.get("TEST_SUBRECORDING_N_FRAMES", 300000))
     if not log_to_file:
-        log_to_file = bool(os.environ.get("LOG_TO_FILE", False))
+        log_to_file = os.environ.get("LOG_TO_FILE", False).lower() in ('true', '1', 't')
 
     # Set up logging
     # logger = make_logger(run_identifier)
