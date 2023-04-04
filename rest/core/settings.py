@@ -6,22 +6,26 @@ class Settings:
     AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY", None)
     AWS_REGION = os.environ.get("AWS_REGION", None)
     DANDI_VAR = os.environ.get("DANDI_VAR")
+    
+    AWS_BATCH_JOB_QUEUE = os.environ.get("AWS_BATCH_JOB_QUEUE", None)
+    AWS_BATCH_JOB_DEFINITION = os.environ.get("AWS_BATCH_JOB_DEFINITION", None)
 
     WORKER_DEPLOY_MODE = os.environ.get("WORKER_DEPLOY_MODE", "compose")
-    
-    db_connection_string = 'postgresql+psycopg2://postgres:postgres@database/si-sorting-db'
-    aws_batch_job_queue = 'si-sorting-batch-queue'
-    aws_batch_job_definition = 'si-sorting-batch-job-definition'
+
 
 class DevSettings(Settings):
     DEBUG = True
     HOST = '0.0.0.0'
     PORT = 8000
+    DB_CONNECTION_STRING = 'postgresql+psycopg2://postgres:postgres@database/si-sorting-db'
+
 
 class ProdSettings(Settings):
     DEBUG = False
     HOST = '0.0.0.0'
     PORT = 8050
+    DB_CONNECTION_STRING = os.environ.get("DB_CONNECTION_STRING", None)
+
 
 def get_settings():
     settings_map = {
@@ -29,7 +33,8 @@ def get_settings():
         "dev": DevSettings,
         "prod": ProdSettings
     }
-    stage = os.environ.get('DEPLOY_MODE', 'dev')
+    stage = os.environ.get('REST_DEPLOY_MODE', 'dev')
     return settings_map[stage]()
+
 
 settings: Settings = get_settings()

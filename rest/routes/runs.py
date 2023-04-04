@@ -13,7 +13,7 @@ router = APIRouter()
 
 
 def get_run_info(run_id: str):
-    db_client = DatabaseClient(connection_string=settings.db_connection_string)
+    db_client = DatabaseClient(connection_string=settings.DB_CONNECTION_STRING)
     run_info = db_client.get_run_info(run_id=run_id)
     logger.info(f"Getting run logs: {run_info['identifier']}")
     if settings.WORKER_DEPLOY_MODE == "aws":
@@ -31,7 +31,7 @@ def get_run_info(run_id: str):
 @router.get("/list", response_description="Get runs", tags=["run"])
 def route_get_runs_list() -> JSONResponse:
     logger.info("Getting runs list")
-    db_client = DatabaseClient(connection_string=settings.db_connection_string)
+    db_client = DatabaseClient(connection_string=settings.DB_CONNECTION_STRING)
     user = db_client.get_user_info(username="admin")
     runs = [
         get_run_info(run_id=obj.id) for obj in db_client.query_runs_by_user(user_id=user.id)

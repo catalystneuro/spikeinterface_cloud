@@ -6,8 +6,6 @@ import shutil
 import requests
 import logging
 import sys
-from uuid import uuid4
-from io import StringIO
 from datetime import datetime
 from pathlib import Path
 import spikeinterface.extractors as se
@@ -99,7 +97,7 @@ def download_all_files_from_bucket_folder(
 
 
 def upload_all_files_to_bucket_folder(
-    # logger:logging.Logger,
+    logger:logging.Logger,
     client:botocore.client.BaseClient, 
     bucket_name:str, 
     bucket_folder:str,
@@ -108,7 +106,7 @@ def upload_all_files_to_bucket_folder(
     # List files from results, upload them to S3
     files_list = [f for f in Path(local_folder).rglob("*") if f.is_file()]
     for f in files_list:
-        logging.info(f"Uploading {str(f)}...")
+        logger.info(f"Uploading {str(f)}...")
         client.upload_file(
             Filename=str(f),
             Bucket=bucket_name,
@@ -194,7 +192,7 @@ def main(
     if not test_with_subrecording:
         test_with_subrecording = bool(os.environ.get("TEST_WITH_SUB_RECORDING", False))
     if not test_subrecording_n_frames:
-        test_subrecording_n_frames = int(os.environ.get("TEST_SUB_RECORDING_N_FRAMES", 300000))
+        test_subrecording_n_frames = int(os.environ.get("TEST_SUBRECORDING_N_FRAMES", 300000))
 
     # Set up logging
     logger = make_logger(run_identifier)
@@ -293,7 +291,7 @@ def main(
             elif target_output_type == "s3":
                 # Upload sorting results to S3
                 upload_all_files_to_bucket_folder(
-                    # logger=logger,
+                    logger=logger,
                     client=s3_client, 
                     bucket_name=target_aws_s3_bucket, 
                     bucket_folder=target_aws_s3_bucket_folder,
@@ -307,7 +305,7 @@ def main(
             elif target_output_type == "s3":
                 # upload error logs to S3
                 upload_all_files_to_bucket_folder(
-                    # logger=logger,
+                    logger=logger,
                     client=s3_client,
                     bucket_name=target_aws_s3_bucket,
                     bucket_folder=target_aws_s3_bucket_folder,

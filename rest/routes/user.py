@@ -12,7 +12,7 @@ router = APIRouter()
 @router.get("/user", response_description="Get user", tags=["user"])
 def route_get_user(username: str) -> JSONResponse:
     logger.info(f"Getting user info: {username}")
-    db_client = DatabaseClient(connection_string=settings.db_connection_string)
+    db_client = DatabaseClient(connection_string=settings.DB_CONNECTION_STRING)
     user = db_client.get_user_info(username=username)
     
     return JSONResponse({

@@ -38,7 +38,7 @@ class SortingData(BaseModel):
 
 def sorting_background_task(payload, run_id, run_at):
     # Run sorting and update db entry status
-    db_client = DatabaseClient(connection_string=settings.db_connection_string)
+    db_client = DatabaseClient(connection_string=settings.DB_CONNECTION_STRING)
     try:
         if run_at == "local":
             client_local_worker = LocalWorkerClient()
@@ -48,8 +48,8 @@ def sorting_background_task(payload, run_id, run_at):
             client_aws = AWSClient()
             client_aws.submit_job(
                 job_name=f"sorting-{run_id}",
-                job_queue=settings.aws_batch_job_queue,
-                job_definition=settings.aws_batch_job_definition,
+                job_queue=settings.AWS_BATCH_JOB_QUEUE,
+                job_definition=settings.AWS_BATCH_JOB_DEFINITION,
                 job_kwargs=job_kwargs,
             )
         db_client.update_run(run_id=run_id, key="status", value="success")
@@ -89,7 +89,7 @@ async def route_run_sorting(data: SortingData, background_tasks: BackgroundTasks
     )
     try:
         # Create Database entries
-        db_client = DatabaseClient(connection_string=settings.db_connection_string)
+        db_client = DatabaseClient(connection_string=settings.DB_CONNECTION_STRING)
         user = db_client.get_user_info(username="admin")
         dataset = db_client.create_dataset(
             name=data.dandiset_id + " - " + data.dandiset_file_path,
