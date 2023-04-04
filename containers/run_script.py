@@ -47,27 +47,36 @@ class Tee(object):
 def make_logger(run_identifier: str):
     logging.basicConfig()
     logger = logging.getLogger("sorting_worker")
-    logFileFormatter = logging.Formatter(
-        fmt="%(asctime)s %(levelname)s -- %(name)s %(levelname)s %(message)s",
+    logger.setLevel(logging.DEBUG)
+    log_formatter = logging.Formatter(
+        fmt="%(asctime)s %(levelname)s %(name)s -- %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
     )
+
+    # Add a logging handler for the log file
     fileHandler = logging.FileHandler(
         filename=f"/logs/sorting_worker_{run_identifier}.log",
         mode="a",
     )
-    fileHandler.setFormatter(logFileFormatter)
+    fileHandler.setFormatter(log_formatter)
     fileHandler.setLevel(level=logging.DEBUG)
     logger.addHandler(fileHandler)
 
     # Add a logging handler for stdout
     stdoutHandler = logging.StreamHandler(sys.stdout)
     stdoutHandler.setLevel(logging.DEBUG)
-    stdoutHandler.setFormatter(logFileFormatter)
+    stdoutHandler.setFormatter(log_formatter)
     logger.addHandler(stdoutHandler)
     
     # Redirect stdout to a file-like object that writes to both stdout and the log file
     stdout_log_file = open(f"/logs/sorting_worker_{run_identifier}.log", "a")
     sys.stdout = Tee(sys.stdout, stdout_log_file)
+
+    # Handler to print to console as well
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setLevel(logging.DEBUG)
+    handler.setFormatter(log_formatter)
+    logger.addHandler(handler)
     return logger
 
 
@@ -199,21 +208,7 @@ def main(
         log_to_file = bool(os.environ.get("LOG_TO_FILE", False))
 
     # Set up logging
-    if log_to_file:
-        logger = make_logger(run_identifier)
-    else:
-        print("Logging to stdout")
-        logger = logging.getLogger("sorting_worker")
-        logger.setLevel(logging.DEBUG)
-        handler = logging.StreamHandler(sys.stdout)
-        handler.setLevel(logging.DEBUG)
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        handler.setFormatter(formatter)
-        logger.addHandler(handler)
-
-    print("############################################################")
-    print("THIS IS A REGULAR PYTHON PRINT, TO CHECK FOR CLOUDWATCH LOGGING")
-    print("############################################################")
+    logger = make_logger(run_identifier)
 
     # Data source
     if (source_aws_s3_bucket is None or source_aws_s3_bucket_folder is None) and (dandiset_s3_file_url is None) and (not test_with_toy_recording):
