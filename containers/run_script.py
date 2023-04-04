@@ -47,6 +47,7 @@ class Tee(object):
 def make_logger(run_identifier: str):
     logging.basicConfig()
     logger = logging.getLogger("sorting_worker")
+    logger.handlers.clear()
     logger.setLevel(logging.DEBUG)
     log_formatter = logging.Formatter(
         fmt="%(asctime)s %(levelname)s %(name)s -- %(message)s",
@@ -72,11 +73,11 @@ def make_logger(run_identifier: str):
     stdout_log_file = open(f"/logs/sorting_worker_{run_identifier}.log", "a")
     sys.stdout = Tee(sys.stdout, stdout_log_file)
 
-    # Handler to print to console as well
-    handler = logging.StreamHandler(sys.stdout)
-    handler.setLevel(logging.DEBUG)
-    handler.setFormatter(log_formatter)
-    logger.addHandler(handler)
+    # # Handler to print to console as well
+    # handler = logging.StreamHandler(sys.stdout)
+    # handler.setLevel(logging.DEBUG)
+    # handler.setFormatter(log_formatter)
+    # logger.addHandler(handler)
     return logger
 
 
@@ -194,8 +195,7 @@ def main(
     if not recording_kwargs:
         recording_kwargs = json.loads(os.environ.get("RECORDING_KWARGS", "{}"))
     if not sorters_names_list:
-        sorters_names_list = os.environ.get("SORTERS_NAMES_LIST", "kilosort3")
-    sorters_names_list = sorters_names_list.split(",")
+        sorters_names_list = os.environ.get("SORTERS_NAMES_LIST", "kilosort3").split(",")
     if not sorters_kwargs:
         sorters_kwargs = eval(os.environ.get("SORTERS_KWARGS", "{}"))
     if not test_with_toy_recording:
@@ -208,7 +208,8 @@ def main(
         log_to_file = bool(os.environ.get("LOG_TO_FILE", False))
 
     # Set up logging
-    logger = make_logger(run_identifier)
+    # logger = make_logger(run_identifier)
+    logger = logging.getLogger("sorting_worker")
 
     # Data source
     if (source_aws_s3_bucket is None or source_aws_s3_bucket_folder is None) and (dandiset_s3_file_url is None) and (not test_with_toy_recording):
@@ -312,6 +313,7 @@ def main(
                 )
         except Exception as e:
             logger.info(f"Error running sorter {sorter_name}: {e}")
+            print(f"Error running sorter {sorter_name}: {e}")
             if target_output_type == "local":
                 # Copy error logs to local - already done by mounted volume
                 pass
@@ -336,6 +338,9 @@ def main(
         )
         logger.info("Matching results:")
         logger.info(mcmp.comparisons[tuple(sorters_names_list)].get_matching())
+
+
+    logger.info("Sorting job completed successfully!")
 
 
 if __name__ == '__main__':
