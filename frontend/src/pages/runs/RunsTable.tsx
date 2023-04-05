@@ -55,7 +55,13 @@ const RunsTable: React.FC = () => {
         setSelectedRow(row);
     };
 
-    const handleDeleteRow = (index: number): void => {
+    const handleDeleteRow = async (index: number) => {
+        const data = tableData[index];
+        try {
+            const response = await restApiClient.delete('/runs/' + data.identifier);
+        } catch (error) {
+            console.error("Error deleting run:", error);
+        }
         setTableData((prevData) => {
             const newData = [...prevData];
             newData.splice(index, 1);

@@ -53,7 +53,7 @@ def get_run_info(run_id: str):
     return run_info
 
 
-@router.get("/list", response_description="Get runs", tags=["run"])
+@router.get("/list", response_description="Get runs", tags=["runs"])
 def route_get_runs_list() -> JSONResponse:
     logger.info("Getting runs list")
     db_client = DatabaseClient(connection_string=settings.DB_CONNECTION_STRING)
@@ -67,7 +67,7 @@ def route_get_runs_list() -> JSONResponse:
     })
 
 
-@router.get("/info", response_description="Get run", tags=["run"])
+@router.get("/info", response_description="Get run", tags=["runs"])
 def route_get_run_info(run_id: str) -> JSONResponse:
     logger.info(f"Getting run info: {run_id}")
     run_info = get_run_info(run_id=run_id)
@@ -75,3 +75,16 @@ def route_get_run_info(run_id: str) -> JSONResponse:
         "message": "Success",
         "run": run_info
     })
+
+
+@router.delete("/{run_identifier}", response_description="Delete run", tags=["runs"])
+def route_delete_run(run_identifier: str) -> JSONResponse:
+    logger.info(f"Deleting run: {run_identifier}")
+    db_client = DatabaseClient(connection_string=settings.DB_CONNECTION_STRING)
+    response = db_client.delete_run(run_identifier=run_identifier)
+    if response:
+        return JSONResponse({
+            "message": "Success"
+        })  
+    else:
+        raise HTTPException(status_code=400, detail="Run not found")

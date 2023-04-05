@@ -127,3 +127,12 @@ class DatabaseClient:
                 session.add(dataset)
                 return dataset
             return None
+    
+
+    def delete_run(self, run_identifier):
+        with self.session_scope() as session:
+            run = session.query(Run).filter(Run.identifier == run_identifier).one_or_none()
+            if run:
+                session.delete(run)
+                return True
+            return False
