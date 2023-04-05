@@ -8,14 +8,15 @@ interface NavItemProps {
     to: string;
     icon: React.ReactElement;
     text: string | React.ReactElement;
+    disabled?: boolean;
 }
 
-const NavItem: React.FC<NavItemProps> = ({ to, icon, text }) => {
+const NavItem: React.FC<NavItemProps> = ({ to, icon, text, disabled = false }) => {
     const location = useLocation();
     const active = location.pathname === to;
 
     return (
-        <ListItem button component={Link} to={to} selected={active}>
+        <ListItem button component={Link} to={to} selected={active} disabled={disabled}>
             <ListItemIcon style={{ color: active ? 'blue' : undefined }}>
                 {icon}
             </ListItemIcon>
@@ -38,6 +39,7 @@ const Sidebar: React.FC = () => {
                     to="/datasets"
                     icon={<BarChart />}
                     text="Datasets"
+                    disabled={true}
                 />
                 <NavItem
                     to="/sorting"
@@ -53,11 +55,13 @@ const Sidebar: React.FC = () => {
                     to="/settings"
                     icon={<Settings />}
                     text="Settings"
+                    disabled={true}
                 />
                 <NavItem
                     to="/logout"
                     icon={<Logout />}
                     text="Log out"
+                    disabled={true}
                 />
             </List>
         </Box>

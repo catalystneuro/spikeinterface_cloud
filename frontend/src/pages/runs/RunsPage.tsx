@@ -6,13 +6,11 @@ import RunsTable from "./RunsTable";
 
 const RunsPage: React.FC = () => {
     return (
-        <Container>
-            <Box className="container">
-                <Box component="form" className="form">
-                    <RunsTable />
-                </Box>
+        <Box className="container">
+            <Box component="form" className="form">
+                <RunsTable />
             </Box>
-        </Container>
+        </Box>
     );
 };
 

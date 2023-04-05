@@ -73,7 +73,7 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
     const [sorters, setSorters] = useState<string[]>([]);
     const [subformsSorters, setSubformsSorters] = useState<React.ReactNode[]>([]);
     const [formDataSorters, setFormDataSorters] = useState<FormValues>({});
-    const [outputDestination, setOutputDestination] = useState<string>('');
+    const [outputDestination, setOutputDestination] = useState<string>('S3');
 
     const [loadingDataset, setLoadingDataset] = useState(false)
     const [loadingFile, setLoadingFile] = useState(false)

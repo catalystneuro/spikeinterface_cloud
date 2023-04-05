@@ -21,8 +21,8 @@ docker compose -f docker-compose-dev.yml up
 
 If you did any changes in `requirements.txt`, `package.json` or `Dockerfile`, you should stop the containers and run again with an extra `--build` flag:
 ```shell
-docker compose -f docker-compose-dev.yml
-docker compose -f docker-compose-dev.yml --build
+docker compose down
+docker compose -f docker-compose-dev.yml up --build
 ``` 
 
 Run rest api standalone (dev):

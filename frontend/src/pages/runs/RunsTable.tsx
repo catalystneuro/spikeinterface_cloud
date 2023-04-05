@@ -13,6 +13,7 @@ import {
     Paper,
     Tabs,
     Tab,
+    Skeleton
 } from "@mui/material";
 import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
 import { makeStyles } from "@mui/styles";
@@ -32,11 +33,15 @@ const RunsTable: React.FC = () => {
     const [tableData, setTableData] = useState<TableRowDataType[]>([]);
     const [tabValue, setTabValue] = useState(0);
 
+    const [loadingTableData, setLoadingTableData] = useState(true);
+
+
     // Fetch data from backend
     const fetchData = async () => {
         try {
             const response = await restApiClient.get('/runs/list');
             setTableData(response.data.runs);
+            setLoadingTableData(false);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -61,54 +66,71 @@ const RunsTable: React.FC = () => {
     return (
         <>
             <TableContainer component={Paper}>
-                <Table className={classes.table} sx={{ minWidth: 650 }} size="small">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell />
-                            <TableCell>Description</TableCell>
-                            <TableCell>Last run</TableCell>
-                            <TableCell>Status</TableCell>
-                            <TableCell>Delete</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {tableData.sort((a, b) => {
-                            return new Date(b.lastRun).getTime() - new Date(a.lastRun).getTime();
-                        }).map((row, index) => (
-                            <TableRow key={row.identifier}>
-                                <TableCell>
-                                    <Radio
-                                        checked={selectedRow?.identifier === row.identifier}
-                                        onChange={() => handleSelectRow(row)}
-                                    />
-                                </TableCell>
-                                <TableCell>{row.description}</TableCell>
-                                <TableCell>{row.lastRun}</TableCell>
-                                <TableCell
-                                    style={{
-                                        fontWeight: 'bold',
-                                        color:
-                                            row.status === 'running' ? 'blue' :
-                                                row.status === 'success' ? 'green' :
-                                                    row.status === 'fail' ? 'red' :
-                                                        'inherit' // fallback color if none of the conditions match
-                                    }}
-                                >
-                                    {row.status}
-                                </TableCell>
-                                <TableCell>
-                                    <Button
-                                        style={{ borderWidth: 0, color: "#3b3b3b" }}
-                                        variant="outlined"
-                                        startIcon={<DeleteOutlinedIcon />}
-                                        onClick={() => handleDeleteRow(index)}
-                                    >
-                                    </Button>
-                                </TableCell>
+                {loadingTableData ? (
+                    <Box sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        gap: .5,
+                        height: '100%',
+                        width: '100%',
+                    }}>
+                        <Skeleton variant="rectangular" width="100%" height={60} />
+                        <Skeleton variant="rectangular" width="100%" height={60} />
+                        <Skeleton variant="rectangular" width="100%" height={60} />
+                        <Skeleton variant="rectangular" width="100%" height={60} />
+                    </Box>
+                ) : (
+                    <Table className={classes.table} sx={{ minWidth: 650 }} size="small">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell />
+                                <TableCell>Description</TableCell>
+                                <TableCell>Last run</TableCell>
+                                <TableCell>Status</TableCell>
+                                <TableCell>Delete</TableCell>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                        </TableHead>
+                        <TableBody>
+                            {tableData.sort((a, b) => {
+                                return new Date(b.lastRun).getTime() - new Date(a.lastRun).getTime();
+                            }).map((row, index) => (
+                                <TableRow key={row.identifier}>
+                                    <TableCell>
+                                        <Radio
+                                            checked={selectedRow?.identifier === row.identifier}
+                                            onChange={() => handleSelectRow(row)}
+                                        />
+                                    </TableCell>
+                                    <TableCell>{row.description}</TableCell>
+                                    <TableCell>{row.lastRun}</TableCell>
+                                    <TableCell
+                                        style={{
+                                            fontWeight: 'bold',
+                                            color:
+                                                row.status === 'running' ? 'blue' :
+                                                    row.status === 'success' ? 'green' :
+                                                        row.status === 'fail' ? 'red' :
+                                                            'inherit' // fallback color if none of the conditions match
+                                        }}
+                                    >
+                                        {row.status}
+                                    </TableCell>
+                                    <TableCell>
+                                        <Button
+                                            style={{ borderWidth: 0, color: "#3b3b3b" }}
+                                            variant="outlined"
+                                            startIcon={<DeleteOutlinedIcon />}
+                                            onClick={() => handleDeleteRow(index)}
+                                        >
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                )}
             </TableContainer>
 
             {selectedRow && (
