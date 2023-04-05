@@ -132,8 +132,7 @@ def main(
     dandiset_s3_file_url:str = None,
     dandiset_file_es_name:str = None,
     target_output_type:str = None,
-    target_aws_s3_bucket:str = None,
-    target_aws_s3_bucket_folder:str = None,
+    output_path:str = None,
     data_type:str = None,
     recording_kwargs:dict = None,
     sorters_names_list:list = None,
@@ -193,20 +192,17 @@ def main(
         dandiset_file_es_name = os.environ.get("DANDISET_FILE_ES_NAME", "ElectricalSeries")
     if not target_output_type:
         target_output_type = os.environ.get("TARGET_OUTPUT_TYPE", "s3")
-    if not target_aws_s3_bucket:
-        target_aws_s3_bucket = os.environ.get("TARGET_AWS_S3_BUCKET", None)
-        if target_aws_s3_bucket == "None":
-            target_aws_s3_bucket = None
-    if not target_aws_s3_bucket_folder:
-        target_aws_s3_bucket_folder = os.environ.get("TARGET_AWS_S3_BUCKET_FOLDER", None)
-        if target_aws_s3_bucket_folder == "None":
-            target_aws_s3_bucket_folder = None
+    if not output_path:
+        output_path = os.environ.get("OUTPUT_PATH", None)
+        if output_path == "None":
+            output_path = None
     if not data_type:
         data_type = os.environ.get("DATA_TYPE", "nwb")
     if not recording_kwargs:
         recording_kwargs = ast.literal_eval(os.environ.get("RECORDING_KWARGS", "{}"))
     if not sorters_names_list:
-        sorters_names_list = os.environ.get("SORTERS_NAMES_LIST", "kilosort3").split(",")
+        sorters_names_list = os.environ.get("SORTERS_NAMES_LIST", '["kilosort3"]')
+        sorters_names_list = [s.strip().replace("\"", "").replace("\'", "") for s in sorters_names_list.strip('][').split(',')]
     if not sorters_kwargs:
         sorters_kwargs = eval(os.environ.get("SORTERS_KWARGS", "{}"))
     if test_with_toy_recording is None:
@@ -217,6 +213,10 @@ def main(
         test_subrecording_n_frames = int(os.environ.get("TEST_SUBRECORDING_N_FRAMES", 300000))
     if log_to_file is None:
         log_to_file = os.environ.get("LOG_TO_FILE", "False").lower() in ('true', '1', 't')
+
+    if target_output_type == "s3":
+        target_aws_s3_bucket = output_path.split("/")[0]
+        target_aws_s3_bucket_folder = "/".join(output_path.split("/")[1:])
 
     # Set up logging
     logger = make_logger(run_identifier=run_identifier, log_to_file=log_to_file)

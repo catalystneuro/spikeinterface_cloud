@@ -1,5 +1,12 @@
 # SI cloud app
 
+Easy submission of spike sorting jobs locally or to the Cloud:
+![sorting](/media/sorting.gif)
+
+Keep track of your sorting jobs:
+![runs](/media/runs.gif)
+
+# Running the app locally
 Set ENV variables:
 ```shell
 export AWS_DEFAULT_REGION=

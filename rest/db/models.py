@@ -45,6 +45,8 @@ class Run(Base):
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship('User', back_populates='runs')
     metadata_ = Column("metadata", String)
+    logs = Column(String)
+    output_path = Column(String)
 
     def update(self, key, value):
         setattr(self, key, value)

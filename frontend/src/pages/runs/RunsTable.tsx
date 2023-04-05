@@ -63,6 +63,10 @@ const RunsTable: React.FC = () => {
         });
     };
 
+    const handleTabChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+        setTabValue(newValue);
+    };
+
     return (
         <>
             <TableContainer component={Paper}>
@@ -135,29 +139,50 @@ const RunsTable: React.FC = () => {
 
             {selectedRow && (
                 <Box>
-                    <Tabs value={tabValue} onChange={(_, newValue) => setTabValue(newValue)}>
+                    <Tabs value={tabValue} onChange={handleTabChange}>
                         <Tab label="Data" />
                         <Tab label="Logs" />
+                        <Tab label="Results" />
                     </Tabs>
-                    {tabValue === 0 ? (
-                        <TextField
-                            multiline
-                            fullWidth
-                            value={JSON.stringify(selectedRow.metadata, null, 2)}
-                            InputProps={{
-                                readOnly: true,
-                            }}
-                        />
-                    ) : (
-                        <TextField
-                            multiline
-                            fullWidth
-                            value={selectedRow.logs}
-                            InputProps={{
-                                readOnly: true,
-                            }}
-                        />
-                    )}
+                    {(() => {
+                        switch (tabValue) {
+                            case 0:
+                                return (
+                                    <TextField
+                                        multiline
+                                        fullWidth
+                                        value={JSON.stringify(selectedRow.metadata, null, 2)}
+                                        InputProps={{
+                                            readOnly: true,
+                                        }}
+                                    />
+                                );
+                            case 1:
+                                return (
+                                    <TextField
+                                        multiline
+                                        fullWidth
+                                        value={selectedRow.logs}
+                                        InputProps={{
+                                            readOnly: true
+                                        }}
+                                    />
+                                );
+                            case 2:
+                                return (
+                                    <TextField
+                                        multiline
+                                        fullWidth
+                                        value={"results"}
+                                        InputProps={{
+                                            readOnly: true
+                                        }}
+                                    />
+                                );
+                            default:
+                                return null;
+                        }
+                    })()}
                 </Box>
             )}
         </>

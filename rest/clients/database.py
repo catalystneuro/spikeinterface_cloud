@@ -63,8 +63,8 @@ class DatabaseClient:
             session.add(dataset)
             return dataset
 
-    def create_run(self, run_at, identifier, description, last_run, status, dataset_id, metadata, user_id):
-        run = Run(run_at=run_at, identifier=identifier, description=description, last_run=last_run, status=status, dataset_id=dataset_id, metadata_=metadata, user_id=user_id)
+    def create_run(self, run_at, identifier, description, last_run, status, dataset_id, metadata, user_id, output_path, logs=""):
+        run = Run(run_at=run_at, identifier=identifier, description=description, last_run=last_run, status=status, dataset_id=dataset_id, metadata_=metadata, user_id=user_id, output_path=output_path, logs=logs)
         with self.session_scope() as session:
             session.add(run)
             return run
@@ -89,6 +89,8 @@ class DatabaseClient:
                 "status": obj.status,
                 "datasetName": dataset.name,
                 "metadata": ast.literal_eval(obj.metadata_),
+                "logs": obj.logs,
+                "outputPath": obj.output_path
             }
     
     def get_all_runs_info(self):

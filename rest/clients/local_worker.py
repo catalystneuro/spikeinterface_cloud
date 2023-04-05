@@ -23,8 +23,7 @@ class LocalWorkerClient:
         dandiset_s3_file_url: str,
         dandiset_file_es_name: str,
         target_output_type: str,
-        target_aws_s3_bucket: str,
-        target_aws_s3_bucket_folder: str,
+        output_path: str,
         data_type: str,
         recording_kwargs: str,
         sorters_names_list: str,
@@ -43,8 +42,7 @@ class LocalWorkerClient:
             "dandiset_s3_file_url": dandiset_s3_file_url,
             "dandiset_file_es_name": dandiset_file_es_name,
             "target_output_type": target_output_type,
-            "target_aws_s3_bucket": target_aws_s3_bucket,
-            "target_aws_s3_bucket_folder": target_aws_s3_bucket_folder,
+            "output_path": output_path,
             "data_type": data_type,
             "recording_kwargs": recording_kwargs,
             "sorters_names_list": sorters_names_list,
@@ -65,7 +63,12 @@ class LocalWorkerClient:
         self.logger.info("Getting logs...")
         response = requests.get(self.endpoint + "/logs", params={"run_identifier": run_identifier})
         if response.status_code == 200:
-            return response.content.decode('utf-8')
+            logs = response.content.decode('utf-8')
+            if "Error running sorter" in logs:
+                return "fail", logs
+            elif "Sorting job completed successfully!" in logs:
+                return "success", logs
+            return "running", logs
         else:
             self.logger.info(f"Error {response.status_code}: {response.content}")
-            return f"Logs couldn't be retrieved. Error {response.status_code}: {response.content}"
+            return "fail", f"Logs couldn't be retrieved. Error {response.status_code}: {response.content}"

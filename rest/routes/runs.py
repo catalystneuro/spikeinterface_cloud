@@ -25,28 +25,32 @@ map_aws_batch_status_to_rest_status = {
 def get_run_info(run_id: str):
     db_client = DatabaseClient(connection_string=settings.DB_CONNECTION_STRING)
     run_info = db_client.get_run_info(run_id=run_id)
-    # Get status and logs
-    logger.info(f"Getting run status and logs: {run_info['identifier']}")
-    try:
-        if run_info["run_at"] == "aws":
-            aws_client = AWSClient()
-            status, run_logs = aws_client.get_job_status_and_logs_by_name(job_name=f"sorting-{run_info['identifier']}", job_queue=settings.AWS_BATCH_JOB_QUEUE)
-            status = map_aws_batch_status_to_rest_status[status]
-        elif run_info["run_at"] == "local":
-            local_worker_client = LocalWorkerClient()
-            status, run_logs = local_worker_client.get_run_logs(run_identifier=run_info['identifier'])
-        else:
+    if run_info["status"] == "running":
+        # Get status and logs
+        logger.info(f"Getting run status and logs: {run_info['identifier']}")
+        try:
+            if run_info["run_at"] == "aws":
+                aws_client = AWSClient()
+                status, run_logs = aws_client.get_job_status_and_logs_by_name(job_name=f"sorting-{run_info['identifier']}", job_queue=settings.AWS_BATCH_JOB_QUEUE)
+                status = map_aws_batch_status_to_rest_status[status]
+                if status == "success":
+                    if "Error running sorter" in run_logs:
+                        status = "fail"
+            elif run_info["run_at"] == "local":
+                local_worker_client = LocalWorkerClient()
+                status, run_logs = local_worker_client.get_run_logs(run_identifier=run_info['identifier'])
+            else:
+                status = "running"
+                run_logs = "No logs for this run"
+        except Exception as e:
+            logger.exception(f"Error getting run logs: {run_info['identifier']}. {e}")
+            run_logs = f"Error getting run logs: {run_info['identifier']}. {e}"
             status = "running"
-            run_logs = "No logs for this run"
-    except Exception as e:
-        logger.exception(f"Error getting run logs: {run_info['identifier']}. {e}")
-        run_logs = f"Error getting run logs: {run_info['identifier']}. {e}"
-        status = "running"
-    run_info["status"] = status
-    return {
-        "logs": run_logs,
-        **run_info
-    }
+        run_info["status"] = status
+        db_client.update_run(run_identifier=run_info["identifier"], key="status", value=status)
+        db_client.update_run(run_identifier=run_info["identifier"], key="logs", value=run_logs)
+        run_info["logs"] = run_logs
+    return run_info
 
 
 @router.get("/list", response_description="Get runs", tags=["run"])

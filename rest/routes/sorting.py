@@ -25,8 +25,7 @@ class SortingData(BaseModel):
     dandiset_file_path: str = None
     dandiset_file_es_name: str = None
     target_output_type: str = None
-    target_aws_s3_bucket: str = None
-    target_aws_s3_bucket_folder: str = None
+    output_path: str = None
     data_type: str = None
     recording_kwargs: dict = None
     sorters_names_list: list = None
@@ -82,8 +81,7 @@ async def route_run_sorting(data: SortingData, background_tasks: BackgroundTasks
         dandiset_s3_file_url=dandiset_s3_file_url,
         dandiset_file_es_name=data.dandiset_file_es_name,
         target_output_type=data.target_output_type,
-        target_aws_s3_bucket=data.target_aws_s3_bucket,
-        target_aws_s3_bucket_folder=data.target_aws_s3_bucket_folder,
+        output_path=data.output_path,
         data_type=data.data_type,
         recording_kwargs=data.recording_kwargs,
         sorters_names_list=data.sorters_names_list,
@@ -117,6 +115,7 @@ async def route_run_sorting(data: SortingData, background_tasks: BackgroundTasks
             dataset_id=dataset.id,
             user_id=user.id,
             metadata=str(payload),
+            output_path=data.output_path,
         )
 
         # Run sorting job

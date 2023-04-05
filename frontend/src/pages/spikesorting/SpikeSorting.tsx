@@ -46,6 +46,7 @@ interface FormValues {
 
 
 const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
+    const [description, setDescription] = useState<string>('');
     const [source, setSource] = useState<string>('DANDI');
     const [selectedDandiset, setSelectedDandiset] = useState<string>('');
     const [selectedDandisetMetadata, setSelectedDandisetMetadata] = useState<{
@@ -74,6 +75,7 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
     const [subformsSorters, setSubformsSorters] = useState<React.ReactNode[]>([]);
     const [formDataSorters, setFormDataSorters] = useState<FormValues>({});
     const [outputDestination, setOutputDestination] = useState<string>('S3');
+    const [outputPath, setOutputPath] = useState<string>('');
 
     const [loadingDataset, setLoadingDataset] = useState(false)
     const [loadingFile, setLoadingFile] = useState(false)
@@ -82,6 +84,12 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
     const [snackbarSeverity, setSnackbarSeverity] = useState<AlertColor | undefined>(undefined);
 
     const handleSnackbarClose = () => setSnackbarOpen(false);
+
+    // Description
+    const handleDescriptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const desc = event.target.value as string;
+        setDescription(desc);
+    };
 
     // Change Data Source
     const handleSourceChange = (event: SelectChangeEvent<string>) => {
@@ -301,6 +309,11 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
         setOutputDestination(selectedOutput);
     };
 
+    const handleOutputPathChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const selectedOutputPath = event.target.value as string;
+        setOutputPath(selectedOutputPath);
+    };
+
     // Run sorting job
     const handleRunSortingJob = async (runAt: "local" | "aws") => {
         const dandiset_id = selectedDandiset.split(' - ')[0];
@@ -316,15 +329,14 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
         const data = {
             run_at: runAt,
             run_identifier: null,
-            run_description: null,
+            run_description: description,
             source_aws_s3_bucket: null,
             source_aws_s3_bucket_folder: null,
             dandiset_id: dandiset_id,
             dandiset_file_path: filepath,
             dandiset_file_es_name: es,
             target_output_type: target_output_type,
-            target_aws_s3_bucket: "cloud-sorting-results",
-            target_aws_s3_bucket_folder: "luiz/si-cloud",
+            output_path: outputPath,
             data_type: "nwb",
             recording_kwargs: {},
             sorters_names_list: sorters,
@@ -348,6 +360,15 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
 
     return (
         <Box className="container">
+            <Box className="form">
+                <Box className="formItem">
+                    <Typography sx={{ marginRight: 2 }}>Description:</Typography>
+                    <FormControl fullWidth>
+                        <TextField label="Description" onChange={handleDescriptionChange} />
+                    </FormControl>
+                </Box>
+            </Box>
+
             <Box component="form" className="form">
                 <Typography gutterBottom className="heading" style={{ fontSize: 28, marginTop: '-20px' }}>
                     Data source
@@ -505,12 +526,12 @@ ${selectedDandisetMetadata.description}`}
                     <FormControl className="formControl_1">
                         <InputLabel>Destination</InputLabel>
                         <Select value={outputDestination} onChange={handleOutputDestinationChange}>
-                            <MenuItem value="DANDI">DANDI</MenuItem>
                             <MenuItem value="S3">S3</MenuItem>
-                            <MenuItem value="Local">Local</MenuItem>
+                            <MenuItem disabled value="DANDI">DANDI</MenuItem>
+                            <MenuItem disabled value="Local">Local</MenuItem>
                         </Select>
                     </FormControl>
-                    <TextField fullWidth label="Path" />
+                    <TextField fullWidth label="Path" onChange={handleOutputPathChange} />
                 </Box>
             </Box>
 
