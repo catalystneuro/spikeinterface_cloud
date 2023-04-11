@@ -11,6 +11,7 @@ from pathlib import Path
 import spikeinterface.extractors as se
 from spikeinterface.sorters import run_sorter_local
 import spikeinterface.comparison as sc
+from neuroconv.tools.spikeinterface import write_sorting, write_recording
 
 
 # TODO - complete with more data types
@@ -90,6 +91,20 @@ def download_file_from_url(url):
             shutil.copyfileobj(r.raw, f)
 
 
+def download_file_from_s3(
+    client:botocore.client.BaseClient, 
+    bucket_name:str, 
+    file_path:str
+):    
+    file_name = file_path.split("/")[-1]
+    client.download_file(
+        Bucket=bucket_name, 
+        Key=file_path, 
+        Filename=f"/data/{file_name}"
+    )
+    return file_name       
+
+
 def download_all_files_from_bucket_folder(
     client:botocore.client.BaseClient, 
     bucket_name:str, 
@@ -105,6 +120,22 @@ def download_all_files_from_bucket_folder(
                 Key=f["Key"], 
                 Filename=f"/data/{file_name}"
             )
+
+
+def upload_file_to_bucket(
+    logger:logging.Logger,
+    client:botocore.client.BaseClient, 
+    bucket_name:str, 
+    bucket_folder:str,
+    local_file_path:str
+):
+    # Upload file to S3
+    logger.info(f"Uploading {local_file_path}...")
+    client.upload_file(
+        Filename=local_file_path,
+        Bucket=bucket_name,
+        Key=f"{bucket_folder}{local_file_path}",
+    )
 
 
 def upload_all_files_to_bucket_folder(
@@ -127,14 +158,18 @@ def upload_all_files_to_bucket_folder(
 
 def main(
     run_identifier:str = None,
-    source_aws_s3_bucket:str = None,
-    source_aws_s3_bucket_folder:str = None,
-    dandiset_s3_file_url:str = None,
-    dandiset_file_es_name:str = None,
+    source:str = None,
+    source_data_type:str = None,
+    source_data_urls:list = None,
+    recording_kwargs:dict = None,
+    # source_aws_s3_bucket:str = None,
+    # source_aws_s3_bucket_folder:str = None,
+    # dandiset_s3_file_url:str = None,
+    # dandiset_file_es_name:str = None,
+    # data_type:str = None,
+    # recording_kwargs:dict = None,
     target_output_type:str = None,
     output_path:str = None,
-    data_type:str = None,
-    recording_kwargs:dict = None,
     sorters_names_list:list = None,
     sorters_kwargs:dict = None,
     test_with_toy_recording:bool = None,
@@ -176,30 +211,40 @@ def main(
     # 3. default value
     if not run_identifier:
         run_identifier = os.environ.get("RUN_IDENTIFIER", datetime.now().strftime("%Y%m%d%H%M%S"))
-    if not source_aws_s3_bucket:
-        source_aws_s3_bucket = os.environ.get("SOURCE_AWS_S3_BUCKET", None)
-        if source_aws_s3_bucket == "None":
-            source_aws_s3_bucket = None
-    if not source_aws_s3_bucket_folder:
-        source_aws_s3_bucket_folder = os.environ.get("SOURCE_AWS_S3_BUCKET_FOLDER", None)
-        if source_aws_s3_bucket_folder == "None":
-            source_aws_s3_bucket_folder = None
-    if not dandiset_s3_file_url:
-        dandiset_s3_file_url = os.environ.get("DANDISET_S3_FILE_URL", None)
-        if dandiset_s3_file_url == "None":
-            dandiset_s3_file_url = None
-    if not dandiset_file_es_name:
-        dandiset_file_es_name = os.environ.get("DANDISET_FILE_ES_NAME", "ElectricalSeries")
+    
+    if not source:
+        source = os.environ.get("SOURCE", None)
+        if source == "None":
+            source = None
+    if not source_data_urls:
+        source_data_urls = os.environ.get("SOURCE_DATA_URLS", '[""]')
+        source_data_urls = [s.strip().replace("\"", "").replace("\'", "") for s in source_data_urls.strip('][').split(',')]
+    if not source_data_type:
+        source_data_type = os.environ.get("SOURCE_DATA_TYPE", "nwb")
+    if not recording_kwargs:
+        recording_kwargs = ast.literal_eval(os.environ.get("RECORDING_KWARGS", "{}"))
+
+    # if not source_aws_s3_bucket:
+    #     source_aws_s3_bucket = os.environ.get("SOURCE_AWS_S3_BUCKET", None)
+    #     if source_aws_s3_bucket == "None":
+    #         source_aws_s3_bucket = None
+    # if not source_aws_s3_bucket_folder:
+    #     source_aws_s3_bucket_folder = os.environ.get("SOURCE_AWS_S3_BUCKET_FOLDER", None)
+    #     if source_aws_s3_bucket_folder == "None":
+    #         source_aws_s3_bucket_folder = None
+    # if not dandiset_s3_file_url:
+    #     dandiset_s3_file_url = os.environ.get("DANDISET_S3_FILE_URL", None)
+    #     if dandiset_s3_file_url == "None":
+    #         dandiset_s3_file_url = None
+    # if not dandiset_file_es_name:
+    #     dandiset_file_es_name = os.environ.get("DANDISET_FILE_ES_NAME", "ElectricalSeries")
+
     if not target_output_type:
         target_output_type = os.environ.get("TARGET_OUTPUT_TYPE", "s3")
     if not output_path:
         output_path = os.environ.get("OUTPUT_PATH", None)
         if output_path == "None":
             output_path = None
-    if not data_type:
-        data_type = os.environ.get("DATA_TYPE", "nwb")
-    if not recording_kwargs:
-        recording_kwargs = ast.literal_eval(os.environ.get("RECORDING_KWARGS", "{}"))
     if not sorters_names_list:
         sorters_names_list = os.environ.get("SORTERS_NAMES_LIST", '["kilosort3"]')
         sorters_names_list = [s.strip().replace("\"", "").replace("\'", "") for s in sorters_names_list.strip('][').split(',')]
@@ -223,11 +268,21 @@ def main(
     # logger = logging.getLogger("sorting_worker")
 
     # Data source
-    if (source_aws_s3_bucket is None or source_aws_s3_bucket_folder is None) and (dandiset_s3_file_url is None) and (not test_with_toy_recording):
-        raise Exception("Missing either: \n- SOURCE_AWS_S3_BUCKET and SOURCE_AWS_S3_BUCKET_FOLDER, or \n- DANDISET_S3_FILE_URL")
+    if source not in ["local", "s3", "dandi"]:
+        logger.error(f"Source {source} not supported. Choose from: local, s3, dandi.")
+        raise ValueError(f"Source {source} not supported. Choose from: local, s3, dandi.")
+    
+    if source_data_type not in ["nwb", "spikeglx"]:
+        logger.error(f"Data type {source_data_type} not supported. Choose from: nwb, spikeglx.")
+        raise ValueError(f"Data type {source_data_type} not supported. Choose from: nwb, spikeglx.")
+    
+    if len(source_data_urls) == 0:
+        logger.error(f"No source data urls provided.")
+        raise ValueError(f"No source data urls provided.")
 
     s3_client = boto3.client('s3')
 
+    # Test with toy recording
     if test_with_toy_recording:
         logger.info("Generating toy recording...")
         recording, _ = se.toy_example(
@@ -237,22 +292,37 @@ def main(
             num_segments=1
         )
     
-    elif source_aws_s3_bucket and source_aws_s3_bucket_folder:
-        logger.info(f"Downloading dataset: {source_aws_s3_bucket}/{source_aws_s3_bucket_folder}")
-        download_all_files_from_bucket_folder(
-            client=s3_client,
-            bucket_name=source_aws_s3_bucket, 
-            bucket_folder=source_aws_s3_bucket_folder
-        )
+    # Load data from S3
+    elif source == "s3":
+        for data_url in source_data_urls:
+            if not data_url.startswith("s3://"):
+                logger.error(f"Data url {data_url} is not a valid S3 path. E.g. s3://...")
+                raise ValueError(f"Data url {data_url} is not a valid S3 path. E.g. s3://...")
+            logger.info(f"Downloading data from S3: {data_url}")
+            data_path = data_url.split("s3://")[-1]
+            bucket_name = data_path.split("/")[0]
+            file_path = "/".join(data_path.split("/")[1:])
+            file_name = download_file_from_s3(
+                client=s3_client,
+                bucket_name=bucket_name, 
+                file_path=file_path,
+            )
 
         logger.info("Reading recording...")
         # E.g.: se.read_spikeglx(folder_path="/data", stream_id="imec.ap")
-        recording = DATA_TYPE_TO_READER.get(data_type)(
-            folder_path="/data",
-            **recording_kwargs
-        )
+        if source_data_type == "spikeglx":
+            recording = se.read_spikeglx(
+                folder_path="/data",
+                **recording_kwargs
+            )
+        elif source_data_type == "nwb":
+            recording = se.read_nwb_recording(
+                file_path=f"/data/{file_name}",
+                **recording_kwargs
+            )
 
-    elif dandiset_s3_file_url:
+    elif source == "dandi":
+        dandiset_s3_file_url = source_data_urls[0]
         if not dandiset_s3_file_url.startswith("https://dandiarchive.s3.amazonaws.com"):
             raise Exception(f"DANDISET_S3_FILE_URL should be a valid Dandiset S3 url. Value received was: {dandiset_s3_file_url}")
 
@@ -263,14 +333,12 @@ def main(
             logger.info("Reading recording from NWB...")
             recording = se.read_nwb_recording(
                 file_path="/data/filename.nwb",
-                electrical_series_name=dandiset_file_es_name,
                 **recording_kwargs
             )
         else:
             logger.info("Reading recording from NWB...")
             recording = se.read_nwb_recording(
                 file_path=dandiset_s3_file_url,
-                electrical_series_name=dandiset_file_es_name,
                 stream_mode="fsspec",
                 **recording_kwargs
             )
@@ -338,7 +406,6 @@ def main(
                     local_folder=output_folder
                 )
 
-
     # Post sorting operations
     if len(sorters_names_list) > 1:
         logger.info("Running sorters comparison...")
@@ -350,6 +417,27 @@ def main(
         logger.info("Matching results:")
         logger.info(mcmp.comparisons[tuple(sorters_names_list)].get_matching())
 
+
+    # Write sorting results to NWB
+    logger.info("Writing sorting results to NWB...")
+    metadata = {
+        "NWBFile": {
+            "session_start_time": datetime.now().isoformat(),
+        }
+    }
+    write_sorting(
+        sorting=sorting,
+        nwbfile_path=f"{run_identifier}.nwb",
+        metadata=metadata,
+        overwrite=True
+    )
+    upload_file_to_bucket(
+        logger=logger,
+        client=s3_client,
+        bucket_name=target_aws_s3_bucket,
+        bucket_folder=target_aws_s3_bucket_folder,
+        local_file_path=f"{run_identifier}.nwb"
+    )
 
     logger.info("Sorting job completed successfully!")
 

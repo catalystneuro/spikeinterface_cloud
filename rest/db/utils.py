@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Enum,
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 
-from db.models import Base, User, Dataset, Run
+from db.models import Base, User, DataSource, Run
 
 
 def initialize_db(db: str):
@@ -12,7 +12,7 @@ def initialize_db(db: str):
     print("############  existing tables  ############")
     print(existing_tables)
 
-    clear_db = False
+    clear_db = True
     if 'user' in existing_tables and clear_db:
         print("Clearing tables...")
         run_clear_db(db)
@@ -38,5 +38,5 @@ def run_clear_db(db: str):
     # Check if the user table exists
     engine = create_engine(db)
     Run.__table__.drop(engine)
-    Dataset.__table__.drop(engine)
+    DataSource.__table__.drop(engine)
     User.__table__.drop(engine)

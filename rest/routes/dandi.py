@@ -44,6 +44,7 @@ async def route_get_nwbfile_info(dandiset_id: str, file_path: str) -> JSONRespon
         dandi_client = DandiClient()
         # file_info = dandi_client.get_nwbfile_info_ros3(dandiset_id, file_path)
         file_info = dandi_client.get_nwbfile_info_fsspec(dandiset_id, file_path)
+        file_info["url"] = dandi_client.get_file_url(dandiset_id, file_path)
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail="Internal server error")

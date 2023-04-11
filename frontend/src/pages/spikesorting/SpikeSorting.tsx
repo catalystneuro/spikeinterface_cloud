@@ -48,6 +48,8 @@ interface FormValues {
 const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
     const [description, setDescription] = useState<string>('');
     const [source, setSource] = useState<string>('DANDI');
+    const [sourceDataType, setSourceDataType] = useState<string>('');
+    const [sourceDataUrls, setSourceDataUrls] = useState<string[]>([]);
     const [selectedDandiset, setSelectedDandiset] = useState<string>('');
     const [selectedDandisetMetadata, setSelectedDandisetMetadata] = useState<{
         name?: string;
@@ -55,13 +57,14 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
         description?: string;
     }>({});
     const [listOfFiles, setListOfFiles] = useState<string[]>([]);
-    const [selectedFile, setSelectedFile] = useState<string>('');
-    const [selectedFileInfo, setSelectedFileInfo] = useState<{
+    const [selectedDandiFile, setSelectedDandiFile] = useState<string>('');
+    const [selectedDandiFileInfo, setSelectedDandiFileInfo] = useState<{
+        url?: string;
         acquisition?: { [key: string]: {} }
     }>({});
     const [listOfES, setListOfES] = useState<string[]>([]);
-    const [selectedES, setSelectedES] = useState<string>('');
-    const [selectedESMetadata, setSelectedESMetadata] = useState<{
+    const [selectedAcquisition, setSelectedAcquisition] = useState<string>('');
+    const [selectedAcquisitionMetadata, setSelectedAcquisitionMetadata] = useState<{
         name?: string;
         description?: string;
         rate?: number;
@@ -96,6 +99,11 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
         setSource(event.target.value as string);
     };
 
+    // Change Source Data Type
+    const handleSourceDataTypeChange = (event: SelectChangeEvent<string>) => {
+        setSourceDataType(event.target.value as string);
+    };
+
     // Selected Dandiset
     const handleDandisetChange = async (event: SelectChangeEvent<string>) => {
         const dandiset = event.target.value as string;
@@ -124,15 +132,15 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
 
     // Selected File
     const handleFileChange = async (event: SelectChangeEvent<string>) => {
-        setSelectedFile(event.target.value);
+        setSelectedDandiFile(event.target.value);
         const filepath = event.target.value as string;
 
         // Extract the id from the selected DANDIset string
         const dandiset_id = selectedDandiset.split(' - ')[0];
 
         setLoadingFile(true);
-        setSelectedES('');
-        setSelectedESMetadata({});
+        setSelectedAcquisition('');
+        setSelectedAcquisitionMetadata({});
 
         // Fetch file metadata
         try {
@@ -146,7 +154,7 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
             );
             const ESNames = Object.keys(response.data.file_info.acquisition);
             setListOfES(ESNames)
-            setSelectedFileInfo(response.data.file_info);
+            setSelectedDandiFileInfo(response.data.file_info);
         } catch (error) {
             console.error('Error fetching DANDIset metadata:', error);
         } finally {
@@ -155,17 +163,17 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
         }
     };
 
-    // Selected Electrical Series
-    const handleESChange = async (event: SelectChangeEvent<string>) => {
-        setSelectedES(event.target.value);
-        const es = event.target.value as string;
+    // Selected Acquisition name
+    const handleAcquisitionChange = async (event: SelectChangeEvent<string>) => {
+        setSelectedAcquisition(event.target.value);
+        const acq = event.target.value as string;
 
-        // Show Electrical Series metadata
+        // Show Acquisition metadata
         try {
-            const esMetadata = selectedFileInfo.acquisition?.[es] || {};
-            setSelectedESMetadata(esMetadata);
+            const acqMetadata = selectedDandiFileInfo.acquisition?.[acq] || {};
+            setSelectedAcquisitionMetadata(acqMetadata);
         } catch (error) {
-            console.error('Error changing Electrical Series:', error);
+            console.error('Error changing Acquisition:', error);
         } finally { }
     };
 
@@ -276,10 +284,11 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
 
     const updateProcessingSubforms = (selectedSorters: string[]) => {
         const newSubforms = selectedSorters.map((selectedItems) => {
-            const schema = {
-                'Item 1': kilosort2_5,
-                'Item 2': kilosort3,
-            }[selectedItems] as SorterSchema;
+            console.log(selectedItems);
+            // const schema = {
+            //     'Item 1': kilosort2_5,
+            //     'Item 2': kilosort3,
+            // }[selectedItems] as SorterSchema;
 
             //     return (
             //         <Box key={selectedItems}>
@@ -317,8 +326,8 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
     // Run sorting job
     const handleRunSortingJob = async (runAt: "local" | "aws") => {
         const dandiset_id = selectedDandiset.split(' - ')[0];
-        const filepath = selectedFile as string;
-        const es = selectedES as string;
+        const es = selectedAcquisition as string;
+
         let target_output_type: string;
         if (runAt === "aws") {
             target_output_type = "s3";
@@ -330,15 +339,12 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
             run_at: runAt,
             run_identifier: null,
             run_description: description,
-            source_aws_s3_bucket: null,
-            source_aws_s3_bucket_folder: null,
-            dandiset_id: dandiset_id,
-            dandiset_file_path: filepath,
-            dandiset_file_es_name: es,
+            source: source.toLowerCase(),
+            source_data_type: sourceDataType.toLowerCase(),
+            source_data_urls: sourceDataUrls,
+            recording_kwargs: {},
             target_output_type: target_output_type,
             output_path: outputPath,
-            data_type: "nwb",
-            recording_kwargs: {},
             sorters_names_list: sorters,
             sorters_kwargs: formDataSorters,
             test_with_toy_recording: false,
@@ -362,7 +368,6 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
         <Box className="container">
             <Box className="form">
                 <Box className="formItem">
-                    <Typography sx={{ marginRight: 2 }}>Description:</Typography>
                     <FormControl fullWidth>
                         <TextField label="Description" onChange={handleDescriptionChange} />
                     </FormControl>
@@ -378,8 +383,8 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
                         <InputLabel>Source</InputLabel>
                         <Select value={source} onChange={handleSourceChange}>
                             <MenuItem value="DANDI">DANDI</MenuItem>
+                            <MenuItem value="S3">S3</MenuItem>
                             <MenuItem disabled value="Dataset">Dataset</MenuItem>
-                            <MenuItem disabled value="S3">S3</MenuItem>
                             <MenuItem disabled value="Local">Local</MenuItem>
                         </Select>
                     </FormControl>
@@ -406,82 +411,114 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
                             </Select>
                         </FormControl>
                     ) : (
-                        <TextField fullWidth label="URL" />
+                        <FormControl className="formControl_1">
+                            <InputLabel>Data type</InputLabel>
+                            <Select value={sourceDataType} onChange={handleSourceDataTypeChange}>
+                                <MenuItem value="NWB">NWB</MenuItem>
+                                <MenuItem value="SpikeGLX">SpikeGLX</MenuItem>
+                            </Select>
+                        </FormControl>
                     )}
                 </Box>
-                {loadingDataset ? <LinearProgress sx={{ marginBottom: 2 }} /> : null}
 
-                {selectedDandisetMetadata.description && (
-                    <Box mt={2} className="MarkdownSummary">
-                        <Markdown>
-                            {`**${selectedDandisetMetadata.name}**\n
+                {source === 'DANDI' ? (
+                    <div>
+                        {loadingDataset ? <LinearProgress sx={{ marginBottom: 2 }} /> : null}
+                        {selectedDandisetMetadata.description && (
+                            <Box mt={2} className="MarkdownSummary">
+                                <Markdown>
+                                    {`**${selectedDandisetMetadata.name}**\n
 ${selectedDandisetMetadata.url}\n\n
 ${selectedDandisetMetadata.description}`}
-                        </Markdown>
-                    </Box>
-                )}
+                                </Markdown>
+                            </Box>
+                        )}
 
-                <Box className="formItem">
-                    <Typography sx={{ marginRight: 2 }}>Select File:</Typography>
-                    <FormControl fullWidth>
-                        <InputLabel>File</InputLabel>
-                        <Select
-                            value={selectedFile}
-                            onChange={handleFileChange}
-                            MenuProps={{
-                                PaperProps: {
-                                    style: {
-                                        maxHeight: 48 * 10, // 48px is the height of each MenuItem
-                                        width: 'fit-content',
-                                    },
-                                },
-                            }}
-                        >
-                            {listOfFiles.map((file) => (
-                                <MenuItem key={file} value={file}>
-                                    {file}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                </Box>
-                {loadingFile ? <LinearProgress sx={{ marginBottom: 2 }} /> : null}
-
-                <Box className="formItem">
-                    <FormControl sx={{ width: '50%', marginRight: 1 }}>
-                        <InputLabel>Electrical Series</InputLabel>
-                        <Select
-                            value={selectedES}
-                            onChange={handleESChange}
-                            MenuProps={{
-                                PaperProps: {
-                                    style: {
-                                        maxHeight: 48 * 10, // 48px is the height of each MenuItem
-                                        width: 'fit-content',
-                                    },
-                                },
-                            }}
-                        >
-                            {listOfES.map((es) => (
-                                <MenuItem key={es} value={es}>
-                                    {es}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-
-                    {selectedFileInfo && (
-                        <Box mt={2} className="MarkdownSummary">
-                            <Markdown>
-                                {`${selectedESMetadata.description}\n
-**Duration:** ${selectedESMetadata.duration} seconds\n
-**Number of traces:** ${selectedESMetadata.n_traces}\n
-**Sampling rate:** ${selectedESMetadata.rate} Hz\n
-**Unit:** ${selectedESMetadata.unit}\n`}
-                            </Markdown>
+                        <Box className="formItem">
+                            <Typography sx={{ marginRight: 2 }}>Select File:</Typography>
+                            <FormControl fullWidth>
+                                <InputLabel>File</InputLabel>
+                                <Select
+                                    value={selectedDandiFile}
+                                    onChange={handleFileChange}
+                                    MenuProps={{
+                                        PaperProps: {
+                                            style: {
+                                                maxHeight: 48 * 10, // 48px is the height of each MenuItem
+                                                width: 'fit-content',
+                                            },
+                                        },
+                                    }}
+                                >
+                                    {listOfFiles.map((file) => (
+                                        <MenuItem key={file} value={file}>
+                                            {file}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
                         </Box>
-                    )}
-                </Box>
+                        {loadingFile ? <LinearProgress sx={{ marginBottom: 2 }} /> : null}
+                        <Box className="formItem">
+                            <FormControl sx={{ width: '50%', marginRight: 1 }}>
+                                <InputLabel>Acquisition name</InputLabel>
+                                <Select
+                                    value={selectedAcquisition}
+                                    onChange={handleAcquisitionChange}
+                                    MenuProps={{
+                                        PaperProps: {
+                                            style: {
+                                                maxHeight: 48 * 10, // 48px is the height of each MenuItem
+                                                width: 'fit-content',
+                                            },
+                                        },
+                                    }}
+                                >
+                                    {listOfES.map((es) => (
+                                        <MenuItem key={es} value={es}>
+                                            {es}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+
+                            {selectedDandiFileInfo && (
+                                <Box mt={2} className="MarkdownSummary">
+                                    <Markdown>
+                                        {`${selectedAcquisitionMetadata.description}\n
+**Duration:** ${selectedAcquisitionMetadata.duration} seconds\n
+**Number of traces:** ${selectedAcquisitionMetadata.n_traces}\n
+**Sampling rate:** ${selectedAcquisitionMetadata.rate} Hz\n
+**Unit:** ${selectedAcquisitionMetadata.unit}\n`}
+                                    </Markdown>
+                                </Box>
+                            )}
+                        </Box>
+                    </div>
+                ) : source === 'S3' && sourceDataType === 'NWB' ? (
+                    <div>
+                        <Box className="formItem">
+                            <Typography sx={{ marginRight: 2 }}>S3 path:</Typography>
+                            <TextField fullWidth label="s3://bucket/path_to/file.nwb" />
+                        </Box>
+                        <Box className="formItem">
+                            <Typography sx={{ marginRight: 2 }}>Acquisition name:</Typography>
+                            <TextField fullWidth label="Acquisition name" />
+                        </Box>
+                    </div>
+                ) : source === 'S3' && sourceDataType === 'SpikeGLX' ? (
+                    <div>
+                        <Box className="formItem">
+                            <Typography sx={{ marginRight: 2 }}>S3 path bin:</Typography>
+                            <TextField fullWidth label="s3://bucket/path_to/file.ap.bin" />
+                        </Box>
+                        <Box className="formItem">
+                            <Typography sx={{ marginRight: 2 }}>S3 path meta:</Typography>
+                            <TextField fullWidth label="s3://bucket/path_to/file.ap.meta" />
+                        </Box>
+                    </div>
+                ) : null}
+
             </Box>
 
             <Box component="form" className="form">
