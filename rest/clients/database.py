@@ -71,8 +71,20 @@ class DatabaseClient:
             session.add(data_source)
             return data_source
 
-    def create_run(self, run_at, identifier, description, last_run, status, data_source_id, metadata, user_id, output_path, logs=""):
-        run = Run(run_at=run_at, identifier=identifier, description=description, last_run=last_run, status=status, data_source_id=data_source_id, metadata_=metadata, user_id=user_id, output_path=output_path, logs=logs)
+    def create_run(self, run_at, identifier, description, last_run, status, data_source_id, metadata, user_id, output_path, output_destination, logs=""):
+        run = Run(
+            run_at=run_at, 
+            identifier=identifier, 
+            description=description, 
+            last_run=last_run, 
+            status=status, 
+            data_source_id=data_source_id, 
+            user_id=user_id, 
+            metadata_=metadata, 
+            logs=logs,
+            output_destination=output_destination,
+            output_path=output_path,
+        )
         with self.session_scope() as session:
             session.add(run)
             return run

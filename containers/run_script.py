@@ -274,12 +274,12 @@ def main(
         raise ValueError(f"Output destination {output_destination} not supported. Choose from: local, s3, dandi.")
 
     if output_destination == "s3":
-        if not data_url.startswith("s3://"):
-            logger.error(f"Data url {data_url} is not a valid S3 path. E.g. s3://...")
-            raise ValueError(f"Data url {data_url} is not a valid S3 path. E.g. s3://...")
-        output_path = data_url.split("s3://")[-1]
-        output_s3_bucket = output_path.split("/")[0]
-        output_s3_bucket_folder = "/".join(output_path.split("/")[1:])
+        if not output_path.startswith("s3://"):
+            logger.error(f"Data url {output_path} is not a valid S3 path. E.g. s3://...")
+            raise ValueError(f"Data url {output_path} is not a valid S3 path. E.g. s3://...")
+        output_path_parsed = output_path.split("s3://")[-1]
+        output_s3_bucket = output_path_parsed.split("/")[0]
+        output_s3_bucket_folder = "/".join(output_path_parsed.split("/")[1:])
 
     s3_client = boto3.client('s3')
 
