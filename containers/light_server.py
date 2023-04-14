@@ -27,7 +27,7 @@ async def run():
         source_data_type=data.get('source_data_type'),
         source_data_paths=data.get('source_data_paths'),
         recording_kwargs=data.get('recording_kwargs'),
-        target_output_type=data.get('target_output_type'),
+        output_destination=data.get('output_destination'),
         output_path=data.get('output_path'),
         sorters_names_list=data.get('sorters_names_list'),
         sorters_kwargs=data.get('sorters_kwargs'),

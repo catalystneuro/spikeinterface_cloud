@@ -67,6 +67,7 @@ async def route_run_sorting(data: SortingData, background_tasks: BackgroundTasks
             data_source_id=data_source.id,
             user_id=user.id,
             metadata=str(payload),
+            output_destination=data.output_destination,
             output_path=data.output_path,
         )
 

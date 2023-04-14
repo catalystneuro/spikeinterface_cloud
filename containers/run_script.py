@@ -162,7 +162,7 @@ def main(
     source_data_type:str = None,
     source_data_paths:dict = None,
     recording_kwargs:dict = None,
-    target_output_type:str = None,
+    output_destination:str = None,
     output_path:str = None,
     sorters_names_list:list = None,
     sorters_kwargs:dict = None,
@@ -232,8 +232,8 @@ def main(
     # if not dandiset_file_es_name:
     #     dandiset_file_es_name = os.environ.get("DANDISET_FILE_ES_NAME", "ElectricalSeries")
 
-    if not target_output_type:
-        target_output_type = os.environ.get("TARGET_OUTPUT_TYPE", "s3")
+    if not output_destination:
+        output_destination = os.environ.get("OUTPUT_DESTINATION", "s3")
     if not output_path:
         output_path = os.environ.get("OUTPUT_PATH", None)
         if output_path == "None":
@@ -252,15 +252,11 @@ def main(
     if log_to_file is None:
         log_to_file = os.environ.get("LOG_TO_FILE", "False").lower() in ('true', '1', 't')
 
-    if target_output_type == "s3":
-        target_aws_s3_bucket = output_path.split("/")[0]
-        target_aws_s3_bucket_folder = "/".join(output_path.split("/")[1:])
-
     # Set up logging
     logger = make_logger(run_identifier=run_identifier, log_to_file=log_to_file)
     # logger = logging.getLogger("sorting_worker")
 
-    # Data source
+    # Checks
     if source not in ["local", "s3", "dandi"]:
         logger.error(f"Source {source} not supported. Choose from: local, s3, dandi.")
         raise ValueError(f"Source {source} not supported. Choose from: local, s3, dandi.")
@@ -272,6 +268,18 @@ def main(
     if len(source_data_paths) == 0:
         logger.error(f"No source data paths provided.")
         raise ValueError(f"No source data paths provided.")
+    
+    if output_destination not in ["local", "s3", "dandi"]:
+        logger.error(f"Output destination {output_destination} not supported. Choose from: local, s3, dandi.")
+        raise ValueError(f"Output destination {output_destination} not supported. Choose from: local, s3, dandi.")
+
+    if output_destination == "s3":
+        if not data_url.startswith("s3://"):
+            logger.error(f"Data url {data_url} is not a valid S3 path. E.g. s3://...")
+            raise ValueError(f"Data url {data_url} is not a valid S3 path. E.g. s3://...")
+        output_path = data_url.split("s3://")[-1]
+        output_s3_bucket = output_path.split("/")[0]
+        output_s3_bucket_folder = "/".join(output_path.split("/")[1:])
 
     s3_client = boto3.client('s3')
 
@@ -356,11 +364,11 @@ def main(
             logger.info(f"Running {sorter_name}...")
             sorter_job_kwargs = sorters_kwargs.get(sorter_name, {})
             sorter_job_kwargs["n_jobs"] = min(n_jobs, sorter_job_kwargs.get("n_jobs", n_jobs))
-            output_folder = f"/results/sorting/{run_identifier}_{sorter_name}"
+            output_results_folder = f"/results/sorting/{run_identifier}_{sorter_name}"
             sorting = run_sorter_local(
                 sorter_name, 
                 recording, 
-                output_folder=output_folder,
+                output_folder=output_results_folder,
                 remove_existing_folder=True, 
                 delete_output_folder=True,
                 verbose=True, 
@@ -371,32 +379,32 @@ def main(
             sorting_list.append(sorting)
             sorting.save_to_folder(folder=f'/results/sorting/{run_identifier}_{sorter_name}/sorter_exported')
 
-            if target_output_type == "local":
+            if output_destination == "local":
                 # Copy sorting results to local - already done by mounted volume
                 pass
-            elif target_output_type == "s3":
+            elif output_destination == "s3":
                 # Upload sorting results to S3
                 upload_all_files_to_bucket_folder(
                     logger=logger,
                     client=s3_client, 
-                    bucket_name=target_aws_s3_bucket, 
-                    bucket_folder=target_aws_s3_bucket_folder,
+                    bucket_name=output_s3_bucket, 
+                    bucket_folder=output_s3_bucket_folder,
                     local_folder=f'/results/sorting/{run_identifier}_{sorter_name}/sorter_exported'
                 )
         except Exception as e:
             logger.info(f"Error running sorter {sorter_name}: {e}")
             print(f"Error running sorter {sorter_name}: {e}")
-            if target_output_type == "local":
+            if output_destination == "local":
                 # Copy error logs to local - already done by mounted volume
                 pass
-            elif target_output_type == "s3":
+            elif output_destination == "s3":
                 # upload error logs to S3
                 upload_all_files_to_bucket_folder(
                     logger=logger,
                     client=s3_client,
-                    bucket_name=target_aws_s3_bucket,
-                    bucket_folder=target_aws_s3_bucket_folder,
-                    local_folder=output_folder
+                    bucket_name=output_s3_bucket,
+                    bucket_folder=output_s3_bucket_folder,
+                    local_folder=output_results_folder
                 )
 
     # Post sorting operations
@@ -427,8 +435,8 @@ def main(
     upload_file_to_bucket(
         logger=logger,
         client=s3_client,
-        bucket_name=target_aws_s3_bucket,
-        bucket_folder=target_aws_s3_bucket_folder,
+        bucket_name=output_s3_bucket,
+        bucket_folder=output_s3_bucket_folder,
         local_file_path=f"{run_identifier}.nwb"
     )
 

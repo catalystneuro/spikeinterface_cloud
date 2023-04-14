@@ -147,7 +147,7 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
     };
 
     // Selected File
-    const handleFileChange = async (event: SelectChangeEvent<string>) => {
+    const handleDandiFileChange = async (event: SelectChangeEvent<string>) => {
         setSelectedDandiFile(event.target.value);
         const filepath = event.target.value as string;
 
@@ -171,6 +171,7 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
             const ESNames = Object.keys(response.data.file_info.acquisition);
             setListOfES(ESNames)
             setSelectedDandiFileInfo(response.data.file_info);
+            setSourceDataPaths({ 'file': response.data.file_info.url });
         } catch (error) {
             console.error('Error fetching DANDIset metadata:', error);
         } finally {
@@ -341,16 +342,6 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
 
     // Run sorting job
     const handleRunSortingJob = async (runAt: "local" | "aws") => {
-        const dandiset_id = selectedDandiset.split(' - ')[0];
-        const es = selectedAcquisition as string;
-
-        let target_output_type: string;
-        if (runAt === "aws") {
-            target_output_type = "s3";
-        } else {
-            target_output_type = "local";
-        }
-
         const data = {
             run_at: runAt,
             run_identifier: null,
@@ -359,11 +350,11 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
             source_data_type: sourceDataType.toLowerCase(),
             source_data_paths: sourceDataPaths,
             recording_kwargs: recordingKwargs,
-            target_output_type: target_output_type,
+            output_destination: outputDestination.toLowerCase(),
             output_path: outputPath,
             sorters_names_list: sorters,
             sorters_kwargs: formDataSorters,
-            test_with_toy_recording: false,
+            test_with_toy_recording: true,
             test_with_subrecording: false,
             test_subrecording_n_frames: 30000,
             log_to_file: true,
@@ -456,7 +447,7 @@ ${selectedDandisetMetadata.description}`}
                                 <InputLabel>File</InputLabel>
                                 <Select
                                     value={selectedDandiFile}
-                                    onChange={handleFileChange}
+                                    onChange={handleDandiFileChange}
                                     MenuProps={{
                                         PaperProps: {
                                             style: {
@@ -600,11 +591,32 @@ ${selectedDandisetMetadata.description}`}
                         <InputLabel>Destination</InputLabel>
                         <Select value={outputDestination} onChange={handleOutputDestinationChange}>
                             <MenuItem value="S3">S3</MenuItem>
-                            <MenuItem disabled value="DANDI">DANDI</MenuItem>
-                            <MenuItem disabled value="Local">Local</MenuItem>
+                            <MenuItem value="DANDI">DANDI</MenuItem>
+                            <MenuItem value="Local">Local</MenuItem>
                         </Select>
                     </FormControl>
-                    <TextField fullWidth label="Path" onChange={handleOutputPathChange} />
+                    {outputDestination === 'S3' ? (
+                        <TextField
+                            fullWidth
+                            label="s3://bucket/output_folder"
+                            key="output_path_s3"
+                            onChange={handleOutputPathChange}
+                        />
+                    ) : outputDestination === 'DANDI' ? (
+                        <TextField
+                            fullWidth
+                            label="DANDI set name"
+                            key="output_path_dandi"
+                            onChange={handleOutputPathChange}
+                        />
+                    ) : outputDestination === 'Local' ? (
+                        <TextField
+                            fullWidth
+                            label="Local output folder"
+                            key="output_path_local"
+                            onChange={handleOutputPathChange}
+                        />
+                    ) : null}
                 </Box>
             </Box>
 

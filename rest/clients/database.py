@@ -57,8 +57,16 @@ class DatabaseClient:
             session.add(user)
             return user
 
-    def create_data_source(self, name, description, user_id, source, source_metadata):
-        data_source = DataSource(name=name, description=description, user_id=user_id, source=source, source_metadata=source_metadata)
+    def create_data_source(self, name, description, user_id, source, source_data_type, source_data_paths, recording_kwargs):
+        data_source = DataSource(
+            name=name, 
+            description=description, 
+            user_id=user_id, 
+            source=source, 
+            source_data_type=source_data_type,
+            source_data_paths=source_data_paths,
+            recording_kwargs=recording_kwargs,
+        )
         with self.session_scope() as session:
             session.add(data_source)
             return data_source
