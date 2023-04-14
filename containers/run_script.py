@@ -134,7 +134,7 @@ def upload_file_to_bucket(
     client.upload_file(
         Filename=local_file_path,
         Bucket=bucket_name,
-        Key=f"{bucket_folder}{local_file_path}",
+        Key=f"{bucket_folder}/{local_file_path}",
     )
 
 
