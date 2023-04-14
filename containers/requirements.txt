@@ -1,4 +1,3 @@
-# s3fs
 boto3>=1.26
 requests
 fsspec
@@ -8,4 +7,7 @@ neo
 pynwb
 threadpoolctl==3.1.0   # https://stackoverflow.com/a/72840515/11483674
 Flask[async]==2.2.3
+pydantic[email,dotenv]==1.10.7
 uvicorn==0.21.1
+# neuroconv==0.2.4
+git+https://github.com/catalystneuro/neuroconv

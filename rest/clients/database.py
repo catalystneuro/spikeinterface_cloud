@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 from contextlib import contextmanager
 import ast
 
-from db.models import User, Dataset, Run
+from db.models import User, DataSource, Run
 
 
 class DatabaseClient:
@@ -35,17 +35,17 @@ class DatabaseClient:
         with self.session_scope() as session:
             return session.query(Run).all()
 
-    def query_datasets_by_user(self, user_id):
+    def query_data_sources_by_user(self, user_id):
         with self.session_scope() as session:
-            return session.query(Dataset).filter(Dataset.user_id == user_id).all()
+            return session.query(DataSource).filter(DataSource.user_id == user_id).all()
 
     def query_runs_by_user(self, user_id):
         with self.session_scope() as session:
             return session.query(Run).filter(Run.user_id == user_id).all()
 
-    def query_runs_by_dataset(self, dataset_id):
+    def query_runs_by_data_source(self, data_source_id):
         with self.session_scope() as session:
-            return session.query(Run).filter(Run.dataset_id == dataset_id).all()
+            return session.query(Run).filter(Run.data_source_id == data_source_id).all()
         
     def query_run_by_id(self, run_id):
         with self.session_scope() as session:
@@ -57,14 +57,34 @@ class DatabaseClient:
             session.add(user)
             return user
 
-    def create_dataset(self, name, description, user_id, source, source_metadata):
-        dataset = Dataset(name=name, description=description, user_id=user_id, source=source, source_metadata=source_metadata)
+    def create_data_source(self, name, description, user_id, source, source_data_type, source_data_paths, recording_kwargs):
+        data_source = DataSource(
+            name=name, 
+            description=description, 
+            user_id=user_id, 
+            source=source, 
+            source_data_type=source_data_type,
+            source_data_paths=source_data_paths,
+            recording_kwargs=recording_kwargs,
+        )
         with self.session_scope() as session:
-            session.add(dataset)
-            return dataset
+            session.add(data_source)
+            return data_source
 
-    def create_run(self, run_at, identifier, description, last_run, status, dataset_id, metadata, user_id, output_path, logs=""):
-        run = Run(run_at=run_at, identifier=identifier, description=description, last_run=last_run, status=status, dataset_id=dataset_id, metadata_=metadata, user_id=user_id, output_path=output_path, logs=logs)
+    def create_run(self, run_at, identifier, description, last_run, status, data_source_id, metadata, user_id, output_path, output_destination, logs=""):
+        run = Run(
+            run_at=run_at, 
+            identifier=identifier, 
+            description=description, 
+            last_run=last_run, 
+            status=status, 
+            data_source_id=data_source_id, 
+            user_id=user_id, 
+            metadata_=metadata, 
+            logs=logs,
+            output_destination=output_destination,
+            output_path=output_path,
+        )
         with self.session_scope() as session:
             session.add(run)
             return run
@@ -73,21 +93,21 @@ class DatabaseClient:
         with self.session_scope() as session:
             return session.query(User).filter(User.username == username).one_or_none()
 
-    def get_dataset_info(self, dataset_id):
+    def get_data_source_info(self, data_source_id):
         with self.session_scope() as session:
-            return session.query(Dataset).filter(Dataset.id == dataset_id).one_or_none()
+            return session.query(DataSource).filter(DataSource.id == data_source_id).one_or_none()
 
     def get_run_info(self, run_id):
         with self.session_scope() as session:
             obj = session.query(Run).filter(Run.id == run_id).one_or_none()
-            dataset = self.get_dataset_info(dataset_id=obj.dataset_id)
+            data_source = self.get_data_source_info(data_source_id=obj.data_source_id)
             return {
                 "run_at": obj.run_at,
                 "identifier": obj.identifier,
                 "description": obj.description,
                 "lastRun": obj.last_run,
                 "status": obj.status,
-                "datasetName": dataset.name,
+                "dataSourceName": data_source.name,
                 "metadata": ast.literal_eval(obj.metadata_),
                 "logs": obj.logs,
                 "outputPath": obj.output_path
@@ -109,23 +129,23 @@ class DatabaseClient:
             return None
     
 
-    def update_dataset(self, dataset_id, key, value):
+    def update_data_source(self, data_source_id, key, value):
         with self.session_scope() as session:
-            dataset = session.query(Dataset).filter(Dataset.id == dataset_id).one_or_none()
-            if dataset:
-                dataset.update(key, value)
-                session.add(dataset)
-                return dataset
+            data_source = session.query(DataSource).filter(DataSource.id == data_source_id).one_or_none()
+            if data_source:
+                data_source.update(key, value)
+                session.add(data_source)
+                return data_source
             return None
     
 
     def update_run(self, run_identifier, key, value):
         with self.session_scope() as session:
-            dataset = session.query(Run).filter(Run.identifier == run_identifier).one_or_none()
-            if dataset:
-                dataset.update(key, value)
-                session.add(dataset)
-                return dataset
+            run = session.query(Run).filter(Run.identifier == run_identifier).one_or_none()
+            if run:
+                run.update(key, value)
+                session.add(run)
+                return run
             return None
     
 

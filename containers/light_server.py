@@ -16,28 +16,19 @@ async def run_async(**kwargs):
     for k,v in kwargs.items():
         logger.info(f"{k}: {v}")
     main(**kwargs)
-    # # Use stream_with_context to stream the response
-    # async with stream_with_context(main(**kwargs)) as response:
-    #     for line in response:
-    #         # Yield each line of the response as it is generated
-    #         logger.info(line)
-    #         yield line
+
 
 @app.route('/worker/run', methods=['POST'])
-# def run():
 async def run():
-    # data = await request.get_json()
     data = request.get_json()
     kwargs = dict(
         run_identifier=data.get('run_identifier'),
-        source_aws_s3_bucket=data.get('source_aws_s3_bucket'),
-        source_aws_s3_bucket_folder=data.get('source_aws_s3_bucket_folder'),
-        dandiset_s3_file_url=data.get('dandiset_s3_file_url'),
-        dandiset_file_es_name=data.get('dandiset_file_es_name'),
-        target_output_type=data.get('target_output_type'),
-        output_path=data.get('output_path'),
-        data_type=data.get('data_type'),
+        source=data.get('source'),
+        source_data_type=data.get('source_data_type'),
+        source_data_paths=data.get('source_data_paths'),
         recording_kwargs=data.get('recording_kwargs'),
+        output_destination=data.get('output_destination'),
+        output_path=data.get('output_path'),
         sorters_names_list=data.get('sorters_names_list'),
         sorters_kwargs=data.get('sorters_kwargs'),
         test_with_toy_recording=data.get('test_with_toy_recording'),
@@ -45,17 +36,8 @@ async def run():
         test_subrecording_n_frames=data.get('test_subrecording_n_frames'),
         log_to_file=data.get('log_to_file'),
     )
-    # Use the Response object to return the async response
-    # return Response(run_async(**kwargs), mimetype='text/plain')
-
-    # task = asyncio.create_task(run_async(**kwargs))
     loop = asyncio.get_event_loop()
     task = loop.create_task(run_async(**kwargs))
-    # Run the long function asynchronously
-    # result = loop.run_in_executor(None, functools.partial(run_async, data=kwargs))
-    # Stream the output to the client
-    # return Response(stream_with_context(result), mimetype='text/plain')
-
     return "success"
 
 
@@ -68,9 +50,9 @@ def get_logs():
     return logs
 
 
-@app.route('/worker/hello')
-def hello_world():
-    return 'Hello, World!'
+@app.route('/worker/ping')
+def ping():
+    return 'Pong!'
 
 
 if __name__ == '__main__':

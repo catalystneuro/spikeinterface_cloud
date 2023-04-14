@@ -10,23 +10,25 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     username = Column(String)
     password = Column(String)
-    datasets = relationship('Dataset', back_populates='user', cascade='all, delete-orphan')
+    data_sources = relationship('DataSource', back_populates='user', cascade='all, delete-orphan')
     runs = relationship('Run', back_populates='user', cascade='all, delete-orphan')
 
     def update(self, key, value):
         setattr(self, key, value)
 
 
-class Dataset(Base):
-    __tablename__ = 'dataset'
+class DataSource(Base):
+    __tablename__ = 'data_source'
     id = Column(Integer, primary_key=True)
     name = Column(String)
     description = Column(String)
-    user_id = Column(Integer, ForeignKey('user.id'))
-    user = relationship('User', back_populates='datasets')
-    runs = relationship('Run', back_populates='dataset', cascade='all, delete-orphan')
     source = Column(Enum('dandi', 's3', 'local', name='source'))
-    source_metadata = Column(String)
+    source_data_type = Column(Enum('nwb', 'spikeglx', name='source_data_type'))
+    source_data_paths = Column(String)
+    recording_kwargs = Column(String)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship('User', back_populates='data_sources')
+    runs = relationship('Run', back_populates='data_source', cascade='all, delete-orphan')
 
     def update(self, key, value):
         setattr(self, key, value)
@@ -40,12 +42,13 @@ class Run(Base):
     description = Column(String)
     last_run = Column(String)
     status = Column(Enum('running', 'success', 'fail', name='status'))
-    dataset_id = Column(Integer, ForeignKey('dataset.id'))
-    dataset = relationship('Dataset', back_populates='runs')
+    data_source_id = Column(Integer, ForeignKey('data_source.id'))
+    data_source = relationship('DataSource', back_populates='runs')
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship('User', back_populates='runs')
     metadata_ = Column("metadata", String)
     logs = Column(String)
+    output_destination = Column(String)
     output_path = Column(String)
 
     def update(self, key, value):
