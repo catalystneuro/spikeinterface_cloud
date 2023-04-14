@@ -24,7 +24,7 @@ class DataSource(Base):
     description = Column(String)
     source = Column(Enum('dandi', 's3', 'local', name='source'))
     source_data_type = Column(Enum('nwb', 'spikeglx', name='source_data_type'))
-    source_data_urls = Column(String)
+    source_data_paths = Column(String)
     recording_kwargs = Column(String)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship('User', back_populates='data_sources')

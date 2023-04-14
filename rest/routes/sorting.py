@@ -55,7 +55,7 @@ async def route_run_sorting(data: SortingData, background_tasks: BackgroundTasks
             user_id=user.id,
             source=data.source,
             source_data_type=data.source_data_type,
-            source_data_urls=",".join(data.source_data_urls),
+            source_data_paths=str(data.source_data_paths),
             recording_kwargs=str(data.recording_kwargs),
         )
         run = db_client.create_run(

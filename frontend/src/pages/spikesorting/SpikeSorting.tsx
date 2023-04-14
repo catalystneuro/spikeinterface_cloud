@@ -49,7 +49,8 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
     const [description, setDescription] = useState<string>('');
     const [source, setSource] = useState<string>('DANDI');
     const [sourceDataType, setSourceDataType] = useState<string>('');
-    const [sourceDataUrls, setSourceDataUrls] = useState<string[]>([]);
+    const [sourceDataPaths, setSourceDataPaths] = useState<Record<string, any>>({});
+    const [recordingKwargs, setRecordingKwargs] = useState<Record<string, any>>({});
     const [selectedDandiset, setSelectedDandiset] = useState<string>('');
     const [selectedDandisetMetadata, setSelectedDandisetMetadata] = useState<{
         name?: string;
@@ -102,6 +103,21 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
     // Change Source Data Type
     const handleSourceDataTypeChange = (event: SelectChangeEvent<string>) => {
         setSourceDataType(event.target.value as string);
+        setRecordingKwargs({});
+        setSourceDataPaths({});
+    };
+
+    // Update Source Data Paths
+    const handleSourceDataPathsChange = (event: React.ChangeEvent<HTMLElement>, inputType: string) => {
+        const target = event.target as HTMLInputElement;
+        const paths = target.value as string;
+        setSourceDataPaths((prevState) => ({ ...prevState, [inputType]: paths }));
+    };
+
+    // Update Recording Kwargs
+    const handleRecordingKwargsChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, key: string) => {
+        const value = event.target.value;
+        setRecordingKwargs((prevState) => ({ ...prevState, [key]: value }));
     };
 
     // Selected Dandiset
@@ -341,8 +357,8 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
             run_description: description,
             source: source.toLowerCase(),
             source_data_type: sourceDataType.toLowerCase(),
-            source_data_urls: sourceDataUrls,
-            recording_kwargs: {},
+            source_data_paths: sourceDataPaths,
+            recording_kwargs: recordingKwargs,
             target_output_type: target_output_type,
             output_path: outputPath,
             sorters_names_list: sorters,
@@ -499,22 +515,42 @@ ${selectedDandisetMetadata.description}`}
                     <div>
                         <Box className="formItem">
                             <Typography sx={{ marginRight: 2 }}>S3 path:</Typography>
-                            <TextField fullWidth label="s3://bucket/path_to/file.nwb" />
+                            <TextField
+                                fullWidth
+                                label="s3://bucket/path_to/file.nwb"
+                                key="s3_path_nwb_file"
+                                onChange={(e) => handleSourceDataPathsChange(e, "file")}
+                            />
                         </Box>
                         <Box className="formItem">
                             <Typography sx={{ marginRight: 2 }}>Acquisition name:</Typography>
-                            <TextField fullWidth label="Acquisition name" />
+                            <TextField
+                                fullWidth
+                                label="Acquisition name"
+                                key="s3_path_nwb_file_acquisition_name"
+                                onChange={(e) => handleRecordingKwargsChange(e, "electrical_series_name")}
+                            />
                         </Box>
                     </div>
                 ) : source === 'S3' && sourceDataType === 'SpikeGLX' ? (
                     <div>
                         <Box className="formItem">
                             <Typography sx={{ marginRight: 2 }}>S3 path bin:</Typography>
-                            <TextField fullWidth label="s3://bucket/path_to/file.ap.bin" />
+                            <TextField
+                                fullWidth
+                                label="s3://bucket/path_to/file.ap.bin"
+                                key="s3_path_spikeglx_bin_file"
+                                onChange={(e) => handleSourceDataPathsChange(e, "file_bin")}
+                            />
                         </Box>
                         <Box className="formItem">
                             <Typography sx={{ marginRight: 2 }}>S3 path meta:</Typography>
-                            <TextField fullWidth label="s3://bucket/path_to/file.ap.meta" />
+                            <TextField
+                                fullWidth
+                                label="s3://bucket/path_to/file.ap.meta"
+                                key="s3_path_spikeglx_meta_file"
+                                onChange={(e) => handleSourceDataPathsChange(e, "file_meta")}
+                            />
                         </Box>
                     </div>
                 ) : null}

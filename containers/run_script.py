@@ -160,14 +160,8 @@ def main(
     run_identifier:str = None,
     source:str = None,
     source_data_type:str = None,
-    source_data_urls:list = None,
+    source_data_paths:dict = None,
     recording_kwargs:dict = None,
-    # source_aws_s3_bucket:str = None,
-    # source_aws_s3_bucket_folder:str = None,
-    # dandiset_s3_file_url:str = None,
-    # dandiset_file_es_name:str = None,
-    # data_type:str = None,
-    # recording_kwargs:dict = None,
     target_output_type:str = None,
     output_path:str = None,
     sorters_names_list:list = None,
@@ -216,9 +210,8 @@ def main(
         source = os.environ.get("SOURCE", None)
         if source == "None":
             source = None
-    if not source_data_urls:
-        source_data_urls = os.environ.get("SOURCE_DATA_URLS", '[""]')
-        source_data_urls = [s.strip().replace("\"", "").replace("\'", "") for s in source_data_urls.strip('][').split(',')]
+    if not source_data_paths:
+        source_data_paths = eval(os.environ.get("SOURCE_DATA_PATHS", "{}"))
     if not source_data_type:
         source_data_type = os.environ.get("SOURCE_DATA_TYPE", "nwb")
     if not recording_kwargs:
@@ -276,9 +269,9 @@ def main(
         logger.error(f"Data type {source_data_type} not supported. Choose from: nwb, spikeglx.")
         raise ValueError(f"Data type {source_data_type} not supported. Choose from: nwb, spikeglx.")
     
-    if len(source_data_urls) == 0:
-        logger.error(f"No source data urls provided.")
-        raise ValueError(f"No source data urls provided.")
+    if len(source_data_paths) == 0:
+        logger.error(f"No source data paths provided.")
+        raise ValueError(f"No source data paths provided.")
 
     s3_client = boto3.client('s3')
 
@@ -294,7 +287,7 @@ def main(
     
     # Load data from S3
     elif source == "s3":
-        for data_url in source_data_urls:
+        for k, data_url in source_data_paths.items():
             if not data_url.startswith("s3://"):
                 logger.error(f"Data url {data_url} is not a valid S3 path. E.g. s3://...")
                 raise ValueError(f"Data url {data_url} is not a valid S3 path. E.g. s3://...")
@@ -322,7 +315,7 @@ def main(
             )
 
     elif source == "dandi":
-        dandiset_s3_file_url = source_data_urls[0]
+        dandiset_s3_file_url = source_data_paths["file"]
         if not dandiset_s3_file_url.startswith("https://dandiarchive.s3.amazonaws.com"):
             raise Exception(f"DANDISET_S3_FILE_URL should be a valid Dandiset S3 url. Value received was: {dandiset_s3_file_url}")
 

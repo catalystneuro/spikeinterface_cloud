@@ -12,7 +12,7 @@ def initialize_db(db: str):
     print("############  existing tables  ############")
     print(existing_tables)
 
-    clear_db = True
+    clear_db = False
     if 'user' in existing_tables and clear_db:
         print("Clearing tables...")
         run_clear_db(db)

@@ -1,5 +1,4 @@
 from pydantic import BaseModel
-from typing import List
 
 
 class SortingData(BaseModel):
@@ -8,7 +7,7 @@ class SortingData(BaseModel):
     run_description: str = None
     source: str = None
     source_data_type: str = None
-    source_data_urls: List[str] = None
+    source_data_paths: dict = None
     recording_kwargs: dict = None
     target_output_type: str = None
     output_path: str = None
