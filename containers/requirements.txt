@@ -11,3 +11,4 @@ pydantic[email,dotenv]==1.10.7
 uvicorn==0.21.1
 # neuroconv==0.2.4
 git+https://github.com/catalystneuro/neuroconv
+nwbinspector==0.4.27

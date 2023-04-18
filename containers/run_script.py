@@ -6,12 +6,15 @@ import shutil
 import requests
 import logging
 import sys
+from warnings import filterwarnings
 from datetime import datetime
 from pathlib import Path
 import spikeinterface.extractors as se
 from spikeinterface.sorters import run_sorter_local
 import spikeinterface.comparison as sc
 from neuroconv.tools.spikeinterface import write_sorting, write_recording
+from nwbinspector import inspect_nwb
+from pynwb import NWBFile
 
 
 # TODO - complete with more data types
@@ -122,6 +125,10 @@ def download_all_files_from_bucket_folder(
             )
 
 
+def inspect_nwbfile(nwbfile: NWBFile, importance_threshold: str = "CRITICAL") -> list:
+    return list(inspect_nwb(nwbfile_obj=nwbfile, importance_threshold=importance_threshold))
+
+
 def upload_file_to_bucket(
     logger:logging.Logger,
     client:botocore.client.BaseClient, 
@@ -205,7 +212,6 @@ def main(
     # 3. default value
     if not run_identifier:
         run_identifier = os.environ.get("RUN_IDENTIFIER", datetime.now().strftime("%Y%m%d%H%M%S"))
-    
     if not source:
         source = os.environ.get("SOURCE", None)
         if source == "None":
@@ -216,22 +222,6 @@ def main(
         source_data_type = os.environ.get("SOURCE_DATA_TYPE", "nwb")
     if not recording_kwargs:
         recording_kwargs = ast.literal_eval(os.environ.get("RECORDING_KWARGS", "{}"))
-
-    # if not source_aws_s3_bucket:
-    #     source_aws_s3_bucket = os.environ.get("SOURCE_AWS_S3_BUCKET", None)
-    #     if source_aws_s3_bucket == "None":
-    #         source_aws_s3_bucket = None
-    # if not source_aws_s3_bucket_folder:
-    #     source_aws_s3_bucket_folder = os.environ.get("SOURCE_AWS_S3_BUCKET_FOLDER", None)
-    #     if source_aws_s3_bucket_folder == "None":
-    #         source_aws_s3_bucket_folder = None
-    # if not dandiset_s3_file_url:
-    #     dandiset_s3_file_url = os.environ.get("DANDISET_S3_FILE_URL", None)
-    #     if dandiset_s3_file_url == "None":
-    #         dandiset_s3_file_url = None
-    # if not dandiset_file_es_name:
-    #     dandiset_file_es_name = os.environ.get("DANDISET_FILE_ES_NAME", "ElectricalSeries")
-
     if not output_destination:
         output_destination = os.environ.get("OUTPUT_DESTINATION", "s3")
     if not output_path:
@@ -254,7 +244,9 @@ def main(
 
     # Set up logging
     logger = make_logger(run_identifier=run_identifier, log_to_file=log_to_file)
-    # logger = logging.getLogger("sorting_worker")
+    
+    filterwarnings(action="ignore", message="No cached namespaces found in .*")
+    filterwarnings(action="ignore", message="Ignoring cached namespace .*")
 
     # Checks
     if source not in ["local", "s3", "dandi"]:
@@ -426,12 +418,21 @@ def main(
             "session_start_time": datetime.now().isoformat(),
         }
     }
-    write_sorting(
+    nwbfile = write_sorting(
         sorting=sorting,
         nwbfile_path=f"{run_identifier}.nwb",
         metadata=metadata,
         overwrite=True
     )
+
+    # Inspect nwb file
+    logger.info("Inspecting NWB file...")
+    critical_violations = inspect_nwbfile(nwbfile)
+    if len(critical_violations) > 0:
+        logger.info(f"Found critical violations in resulting NWB file: {critical_violations}")
+        raise Exception(f"Found critical violations in resulting NWB file: {critical_violations}")
+
+    # Upload results to S3
     upload_file_to_bucket(
         logger=logger,
         client=s3_client,
@@ -441,6 +442,7 @@ def main(
     )
 
     logger.info("Sorting job completed successfully!")
+    logger.info(f"Sorting results available at: {output_s3_bucket_folder}/{run_identifier}.nwb")
 
 
 if __name__ == '__main__':
