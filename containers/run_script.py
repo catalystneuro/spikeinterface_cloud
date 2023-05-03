@@ -13,8 +13,9 @@ import spikeinterface.extractors as se
 from spikeinterface.sorters import run_sorter_local
 import spikeinterface.comparison as sc
 from neuroconv.tools.spikeinterface import write_sorting, write_recording
-from nwbinspector import inspect_nwb
+from nwbinspector import inspect_nwbfile_object
 from pynwb import NWBFile
+from dandi.validate import validate
 
 
 # TODO - complete with more data types
@@ -125,8 +126,8 @@ def download_all_files_from_bucket_folder(
             )
 
 
-def inspect_nwbfile(nwbfile: NWBFile, importance_threshold: str = "CRITICAL") -> list:
-    return list(inspect_nwb(nwbfile_obj=nwbfile, importance_threshold=importance_threshold))
+def validate_nwbfile_dandi(nwbfile_path: str) -> list:
+    return [v for v in validate(nwbfile_path)]
 
 
 def upload_file_to_bucket(
@@ -418,31 +419,52 @@ def main(
             "session_start_time": datetime.now().isoformat(),
         }
     }
+    output_nwbfile_path = f"/results/nwb/{run_identifier}.nwb"
     nwbfile = write_sorting(
         sorting=sorting,
-        nwbfile_path=f"{run_identifier}.nwb",
+        nwbfile_path=output_nwbfile_path,
         metadata=metadata,
         overwrite=True
     )
 
-    # Inspect nwb file
+    # Inspect nwb file for CRITICAL best practices violations
     logger.info("Inspecting NWB file...")
-    critical_violations = inspect_nwbfile(nwbfile)
+    critical_violations = list(inspect_nwbfile_object(nwbfile_object=nwbfile, importance_threshold="CRITICAL"))
     if len(critical_violations) > 0:
         logger.info(f"Found critical violations in resulting NWB file: {critical_violations}")
         raise Exception(f"Found critical violations in resulting NWB file: {critical_violations}")
 
-    # Upload results to S3
-    upload_file_to_bucket(
-        logger=logger,
-        client=s3_client,
-        bucket_name=output_s3_bucket,
-        bucket_folder=output_s3_bucket_folder,
-        local_file_path=f"{run_identifier}.nwb"
-    )
+    # Upload results
+    if output_destination == "s3":
+        # Upload results to S3
+        upload_file_to_bucket(
+            logger=logger,
+            client=s3_client,
+            bucket_name=output_s3_bucket,
+            bucket_folder=output_s3_bucket_folder,
+            local_file_path=output_nwbfile_path,
+        )
+    elif output_destination == "dandi":
+        # Validate nwb file for DANDI
+        logger.info("Validating NWB file for DANDI...")
+        validation_errors = validate_nwbfile_dandi(nwbfile_path=output_nwbfile_path)
+        if len(validation_errors) > 0:
+            logger.info(f"Found DANDI validation errors in resulting NWB file: {validation_errors}")
+            raise Exception(f"Found DANDI validation errors in resulting NWB file: {validation_errors}")
+        # Upload results to DANDI
+        logger.info(f"Uploading results to DANDI: {output_dandi_url}")
+        # dandi_upload(
+        #     logger=logger,
+        #     dandi_url=output_dandi_url,
+        #     dandi_token=output_dandi_token,
+        #     dandi_path=output_dandi_path,
+        #     local_file_path=output_nwbfile_path,
+        # )
+    else:
+        # Upload results to local - already done by mounted volume
+        pass
 
     logger.info("Sorting job completed successfully!")
-    logger.info(f"Sorting results available at: {output_s3_bucket_folder}/{run_identifier}.nwb")
 
 
 if __name__ == '__main__':
