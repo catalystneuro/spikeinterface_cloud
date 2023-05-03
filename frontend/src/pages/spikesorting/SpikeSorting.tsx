@@ -208,12 +208,12 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
             return (
                 <Accordion key={selectedItem}>
                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                        <Typography>{selectedItem} parameters</Typography>
+                        <Typography sx={{ fontSize: "1.2rem" }}>{selectedItem} parameters</Typography>
                     </AccordionSummary>
                     <Box key={selectedItem}>
                         {Object.entries(schema).map(([key, field]) => (
                             <Box className="formItem formItemCompact" key={`${selectedItem}-${key}`}>
-                                <Typography className="label">{key}:</Typography>
+                                <Typography sx={{ width: "200px", marginRight: "1rem", marginLeft: "2rem" }} className="labelFormAccordion">{key}:</Typography>
                                 {field.type === 'boolean' ? (
                                     <FormControlLabel
                                         className="compactSwitch"
@@ -373,14 +373,6 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
 
     return (
         <Box className="container">
-            <Box className="form">
-                <Box className="formItem">
-                    <FormControl fullWidth>
-                        <TextField label="Description" onChange={handleDescriptionChange} />
-                    </FormControl>
-                </Box>
-            </Box>
-
             <Box component="form" className="form">
                 <Typography gutterBottom className="heading" style={{ fontSize: 28, marginTop: '-20px' }}>
                     Data source
@@ -545,6 +537,138 @@ ${selectedDandisetMetadata.description}`}
                         </Box>
                     </div>
                 ) : null}
+
+                <Accordion key="Metadata">
+                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                        <Typography sx={{ fontSize: "1.2rem" }}>Metadata</Typography>
+                    </AccordionSummary>
+                    <Box className="formItem">
+                        <Typography sx={{ marginRight: 2, marginLeft: 2 }}>Session description:</Typography>
+                        <TextField
+                            fullWidth
+                            label="Description"
+                            onChange={handleDescriptionChange}
+                        />
+                        <Tooltip title="Description of this experimental session" arrow>
+                            <IconButton size="small" color="primary">
+                                <HelpOutlineIcon fontSize="small" />
+                            </IconButton>
+                        </Tooltip>
+                    </Box>
+                </Accordion>
+
+                <Accordion key="Subject">
+                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                        <Typography sx={{ fontSize: "1.2rem" }}>Subject</Typography>
+                    </AccordionSummary>
+                    <Box className="formItem">
+                        <Typography sx={{ marginRight: 2, marginLeft: 2 }}>Description:</Typography>
+                        <TextField
+                            fullWidth
+                        // label="Description"
+                        // onChange={handleDescriptionChange}
+                        />
+                        <Tooltip title="A description of the subject, e.g., 'mouse A10'." arrow>
+                            <IconButton size="small" color="primary">
+                                <HelpOutlineIcon fontSize="small" />
+                            </IconButton>
+                        </Tooltip>
+                    </Box>
+                    <Box className="formItem">
+                        <Typography sx={{ marginRight: 2, marginLeft: 2 }}>Age:</Typography>
+                        <TextField
+                            fullWidth
+                        // label="Description"
+                        // onChange={handleDescriptionChange}
+                        />
+                        <Tooltip title="The age of the subject. The ISO 8601 Duration format is recommended, e.g., 'P90D' for 90 days old." arrow>
+                            <IconButton size="small" color="primary">
+                                <HelpOutlineIcon fontSize="small" />
+                            </IconButton>
+                        </Tooltip>
+                    </Box>
+                    <Box className="formItem">
+                        <Typography sx={{ marginRight: 2, marginLeft: 2 }}>Genotype:</Typography>
+                        <TextField
+                            fullWidth
+                        // label="Description"
+                        // onChange={handleDescriptionChange}
+                        />
+                        <Tooltip title="The genotype of the subject, e.g., 'Sst-IRES-Cre/wt;Ai32(RCL-ChR2(H134R)_EYFP)/wt'." arrow>
+                            <IconButton size="small" color="primary">
+                                <HelpOutlineIcon fontSize="small" />
+                            </IconButton>
+                        </Tooltip>
+                    </Box>
+                    <Box className="formItem">
+                        <Typography sx={{ marginRight: 2, marginLeft: 2 }}>Sex:</Typography>
+                        <Select fullWidth>
+                            <MenuItem value="F">F</MenuItem>
+                            <MenuItem value="M">M</MenuItem>
+                            <MenuItem value="U">U</MenuItem>
+                            <MenuItem value="O">O</MenuItem>
+                        </Select>
+                        <Tooltip title="The sex of the subject. Using 'F' (female), 'M' (male), 'U' (unknown), or 'O' (other) is recommended." arrow>
+                            <IconButton size="small" color="primary">
+                                <HelpOutlineIcon fontSize="small" />
+                            </IconButton>
+                        </Tooltip>
+                    </Box>
+                    <Box className="formItem">
+                        <Typography sx={{ marginRight: 2, marginLeft: 2 }}>Species:</Typography>
+                        <TextField
+                            fullWidth
+                        // label="Description"
+                        // onChange={handleDescriptionChange}
+                        />
+                        <Tooltip title="The species of the subject. The formal latin binomal name is recommended, e.g., 'Mus musculus'." arrow>
+                            <IconButton size="small" color="primary">
+                                <HelpOutlineIcon fontSize="small" />
+                            </IconButton>
+                        </Tooltip>
+                    </Box>
+                    <Box className="formItem">
+                        <Typography sx={{ marginRight: 2, marginLeft: 2 }}>Strain:</Typography>
+                        <TextField
+                            fullWidth
+                        // label="Description"
+                        // onChange={handleDescriptionChange}
+                        />
+                        <Tooltip title="The strain of the subject, e.g., 'C57BL/6J'." arrow>
+                            <IconButton size="small" color="primary">
+                                <HelpOutlineIcon fontSize="small" />
+                            </IconButton>
+                        </Tooltip>
+                    </Box>
+                    <Box className="formItem">
+                        <Typography sx={{ marginRight: 2, marginLeft: 2 }}>Subject ID:</Typography>
+                        <TextField
+                            fullWidth
+                        // label="Description"
+                        // onChange={handleDescriptionChange}
+                        />
+                        <Tooltip title="A unique identifier for the subject, e.g., 'A10'." arrow>
+                            <IconButton size="small" color="primary">
+                                <HelpOutlineIcon fontSize="small" />
+                            </IconButton>
+                        </Tooltip>
+                    </Box>
+                    <Box className="formItem">
+                        <Typography sx={{ marginRight: 2, marginLeft: 2 }}>Weight:</Typography>
+                        <TextField
+                            fullWidth
+                            type="number"
+                            inputProps={{ step: .01, min: 0 }}
+                        // label="Description"
+                        // onChange={handleDescriptionChange}
+                        />
+                        <Tooltip title="The weight of the subject in kilograms." arrow>
+                            <IconButton size="small" color="primary">
+                                <HelpOutlineIcon fontSize="small" />
+                            </IconButton>
+                        </Tooltip>
+                    </Box>
+                </Accordion>
 
             </Box>
 
