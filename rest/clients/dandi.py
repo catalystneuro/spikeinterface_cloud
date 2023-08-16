@@ -6,6 +6,7 @@ import fsspec
 import pynwb
 import h5py
 import json
+import requests
 from fsspec.implementations.cached import CachingFileSystem
 from typing import List
 
@@ -131,6 +132,8 @@ class DandiClient:
             dict: Information extracted from the NWBFile object.
         """
         file_s3_url = self.get_file_url(dandiset_id, file_path)
+        if "dandiarchive-embargo" in file_s3_url:
+            file_s3_url = self.get_file_url_embargo(dandiset_id, file_path)
         with self.fs.open(file_s3_url, "rb") as f:
             with h5py.File(f) as file:
                 with pynwb.NWBHDF5IO(file=file, load_namespaces=True) as io:
@@ -193,6 +196,28 @@ class DandiClient:
         with DandiAPIClient(token=self.token) as client:
             asset = client.get_dandiset(dandiset_id, "draft").get_asset_by_path(file_path)
             return asset.get_content_url(follow_redirects=1, strip_query=True)
+    
+
+    def get_file_url_embargo(self, dandiset_id: str, file_path: str) -> str:
+        """
+        Get the S3 URL of a file in a dandiset in embargo mode.
+
+        Args:
+            dandiset_id (str): Numerical ID of the dandiset. E.g. 000001
+            file_path (str): File path within Dandiset. E.g. sub-000001/sub-000001.nwb
+
+        Returns:
+            str: S3 URL of the file.
+        """
+        with DandiAPIClient(token=self.token) as client:
+            asset = client.get_dandiset(dandiset_id, "draft").get_asset_by_path(file_path)
+            base_download_url = asset.base_download_url
+            headers = {
+                "Authorization": f'token {self.token}'
+            }
+            response = requests.get(base_download_url, headers=headers, stream=True)
+            authorized_url = response.url
+            return authorized_url
     
 
     def has_nwb(self, metadata: Dandiset) -> bool:
