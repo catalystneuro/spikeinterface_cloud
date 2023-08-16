@@ -25,6 +25,7 @@ def sorting_background_task(payload, run_identifier):
             client_local_worker.run_sorting(**payload)
         elif run_at == "aws":
             job_kwargs = {k.upper(): v for k, v in payload.items()}
+            job_kwargs["DANDI_API_TOKEN"] = settings.DANDI_API_TOKEN
             client_aws = AWSClient()
             client_aws.submit_job(
                 job_name=f"sorting-{run_identifier}",

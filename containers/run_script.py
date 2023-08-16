@@ -205,6 +205,9 @@ def main(
     - AWS_DEFAULT_REGION
     - AWS_ACCESS_KEY_ID
     - AWS_SECRET_ACCESS_KEY
+
+    If saving results to DANDI archive, the following ENV variables should be present:
+    - DANDI_API_TOKEN
     """
 
     # Order of priority for definition of running arguments:
@@ -317,7 +320,7 @@ def main(
 
     elif source == "dandi":
         dandiset_s3_file_url = source_data_paths["file"]
-        if not dandiset_s3_file_url.startswith("https://dandiarchive.s3.amazonaws.com"):
+        if not dandiset_s3_file_url.startswith("https://dandiarchive"):
             raise Exception(f"DANDISET_S3_FILE_URL should be a valid Dandiset S3 url. Value received was: {dandiset_s3_file_url}")
 
         if not test_with_subrecording:            

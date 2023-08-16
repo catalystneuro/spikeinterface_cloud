@@ -138,7 +138,9 @@ class DandiClient:
             with h5py.File(f) as file:
                 with pynwb.NWBHDF5IO(file=file, load_namespaces=True) as io:
                     nwbfile = io.read()
-                    return self.extract_nwbfile_info(nwbfile=nwbfile)
+                    file_info = self.extract_nwbfile_info(nwbfile=nwbfile)
+                    file_info["url"] = file_s3_url
+                    return file_info
 
 
     def get_nwbfile_info_ros3(self, dandiset_id: str, file_path: str) -> dict:
