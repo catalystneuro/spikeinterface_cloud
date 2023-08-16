@@ -38,9 +38,11 @@ ENV PYTHONUNBUFFERED=1
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-RUN pip install git+https://github.com/catalystneuro/spikeinterface.git@fsspec
-
+WORKDIR /app
 COPY run_script.py .
+COPY light_server.py .
 RUN mkdir /data
+RUN mkdir /logs
 
-ENTRYPOINT ["python", "run_script.py"]
+CMD ["python", "light_server.py"]
+# ENTRYPOINT ["python", "run_script.py"]
