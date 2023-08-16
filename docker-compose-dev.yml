@@ -32,16 +32,18 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_BATCH_JOB_QUEUE: ${AWS_BATCH_JOB_QUEUE}
       AWS_BATCH_JOB_DEFINITION: ${AWS_BATCH_JOB_DEFINITION}
+      DANDI_API_TOKEN: ${DANDI_API_TOKEN}
     volumes:
       - ./rest:/app
     depends_on:
       - database
 
   worker:
-    build:
-      context: containers
-      dockerfile: Dockerfile.combined
-    image: si-sorting-worker
+    # build:
+    #   context: containers
+    #   dockerfile: Dockerfile.combined
+    # image: si-sorting-worker
+    image: ghcr.io/catalystneuro/si-sorting-worker:latest
     container_name: si-sorting-worker
     ports:
       - "5000:5000"

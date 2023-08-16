@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 from typing import List
 
 from clients.dandi import DandiClient
+from core.settings import settings
 
 
 router = APIRouter()
@@ -12,7 +13,7 @@ router = APIRouter()
 @router.get("/get-dandisets-labels", response_description="Get Dandisets Labels", tags=["dandi"])
 def route_get_dandisets_labels() -> JSONResponse:
     try:
-        dandi_client = DandiClient()
+        dandi_client = DandiClient(token=settings.DANDI_API_TOKEN)
         labels = dandi_client.get_all_dandisets_labels()
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal server error")
@@ -23,7 +24,7 @@ def route_get_dandisets_labels() -> JSONResponse:
 @router.get("/get-dandiset-metadata", response_description="Get Dandisets Metadata", tags=["dandi"])
 def route_get_dandiset_metadata(dandiset_id: str) -> JSONResponse:
     try:
-        dandi_client = DandiClient()
+        dandi_client = DandiClient(token=settings.DANDI_API_TOKEN)
         metadata = dandi_client.get_dandiset_metadata(dandiset_id)
         cleaned_metadata = {
             "name": metadata["name"],
@@ -41,7 +42,7 @@ def route_get_dandiset_metadata(dandiset_id: str) -> JSONResponse:
 @router.get("/get-nwbfile-info", response_description="Get NWB file Info", tags=["dandi"])
 async def route_get_nwbfile_info(dandiset_id: str, file_path: str) -> JSONResponse:
     try:
-        dandi_client = DandiClient()
+        dandi_client = DandiClient(token=settings.DANDI_API_TOKEN)
         # file_info = dandi_client.get_nwbfile_info_ros3(dandiset_id, file_path)
         file_info = dandi_client.get_nwbfile_info_fsspec(dandiset_id, file_path)
         file_info["url"] = dandi_client.get_file_url(dandiset_id, file_path)

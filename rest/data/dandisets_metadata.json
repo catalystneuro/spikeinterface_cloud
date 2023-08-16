@@ -1,4 +1,295 @@
 {
+    "000003": {
+        "id": "DANDI:000003/0.230629.1955",
+        "doi": "10.48324/dandi.000003/0.230629.1955",
+        "url": "https://dandiarchive.org/dandiset/000003/0.230629.1955",
+        "name": "Physiological Properties and Behavioral Correlates of Hippocampal Granule Cells and Mossy Cells",
+        "about": [
+            {
+                "name": "hippocampus",
+                "schemaKey": "Anatomy",
+                "identifier": "UBERON:0002421"
+            }
+        ],
+        "access": [
+            {
+                "status": "dandi:OpenAccess",
+                "schemaKey": "AccessRequirements",
+                "contactPoint": {
+                    "email": "petersen.peter@gmail.com",
+                    "schemaKey": "ContactPoint"
+                }
+            }
+        ],
+        "license": [
+            "spdx:CC-BY-4.0"
+        ],
+        "version": "0.230629.1955",
+        "@context": "https://raw.githubusercontent.com/dandi/schema/master/releases/0.6.0/context.json",
+        "citation": "Senzai, Yuta; Fernandez-Ruiz, Antonio; Buzsáki, György (2023) Physiological Properties and Behavioral Correlates of Hippocampal Granule Cells and Mossy Cells (Version 0.230629.1955) [Data set]. DANDI archive. https://doi.org/10.48324/dandi.000003/0.230629.1955",
+        "keywords": [
+            "cell types",
+            "current source density",
+            "laminar recordings",
+            "oscillations",
+            "mossy cells",
+            "granule cells",
+            "optogenetics"
+        ],
+        "protocol": [],
+        "schemaKey": "Dandiset",
+        "identifier": "DANDI:000003",
+        "repository": "https://dandiarchive.org",
+        "contributor": [
+            {
+                "name": "Senzai, Yuta",
+                "roleName": [
+                    "dcite:Author",
+                    "dcite:ContactPerson",
+                    "dcite:DataCollector",
+                    "dcite:FormalAnalysis"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Fernandez-Ruiz, Antonio",
+                "roleName": [
+                    "dcite:Author",
+                    "dcite:FormalAnalysis"
+                ],
+                "schemaKey": "Person",
+                "identifier": "0000-0001-8481-0796",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Buzsáki, György",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "identifier": "0000-0002-3100-4800",
+                "affiliation": [
+                    {
+                        "name": "New York University Langone Medical Center",
+                        "schemaKey": "Affiliation",
+                        "identifier": "https://ror.org/005dvqh91"
+                    }
+                ],
+                "includeInCitation": true
+            },
+            {
+                "url": "https://www.nih.gov/",
+                "name": "National Institutes of Health",
+                "roleName": [
+                    "dcite:Funder"
+                ],
+                "schemaKey": "Organization",
+                "identifier": "https://ror.org/01cwqze88",
+                "awardNumber": "NIHMH54671, MH107396, NS090583",
+                "contactPoint": [],
+                "includeInCitation": false
+            },
+            {
+                "url": "http://hnf.jp/",
+                "name": "Nakajima Foundation",
+                "roleName": [
+                    "dcite:Funder"
+                ],
+                "schemaKey": "Organization",
+                "identifier": "https://ror.org/000k40t10",
+                "contactPoint": [],
+                "includeInCitation": false
+            },
+            {
+                "url": "http://www.nsf.gov/",
+                "name": "National Science Foundation",
+                "roleName": [
+                    "dcite:Funder"
+                ],
+                "schemaKey": "Organization",
+                "identifier": "https://ror.org/021nxhr62",
+                "awardNumber": "PIRE",
+                "contactPoint": [],
+                "includeInCitation": false
+            },
+            {
+                "url": "https://www.simonsfoundation.org",
+                "name": "Simons Foundation",
+                "roleName": [
+                    "dcite:Funder"
+                ],
+                "schemaKey": "Organization",
+                "identifier": "https://ror.org/01cmst727",
+                "contactPoint": [],
+                "includeInCitation": false
+            }
+        ],
+        "dateCreated": "2020-03-15T22:56:55.655000+00:00",
+        "description": "Data from \"Physiological Properties and Behavioral Correlates of Hippocampal Granule Cells and Mossy Cells\" Senzai, Buzsaki, Neuron 2017. Electrophysiology recordings of hippocampus during theta maze exploration.",
+        "publishedBy": {
+            "id": "urn:uuid:1d146605-5d67-4517-91b4-51cd3b9a5cf3",
+            "name": "DANDI publish",
+            "endDate": "2023-06-29T19:55:30.807473+00:00",
+            "schemaKey": "PublishActivity",
+            "startDate": "2023-06-29T19:55:30.807473+00:00",
+            "wasAssociatedWith": [
+                {
+                    "id": "urn:uuid:0fca6ff4-84ca-42fe-bbed-85d3fb4291f0",
+                    "name": "DANDI API",
+                    "version": "0.1.0",
+                    "schemaKey": "Software",
+                    "identifier": "RRID:SCR_017571"
+                }
+            ]
+        },
+        "studyTarget": [],
+        "assetsSummary": {
+            "species": [
+                {
+                    "name": "House mouse",
+                    "schemaKey": "SpeciesType",
+                    "identifier": "http://purl.obolibrary.org/obo/NCBITaxon_10090"
+                }
+            ],
+            "approach": [
+                {
+                    "name": "electrophysiological approach",
+                    "schemaKey": "ApproachType"
+                },
+                {
+                    "name": "behavioral approach",
+                    "schemaKey": "ApproachType"
+                }
+            ],
+            "schemaKey": "AssetsSummary",
+            "dataStandard": [
+                {
+                    "name": "Neurodata Without Borders (NWB)",
+                    "schemaKey": "StandardsType",
+                    "identifier": "RRID:SCR_015242"
+                }
+            ],
+            "numberOfBytes": 2559248010229,
+            "numberOfFiles": 101,
+            "numberOfSubjects": 16,
+            "variableMeasured": [
+                "DecompositionSeries",
+                "LFP",
+                "Units",
+                "Position",
+                "ElectricalSeries"
+            ],
+            "measurementTechnique": [
+                {
+                    "name": "signal filtering technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "fourier analysis technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "spike sorting technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "behavioral technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "multi electrode extracellular electrophysiology recording technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                }
+            ]
+        },
+        "datePublished": "2023-06-29T19:55:30.807473+00:00",
+        "schemaVersion": "0.6.0",
+        "ethicsApproval": [],
+        "wasGeneratedBy": [],
+        "relatedResource": [
+            {
+                "url": "https://doi.org/10.1016/j.neuron.2016.12.011",
+                "name": "Physiological Properties and Behavioral Correlates of Hippocampal Granule Cells and Mossy Cells",
+                "relation": "dcite:IsDescribedBy",
+                "schemaKey": "Resource",
+                "identifier": "doi:10.1016/j.neuron.2016.12.011"
+            }
+        ],
+        "manifestLocation": [
+            "https://dandiarchive.s3.amazonaws.com/dandisets/000003/0.230629.1955/assets.yaml"
+        ]
+    },
+    "000028": {
+        "id": "DANDI:000028/draft",
+        "url": "https://dandiarchive.org/dandiset/000028/draft",
+        "name": "Simulated cortical Neuropixels recording with ground truth",
+        "access": [
+            {
+                "status": "dandi:OpenAccess",
+                "schemaKey": "AccessRequirements"
+            }
+        ],
+        "version": "draft",
+        "@context": "https://raw.githubusercontent.com/dandi/schema/master/releases/0.6.0/context.json",
+        "citation": "Simulated cortical Neuropixels recording with ground truth (2022). (Version draft) [Data set]. DANDI archive. https://dandiarchive.org/dandiset/000028/draft",
+        "schemaKey": "Dandiset",
+        "identifier": "DANDI:000028",
+        "repository": "https://dandiarchive.org/",
+        "dateCreated": "2020-07-26T21:11:42.917000+00:00",
+        "description": "A 10 minute Neuropixels recording simulated using the MEArec Python package (Buccino et al., 2020). The recording contains the spiking activity of 250 biophysically detailed neurons (200 excitatory and 50 inhibitory cells from the Neocortical Micro Circuit Portal with independent Poisson firing patterns, and additive Gaussian noise with 10uV standard deviation.",
+        "assetsSummary": {
+            "species": [
+                {
+                    "name": "House mouse",
+                    "schemaKey": "SpeciesType",
+                    "identifier": "http://purl.obolibrary.org/obo/NCBITaxon_10090"
+                }
+            ],
+            "approach": [
+                {
+                    "name": "electrophysiological approach",
+                    "schemaKey": "ApproachType"
+                }
+            ],
+            "schemaKey": "AssetsSummary",
+            "dataStandard": [
+                {
+                    "name": "Neurodata Without Borders (NWB)",
+                    "schemaKey": "StandardsType",
+                    "identifier": "RRID:SCR_015242"
+                }
+            ],
+            "numberOfBytes": 42942229688,
+            "numberOfFiles": 3,
+            "numberOfSubjects": 2,
+            "variableMeasured": [
+                "ElectrodeGroup",
+                "ElectricalSeries",
+                "Units"
+            ],
+            "measurementTechnique": [
+                {
+                    "name": "multi electrode extracellular electrophysiology recording technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "surgical technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "spike sorting technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                }
+            ]
+        },
+        "schemaVersion": "0.6.0",
+        "manifestLocation": [
+            "https://api.dandiarchive.org/api/dandisets/000028/versions/draft/assets/"
+        ]
+    },
     "000019": {
         "id": "DANDI:000019/0.220126.2148",
         "doi": "10.48324/dandi.000019/0.220126.2148",
@@ -139,74 +430,6 @@
         ],
         "manifestLocation": [
             "https://dandiarchive.s3.amazonaws.com/dandisets/000019/0.220126.2148/assets.yaml"
-        ]
-    },
-    "000028": {
-        "id": "DANDI:000028/draft",
-        "url": "https://dandiarchive.org/dandiset/000028/draft",
-        "name": "Simulated cortical Neuropixels recording with ground truth",
-        "access": [
-            {
-                "status": "dandi:OpenAccess",
-                "schemaKey": "AccessRequirements"
-            }
-        ],
-        "version": "draft",
-        "@context": "https://raw.githubusercontent.com/dandi/schema/master/releases/0.6.0/context.json",
-        "citation": "Simulated cortical Neuropixels recording with ground truth (2022). (Version draft) [Data set]. DANDI archive. https://dandiarchive.org/dandiset/000028/draft",
-        "schemaKey": "Dandiset",
-        "identifier": "DANDI:000028",
-        "repository": "https://dandiarchive.org/",
-        "dateCreated": "2020-07-26T21:11:42.917000+00:00",
-        "description": "A 10 minute Neuropixels recording simulated using the MEArec Python package (Buccino et al., 2020). The recording contains the spiking activity of 250 biophysically detailed neurons (200 excitatory and 50 inhibitory cells from the Neocortical Micro Circuit Portal with independent Poisson firing patterns, and additive Gaussian noise with 10uV standard deviation.",
-        "assetsSummary": {
-            "species": [
-                {
-                    "name": "House mouse",
-                    "schemaKey": "SpeciesType",
-                    "identifier": "http://purl.obolibrary.org/obo/NCBITaxon_10090"
-                }
-            ],
-            "approach": [
-                {
-                    "name": "electrophysiological approach",
-                    "schemaKey": "ApproachType"
-                }
-            ],
-            "schemaKey": "AssetsSummary",
-            "dataStandard": [
-                {
-                    "name": "Neurodata Without Borders (NWB)",
-                    "schemaKey": "StandardsType",
-                    "identifier": "RRID:SCR_015242"
-                }
-            ],
-            "numberOfBytes": 42942229688,
-            "numberOfFiles": 3,
-            "numberOfSubjects": 2,
-            "variableMeasured": [
-                "ElectrodeGroup",
-                "ElectricalSeries",
-                "Units"
-            ],
-            "measurementTechnique": [
-                {
-                    "name": "multi electrode extracellular electrophysiology recording technique",
-                    "schemaKey": "MeasurementTechniqueType"
-                },
-                {
-                    "name": "surgical technique",
-                    "schemaKey": "MeasurementTechniqueType"
-                },
-                {
-                    "name": "spike sorting technique",
-                    "schemaKey": "MeasurementTechniqueType"
-                }
-            ]
-        },
-        "schemaVersion": "0.6.0",
-        "manifestLocation": [
-            "https://api.dandiarchive.org/api/dandisets/000028/versions/draft/assets/"
         ]
     },
     "000034": {
@@ -661,6 +884,165 @@
             "https://dandiarchive.s3.amazonaws.com/dandisets/000044/0.210812.1516/assets.yaml"
         ]
     },
+    "000056": {
+        "id": "DANDI:000056/0.210812.1518",
+        "doi": "10.48324/dandi.000056/0.210812.1518",
+        "url": "https://dandiarchive.org/dandiset/000056/0.210812.1518",
+        "name": "Internally organized mechanisms of the head direction sense",
+        "about": [],
+        "access": [
+            {
+                "status": "dandi:OpenAccess",
+                "contactPoint": {
+                    "email": "petersen.peter@gmail.com",
+                    "schemaKey": "ContactPoint"
+                }
+            }
+        ],
+        "license": [
+            "spdx:CC-BY-4.0"
+        ],
+        "version": "0.210812.1518",
+        "@context": "https://raw.githubusercontent.com/dandi/schema/master/releases/0.4.4/context.json",
+        "citation": "Peyrache, Adrien; Lacroix, Marie M; Petersen, Peter C; Buzsáki, György (2021) Internally organized mechanisms of the head direction sense (Version 0.210812.1518) [Data set]. DANDI archive. https://doi.org/10.48324/dandi.000056/0.210812.1518",
+        "keywords": [
+            ""
+        ],
+        "protocol": [],
+        "schemaKey": "Dandiset",
+        "identifier": "DANDI:000056",
+        "repository": "https://dandiarchive.org/",
+        "contributor": [
+            {
+                "name": "Peyrache, Adrien",
+                "roleName": [
+                    "dcite:Author",
+                    "dcite:ContactPerson"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Lacroix, Marie M",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Petersen, Peter C",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Buzsáki, György",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "identifier": "0000-0002-3100-4800",
+                "affiliation": [],
+                "includeInCitation": true
+            }
+        ],
+        "description": "The head-direction (HD) system functions as a compass, with member neurons robustly increasing their firing rates when the animal's head points in a specific direction. HD neurons may be driven by peripheral sensors or, as computational models postulate, internally generated (attractor) mechanisms. We addressed the contributions of stimulus-driven and internally generated activity by recording ensembles of HD neurons in the antero-dorsal thalamic nucleus and the post-subiculum of mice by comparing their activity in various brain states. The temporal correlation structure of HD neurons was preserved during sleep, characterized by a 60°-wide correlated neuronal firing (activity packet), both within and across these two brain structures. During rapid eye movement sleep, the spontaneous drift of the activity packet was similar to that observed during waking and accelerated tenfold during slow-wave sleep. These findings demonstrate that peripheral inputs impinge on an internally organized network, which provides amplification and enhanced precision of the HD signal.",
+        "publishedBy": {
+            "id": "urn:uuid:eebad23d-ea76-4af6-882f-70e60f0caa12",
+            "name": "DANDI publish",
+            "endDate": "2021-08-12T15:17:03.686485",
+            "schemaKey": "PublishActivity",
+            "startDate": "2021-08-12T15:17:03.686485",
+            "wasAssociatedWith": [
+                {
+                    "id": "urn:uuid:e7aefd35-8912-45a9-a988-dac39290d7ac",
+                    "name": "DANDI API",
+                    "version": "0.1.0",
+                    "schemaKey": "Software",
+                    "identifier": "RRID:SCR_017571"
+                }
+            ]
+        },
+        "studyTarget": [],
+        "assetsSummary": {
+            "species": [
+                {
+                    "name": "House mouse",
+                    "schemaKey": "SpeciesType",
+                    "identifier": "http://purl.obolibrary.org/obo/NCBITaxon_10090"
+                }
+            ],
+            "approach": [
+                {
+                    "name": "electrophysiological approach",
+                    "schemaKey": "ApproachType"
+                },
+                {
+                    "name": "behavioral approach",
+                    "schemaKey": "ApproachType"
+                }
+            ],
+            "schemaKey": "AssetsSummary",
+            "dataStandard": [
+                {
+                    "name": "Neurodata Without Borders (NWB)",
+                    "schemaKey": "StandardsType",
+                    "identifier": "RRID:SCR_015242"
+                }
+            ],
+            "numberOfBytes": 207733008367,
+            "numberOfFiles": 40,
+            "numberOfSubjects": 7,
+            "variableMeasured": [
+                "ElectricalSeries",
+                "Units",
+                "LFP",
+                "Position",
+                "ProcessingModule"
+            ],
+            "measurementTechnique": [
+                {
+                    "name": "multi electrode extracellular electrophysiology recording technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "behavioral technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "signal filtering technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "spike sorting technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "analytical technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                }
+            ]
+        },
+        "datePublished": "2021-08-12T15:17:03.686485",
+        "schemaVersion": "0.4.4",
+        "ethicsApproval": [],
+        "wasGeneratedBy": [],
+        "relatedResource": [
+            {
+                "url": "https://www.nature.com/articles/nn.3968",
+                "relation": "dcite:IsDescribedBy"
+            }
+        ],
+        "manifestLocation": [
+            "https://dandiarchive.s3.amazonaws.com/dandisets/000056/0.210812.1518/assets.yaml"
+        ]
+    },
     "000055": {
         "id": "DANDI:000055/0.220127.0436",
         "doi": "10.48324/dandi.000055/0.220127.0436",
@@ -900,165 +1282,6 @@
         ],
         "manifestLocation": [
             "https://dandiarchive.s3.amazonaws.com/dandisets/000055/0.220127.0436/assets.yaml"
-        ]
-    },
-    "000056": {
-        "id": "DANDI:000056/0.210812.1518",
-        "doi": "10.48324/dandi.000056/0.210812.1518",
-        "url": "https://dandiarchive.org/dandiset/000056/0.210812.1518",
-        "name": "Internally organized mechanisms of the head direction sense",
-        "about": [],
-        "access": [
-            {
-                "status": "dandi:OpenAccess",
-                "contactPoint": {
-                    "email": "petersen.peter@gmail.com",
-                    "schemaKey": "ContactPoint"
-                }
-            }
-        ],
-        "license": [
-            "spdx:CC-BY-4.0"
-        ],
-        "version": "0.210812.1518",
-        "@context": "https://raw.githubusercontent.com/dandi/schema/master/releases/0.4.4/context.json",
-        "citation": "Peyrache, Adrien; Lacroix, Marie M; Petersen, Peter C; Buzsáki, György (2021) Internally organized mechanisms of the head direction sense (Version 0.210812.1518) [Data set]. DANDI archive. https://doi.org/10.48324/dandi.000056/0.210812.1518",
-        "keywords": [
-            ""
-        ],
-        "protocol": [],
-        "schemaKey": "Dandiset",
-        "identifier": "DANDI:000056",
-        "repository": "https://dandiarchive.org/",
-        "contributor": [
-            {
-                "name": "Peyrache, Adrien",
-                "roleName": [
-                    "dcite:Author",
-                    "dcite:ContactPerson"
-                ],
-                "schemaKey": "Person",
-                "affiliation": [],
-                "includeInCitation": true
-            },
-            {
-                "name": "Lacroix, Marie M",
-                "roleName": [
-                    "dcite:Author"
-                ],
-                "schemaKey": "Person",
-                "affiliation": [],
-                "includeInCitation": true
-            },
-            {
-                "name": "Petersen, Peter C",
-                "roleName": [
-                    "dcite:Author"
-                ],
-                "schemaKey": "Person",
-                "affiliation": [],
-                "includeInCitation": true
-            },
-            {
-                "name": "Buzsáki, György",
-                "roleName": [
-                    "dcite:Author"
-                ],
-                "schemaKey": "Person",
-                "identifier": "0000-0002-3100-4800",
-                "affiliation": [],
-                "includeInCitation": true
-            }
-        ],
-        "description": "The head-direction (HD) system functions as a compass, with member neurons robustly increasing their firing rates when the animal's head points in a specific direction. HD neurons may be driven by peripheral sensors or, as computational models postulate, internally generated (attractor) mechanisms. We addressed the contributions of stimulus-driven and internally generated activity by recording ensembles of HD neurons in the antero-dorsal thalamic nucleus and the post-subiculum of mice by comparing their activity in various brain states. The temporal correlation structure of HD neurons was preserved during sleep, characterized by a 60°-wide correlated neuronal firing (activity packet), both within and across these two brain structures. During rapid eye movement sleep, the spontaneous drift of the activity packet was similar to that observed during waking and accelerated tenfold during slow-wave sleep. These findings demonstrate that peripheral inputs impinge on an internally organized network, which provides amplification and enhanced precision of the HD signal.",
-        "publishedBy": {
-            "id": "urn:uuid:eebad23d-ea76-4af6-882f-70e60f0caa12",
-            "name": "DANDI publish",
-            "endDate": "2021-08-12T15:17:03.686485",
-            "schemaKey": "PublishActivity",
-            "startDate": "2021-08-12T15:17:03.686485",
-            "wasAssociatedWith": [
-                {
-                    "id": "urn:uuid:e7aefd35-8912-45a9-a988-dac39290d7ac",
-                    "name": "DANDI API",
-                    "version": "0.1.0",
-                    "schemaKey": "Software",
-                    "identifier": "RRID:SCR_017571"
-                }
-            ]
-        },
-        "studyTarget": [],
-        "assetsSummary": {
-            "species": [
-                {
-                    "name": "House mouse",
-                    "schemaKey": "SpeciesType",
-                    "identifier": "http://purl.obolibrary.org/obo/NCBITaxon_10090"
-                }
-            ],
-            "approach": [
-                {
-                    "name": "electrophysiological approach",
-                    "schemaKey": "ApproachType"
-                },
-                {
-                    "name": "behavioral approach",
-                    "schemaKey": "ApproachType"
-                }
-            ],
-            "schemaKey": "AssetsSummary",
-            "dataStandard": [
-                {
-                    "name": "Neurodata Without Borders (NWB)",
-                    "schemaKey": "StandardsType",
-                    "identifier": "RRID:SCR_015242"
-                }
-            ],
-            "numberOfBytes": 207733008367,
-            "numberOfFiles": 40,
-            "numberOfSubjects": 7,
-            "variableMeasured": [
-                "ElectricalSeries",
-                "Units",
-                "LFP",
-                "Position",
-                "ProcessingModule"
-            ],
-            "measurementTechnique": [
-                {
-                    "name": "multi electrode extracellular electrophysiology recording technique",
-                    "schemaKey": "MeasurementTechniqueType"
-                },
-                {
-                    "name": "behavioral technique",
-                    "schemaKey": "MeasurementTechniqueType"
-                },
-                {
-                    "name": "signal filtering technique",
-                    "schemaKey": "MeasurementTechniqueType"
-                },
-                {
-                    "name": "spike sorting technique",
-                    "schemaKey": "MeasurementTechniqueType"
-                },
-                {
-                    "name": "analytical technique",
-                    "schemaKey": "MeasurementTechniqueType"
-                }
-            ]
-        },
-        "datePublished": "2021-08-12T15:17:03.686485",
-        "schemaVersion": "0.4.4",
-        "ethicsApproval": [],
-        "wasGeneratedBy": [],
-        "relatedResource": [
-            {
-                "url": "https://www.nature.com/articles/nn.3968",
-                "relation": "dcite:IsDescribedBy"
-            }
-        ],
-        "manifestLocation": [
-            "https://dandiarchive.s3.amazonaws.com/dandisets/000056/0.210812.1518/assets.yaml"
         ]
     },
     "000061": {
@@ -1342,6 +1565,422 @@
         ],
         "manifestLocation": [
             "https://dandiarchive.s3.amazonaws.com/dandisets/000067/0.210812.1457/assets.yaml"
+        ]
+    },
+    "000114": {
+        "id": "DANDI:000114/0.230602.1643",
+        "doi": "10.48324/dandi.000114/0.230602.1643",
+        "url": "https://dandiarchive.org/dandiset/000114/0.230602.1643",
+        "name": "Oxytocin neurons enable social transmission of maternal behaviour",
+        "about": [
+            {
+                "name": "paraventricular nucleus of hypothalamus",
+                "schemaKey": "Anatomy",
+                "identifier": "http://purl.obolibrary.org/obo/UBERON_0001930"
+            }
+        ],
+        "access": [],
+        "license": [
+            "spdx:CC0-1.0"
+        ],
+        "version": "0.230602.1643",
+        "@context": "https://raw.githubusercontent.com/dandi/schema/master/releases/0.6.0/context.json",
+        "citation": "Carcea, Ioana; Caraballo, Naomi López; Marlin, Bianca J.; Ooyama, Rumi; Riceberg, Justin S.; Mendoza Navarro, Joyce M.; Opendak, Maya; Diaz, Veronica E.; Schuster, Luisa; Alvarado Torres, Maria I.; Lethin, Harper; Ramos, Daniel; Minder, Jessica; Mendoza, Sebastian L.; Bair-Marshall, Chloe J.; Samadjopoulos, Grace H.; Hidema, Shizu; Falkner, Annegret; Lin, Dayu; Mar, Adam; Wadghiri, Youssef Z.; Nishimori, Katsuhiko; Kikusui, Takefumi; Mogi, Kazutaka; Sullivan, Regina M.; Froemke, Robert C. (2023) Oxytocin neurons enable social transmission of maternal behaviour (Version 0.230602.1643) [Data set]. DANDI archive. https://doi.org/10.48324/dandi.000114/0.230602.1643",
+        "keywords": [
+            "oxytocin",
+            "alloparenting",
+            "maternal behavior"
+        ],
+        "protocol": [],
+        "schemaKey": "Dandiset",
+        "identifier": "DANDI:000114",
+        "repository": "https://dandiarchive.org",
+        "contributor": [
+            {
+                "name": "Carcea, Ioana",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "identifier": "0000-0002-4459-9321",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Caraballo, Naomi López",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Marlin, Bianca J.",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Ooyama, Rumi",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Riceberg, Justin S.",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Mendoza Navarro, Joyce M.",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Opendak, Maya",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Diaz, Veronica E.",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Schuster, Luisa",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Alvarado Torres, Maria I.",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Lethin, Harper",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Ramos, Daniel",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Minder, Jessica",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Mendoza, Sebastian L.",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Bair-Marshall, Chloe J.",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Samadjopoulos, Grace H.",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Hidema, Shizu",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Falkner, Annegret",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "identifier": "0000-0001-9756-7887",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Lin, Dayu",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "identifier": "0000-0003-2006-0791",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Mar, Adam",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Wadghiri, Youssef Z.",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Nishimori, Katsuhiko",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Kikusui, Takefumi",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Mogi, Kazutaka",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Sullivan, Regina M.",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Froemke, Robert C.",
+                "roleName": [
+                    "dcite:Author",
+                    "dcite:ContactPerson"
+                ],
+                "schemaKey": "Person",
+                "identifier": "0000-0002-1230-6811",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Eunice Kennedy Shriver National Institute of Child Health and Human Development",
+                "roleName": [
+                    "dcite:Funder"
+                ],
+                "schemaKey": "Organization",
+                "identifier": "https://ror.org/04byxyr05",
+                "awardNumber": "HD088411",
+                "contactPoint": [],
+                "includeInCitation": false
+            },
+            {
+                "name": "National Institute on Deafness and Other Communication Disorders",
+                "roleName": [
+                    "dcite:Funder"
+                ],
+                "schemaKey": "Organization",
+                "identifier": "https://ror.org/04mhx6838",
+                "awardNumber": "DC12557",
+                "contactPoint": [],
+                "includeInCitation": false
+            },
+            {
+                "name": "National Institute of Mental Health",
+                "roleName": [
+                    "dcite:Funder"
+                ],
+                "schemaKey": "Organization",
+                "identifier": "https://ror.org/04xeg9z08",
+                "awardNumber": "K99/R00 MH106744, F32 MH112232, T32 MH019524",
+                "contactPoint": [],
+                "includeInCitation": false
+            },
+            {
+                "name": "Howard Hughes Medical Institute",
+                "roleName": [
+                    "dcite:Funder"
+                ],
+                "schemaKey": "Organization",
+                "identifier": "https://ror.org/006w34k90",
+                "contactPoint": [],
+                "includeInCitation": false
+            },
+            {
+                "name": "Dichter, Benjamin",
+                "roleName": [
+                    "dcite:DataCurator"
+                ],
+                "schemaKey": "Person",
+                "identifier": "0000-0001-5725-6910",
+                "affiliation": [
+                    {
+                        "name": "CatalystNeuro",
+                        "schemaKey": "Affiliation",
+                        "identifier": "https://ror.org/01d74sk53"
+                    }
+                ],
+                "includeInCitation": false
+            }
+        ],
+        "dateCreated": "2021-06-28T15:06:36.176036+00:00",
+        "description": "Maternal care, including by non-biological parents, is important for offspring survival. Oxytocin which is released by the hypothalamic paraventricular nucleus (PVN), is a critical maternal hormone. In mice, oxytocin enables neuroplasticity in the auditory cortex for maternal recognition of pup distress. However, it is unclear how initial parental experience promotes hypothalamic signalling and cortical plasticity for reliable maternal care. Here we continuously monitored the behaviour of female virgin mice co-housed with an experienced mother and litter. This documentary approach was synchronized with neural recordings from the virgin PVN, including oxytocin neurons. These cells were activated as virgins were enlisted in maternal care by experienced mothers, who shepherded virgins into the nest and demonstrated pup retrieval. Virgins visually observed maternal retrieval, which activated PVN oxytocin neurons and promoted alloparenting. Thus rodents can acquire maternal behaviour by social transmission, providing a mechanism for adapting the brains of adult caregivers to infant needs via endogenous oxytocin.",
+        "publishedBy": {
+            "id": "urn:uuid:5d399222-6cb4-4387-b936-5d0aa2ae2c73",
+            "name": "DANDI publish",
+            "endDate": "2023-06-02T16:43:16.440150+00:00",
+            "schemaKey": "PublishActivity",
+            "startDate": "2023-06-02T16:43:16.440150+00:00",
+            "wasAssociatedWith": [
+                {
+                    "id": "urn:uuid:fa66c29c-8808-4410-969a-604a8c697dc5",
+                    "name": "DANDI API",
+                    "version": "0.1.0",
+                    "schemaKey": "Software",
+                    "identifier": "RRID:SCR_017571"
+                }
+            ]
+        },
+        "studyTarget": [],
+        "assetsSummary": {
+            "species": [
+                {
+                    "name": "Mus musculus - House mouse",
+                    "schemaKey": "SpeciesType",
+                    "identifier": "http://purl.obolibrary.org/obo/NCBITaxon_10090"
+                }
+            ],
+            "approach": [
+                {
+                    "name": "electrophysiological approach",
+                    "schemaKey": "ApproachType"
+                }
+            ],
+            "schemaKey": "AssetsSummary",
+            "dataStandard": [
+                {
+                    "name": "Neurodata Without Borders (NWB)",
+                    "schemaKey": "StandardsType",
+                    "identifier": "RRID:SCR_015242"
+                }
+            ],
+            "numberOfBytes": 387202184927,
+            "numberOfFiles": 30,
+            "numberOfSubjects": 11,
+            "variableMeasured": [
+                "ProcessingModule",
+                "ElectricalSeries",
+                "ElectrodeGroup",
+                "Units"
+            ],
+            "measurementTechnique": [
+                {
+                    "name": "analytical technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "multi electrode extracellular electrophysiology recording technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "surgical technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "spike sorting technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                }
+            ]
+        },
+        "datePublished": "2023-06-02T16:43:16.440150+00:00",
+        "schemaVersion": "0.6.0",
+        "ethicsApproval": [],
+        "wasGeneratedBy": [],
+        "acknowledgement": "We thank G. Buzsaki, E. Glennon, V. Grinevich, B. Hangya, K. Kuchibhotla, M. A. Long, J. Minder, J. K. Schiavo, R. Tremblay, R. W. Tsien and D. Vallentin for comments, discussions and technical assistance; and C. A. Loomis and NYU School of Medicine Histology Core for assistance with anatomical studies. Oxytocin-IRES-Cre mice were obtained from The Jackson Laboratory. Oxytocin receptor knockout mice were obtained from R. W. Tsien. S. E. Ross created artwork in Figs. 1a, 3e, 4d, g, j, k, Extended Data Fig. 9e.",
+        "relatedResource": [
+            {
+                "url": "https://www.nature.com/articles/s41586-021-03814-7",
+                "name": "Oxytocin neurons enable social transmission of maternal behaviour",
+                "relation": "dcite:IsDescribedBy",
+                "schemaKey": "Resource",
+                "identifier": "https://doi.org/10.1038/s41586-021-03814-7",
+                "repository": "Nature"
+            }
+        ],
+        "manifestLocation": [
+            "https://dandiarchive.s3.amazonaws.com/dandisets/000114/0.230602.1643/assets.yaml"
         ]
     },
     "000115": {
@@ -4742,6 +5381,209 @@
             "https://dandiarchive.s3.amazonaws.com/dandisets/000398/0.221208.1803/assets.yaml"
         ]
     },
+    "000399": {
+        "id": "DANDI:000399/draft",
+        "doi": "10.80507/dandi.123456/0.123456.1234",
+        "url": "https://dandiarchive.org/dandiset/000399/draft",
+        "name": "All-optical physiology resolves a synaptic basis for behavioral time scale plasticity",
+        "access": [
+            {
+                "status": "dandi:OpenAccess",
+                "schemaKey": "AccessRequirements"
+            }
+        ],
+        "license": [
+            "spdx:CC-BY-4.0"
+        ],
+        "version": "draft",
+        "@context": "https://raw.githubusercontent.com/dandi/schema/master/releases/0.6.3/context.json",
+        "citation": "Fan, Linlin (2023) All-optical physiology resolves a synaptic basis for behavioral time scale plasticity (Version draft) [Data set]. DANDI archive. https://doi.org/10.80507/dandi.123456/0.123456.1234",
+        "schemaKey": "Dandiset",
+        "identifier": "DANDI:000399",
+        "repository": "https://dandiarchive.org",
+        "contributor": [
+            {
+                "name": "Fan, Linlin",
+                "email": "dlinfan@gmail.com",
+                "roleName": [
+                    "dcite:ContactPerson"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            }
+        ],
+        "dateCreated": "2022-12-11T06:15:01.030408+00:00",
+        "description": "Data included in Fan (2022) Cell",
+        "publishedBy": {
+            "id": "urn:uuid:93b629c2-43ab-4653-a56c-c5e93893d5ac",
+            "name": "DANDI publish",
+            "endDate": "2023-06-14T06:20:56.195429+00:00",
+            "schemaKey": "PublishActivity",
+            "startDate": "2023-06-14T06:20:56.195429+00:00",
+            "wasAssociatedWith": [
+                {
+                    "id": "urn:uuid:d5beda19-8522-422f-940e-c25920000268",
+                    "name": "DANDI API",
+                    "version": "0.1.0",
+                    "schemaKey": "Software",
+                    "identifier": "RRID:SCR_017571"
+                }
+            ]
+        },
+        "assetsSummary": {
+            "species": [
+                {
+                    "name": "Mus musculus - House mouse",
+                    "schemaKey": "SpeciesType",
+                    "identifier": "http://purl.obolibrary.org/obo/NCBITaxon_10090"
+                }
+            ],
+            "approach": [
+                {
+                    "name": "electrophysiological approach",
+                    "schemaKey": "ApproachType"
+                }
+            ],
+            "schemaKey": "AssetsSummary",
+            "dataStandard": [
+                {
+                    "name": "Neurodata Without Borders (NWB)",
+                    "schemaKey": "StandardsType",
+                    "identifier": "RRID:SCR_015242"
+                }
+            ],
+            "numberOfBytes": 86582248,
+            "numberOfFiles": 105,
+            "numberOfSubjects": 19,
+            "variableMeasured": [
+                "ElectricalSeries",
+                "ElectrodeGroup"
+            ],
+            "measurementTechnique": [
+                {
+                    "name": "multi electrode extracellular electrophysiology recording technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "surgical technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                }
+            ]
+        },
+        "datePublished": "2023-06-14T06:20:56.195429+00:00",
+        "schemaVersion": "0.6.3",
+        "manifestLocation": [
+            "https://api.dandiarchive.org/api/dandisets/000399/versions/draft/assets/"
+        ]
+    },
+    "000410": {
+        "id": "DANDI:000410/draft",
+        "doi": "10.80507/dandi.123456/0.123456.1234",
+        "url": "https://dandiarchive.org/dandiset/000410/draft",
+        "name": "Joshi et al (2023) Dynamic Synchronization between Hippocampal Spatial Representations and the Stepping Rhythm",
+        "access": [
+            {
+                "status": "dandi:OpenAccess",
+                "schemaKey": "AccessRequirements"
+            }
+        ],
+        "license": [
+            "spdx:CC-BY-4.0"
+        ],
+        "version": "draft",
+        "@context": "https://raw.githubusercontent.com/dandi/schema/master/releases/0.6.3/context.json",
+        "citation": "Joshi, Abhilasha (2023) Joshi et al (2023) Dynamic Synchronization between Hippocampal Spatial Representations and the Stepping Rhythm (Version draft) [Data set]. DANDI archive. https://doi.org/10.80507/dandi.123456/0.123456.1234",
+        "schemaKey": "Dandiset",
+        "identifier": "DANDI:000410",
+        "repository": "https://dandiarchive.org",
+        "contributor": [
+            {
+                "name": "Joshi, Abhilasha",
+                "email": "abhilasha.joshi7@gmail.com",
+                "roleName": [
+                    "dcite:ContactPerson"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            }
+        ],
+        "dateCreated": "2023-02-07T02:10:45.942699+00:00",
+        "description": "This dateset includes electrophysiological data from from dorsal CA1 of rats running on a linear or w-shaped track. Please contact Abhilasha Joshi or Loren Frank for more information about this data. ",
+        "publishedBy": {
+            "id": "urn:uuid:923e4c34-53aa-4001-bbee-70a4055581be",
+            "name": "DANDI publish",
+            "endDate": "2023-02-25T03:37:38.847599+00:00",
+            "schemaKey": "PublishActivity",
+            "startDate": "2023-02-25T03:37:38.847599+00:00",
+            "wasAssociatedWith": [
+                {
+                    "id": "urn:uuid:b200d8ea-9de8-4d0a-9741-5c42decf4d42",
+                    "name": "DANDI API",
+                    "version": "0.1.0",
+                    "schemaKey": "Software",
+                    "identifier": "RRID:SCR_017571"
+                }
+            ]
+        },
+        "assetsSummary": {
+            "species": [
+                {
+                    "name": "Rattus norvegicus - Norway rat",
+                    "schemaKey": "SpeciesType",
+                    "identifier": "http://purl.obolibrary.org/obo/NCBITaxon_10116"
+                }
+            ],
+            "approach": [
+                {
+                    "name": "behavioral approach",
+                    "schemaKey": "ApproachType"
+                },
+                {
+                    "name": "electrophysiological approach",
+                    "schemaKey": "ApproachType"
+                }
+            ],
+            "schemaKey": "AssetsSummary",
+            "dataStandard": [
+                {
+                    "name": "Neurodata Without Borders (NWB)",
+                    "schemaKey": "StandardsType",
+                    "identifier": "RRID:SCR_015242"
+                }
+            ],
+            "numberOfBytes": 2802041975041,
+            "numberOfFiles": 22,
+            "numberOfSubjects": 5,
+            "variableMeasured": [
+                "SpatialSeries",
+                "ProcessingModule",
+                "Position",
+                "BehavioralEvents",
+                "ElectricalSeries"
+            ],
+            "measurementTechnique": [
+                {
+                    "name": "behavioral technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "analytical technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "multi electrode extracellular electrophysiology recording technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                }
+            ]
+        },
+        "datePublished": "2023-02-25T03:37:38.847599+00:00",
+        "schemaVersion": "0.6.3",
+        "manifestLocation": [
+            "https://api.dandiarchive.org/api/dandisets/000410/versions/draft/assets/"
+        ]
+    },
     "000409": {
         "id": "DANDI:000409/draft",
         "doi": "10.80507/dandi.123456/0.123456.1234",
@@ -5387,14 +6229,14 @@
         "dateCreated": "2023-01-31T21:47:46.772688+00:00",
         "description": "The International Brain lab (IBL) aims to understand the neural basis of decision-making in the mouse by gathering a whole-brain activity map composed of electrophysiological recordings pooled from multiple laboratories. We have systematically recorded from nearly all major brain areas with Neuropixels probes, using a grid system for unbiased sampling and replicating each recording site in at least two laboratories. These data have been used to construct a brain-wide map of activity at single-spike cellular resolution during a decision-making task. In addition to the map, this data set contains other information gathered during the task: sensory stimuli presented to the mouse; mouse decisions and response times; and mouse pose information from video recordings and DeepLabCut analysis.",
         "publishedBy": {
-            "id": "urn:uuid:3ec75fb6-9347-40b5-a94d-1e2fe468dac5",
+            "id": "urn:uuid:c67598bf-491d-4571-a619-5966d11f559a",
             "name": "DANDI publish",
-            "endDate": "2023-02-22T18:08:15.150409+00:00",
+            "endDate": "2023-08-08T19:47:44.818672+00:00",
             "schemaKey": "PublishActivity",
-            "startDate": "2023-02-22T18:08:15.150409+00:00",
+            "startDate": "2023-08-08T19:47:44.818672+00:00",
             "wasAssociatedWith": [
                 {
-                    "id": "urn:uuid:82e22709-aa32-4e2d-aae0-1f244fbf9cf8",
+                    "id": "urn:uuid:442b0bc0-0393-4a48-b5ce-3988ace57f00",
                     "name": "DANDI API",
                     "version": "0.1.0",
                     "schemaKey": "Software",
@@ -5429,9 +6271,9 @@
                     "identifier": "RRID:SCR_015242"
                 }
             ],
-            "numberOfBytes": 33617618891185,
-            "numberOfFiles": 1225,
-            "numberOfSubjects": 109,
+            "numberOfBytes": 34138050211062,
+            "numberOfFiles": 1576,
+            "numberOfSubjects": 115,
             "variableMeasured": [
                 "ElectricalSeries",
                 "ElectrodeGroup",
@@ -5464,7 +6306,7 @@
                 }
             ]
         },
-        "datePublished": "2023-02-22T18:08:15.150409+00:00",
+        "datePublished": "2023-08-08T19:47:44.818672+00:00",
         "schemaVersion": "0.6.3",
         "ethicsApproval": [],
         "wasGeneratedBy": [],
@@ -5485,113 +6327,6 @@
         ],
         "manifestLocation": [
             "https://api.dandiarchive.org/api/dandisets/000409/versions/draft/assets/"
-        ]
-    },
-    "000410": {
-        "id": "DANDI:000410/draft",
-        "doi": "10.80507/dandi.123456/0.123456.1234",
-        "url": "https://dandiarchive.org/dandiset/000410/draft",
-        "name": "Joshi et al (2023) Dynamic Synchronization between Hippocampal Spatial Representations and the Stepping Rhythm",
-        "access": [
-            {
-                "status": "dandi:OpenAccess",
-                "schemaKey": "AccessRequirements"
-            }
-        ],
-        "license": [
-            "spdx:CC-BY-4.0"
-        ],
-        "version": "draft",
-        "@context": "https://raw.githubusercontent.com/dandi/schema/master/releases/0.6.3/context.json",
-        "citation": "Joshi, Abhilasha (2023) Joshi et al (2023) Dynamic Synchronization between Hippocampal Spatial Representations and the Stepping Rhythm (Version draft) [Data set]. DANDI archive. https://doi.org/10.80507/dandi.123456/0.123456.1234",
-        "schemaKey": "Dandiset",
-        "identifier": "DANDI:000410",
-        "repository": "https://dandiarchive.org",
-        "contributor": [
-            {
-                "name": "Joshi, Abhilasha",
-                "email": "abhilasha.joshi7@gmail.com",
-                "roleName": [
-                    "dcite:ContactPerson"
-                ],
-                "schemaKey": "Person",
-                "affiliation": [],
-                "includeInCitation": true
-            }
-        ],
-        "dateCreated": "2023-02-07T02:10:45.942699+00:00",
-        "description": "This dateset includes electrophysiological data from from dorsal CA1 of rats running on a linear or w-shaped track. Please contact Abhilasha Joshi or Loren Frank for more information about this data. ",
-        "publishedBy": {
-            "id": "urn:uuid:923e4c34-53aa-4001-bbee-70a4055581be",
-            "name": "DANDI publish",
-            "endDate": "2023-02-25T03:37:38.847599+00:00",
-            "schemaKey": "PublishActivity",
-            "startDate": "2023-02-25T03:37:38.847599+00:00",
-            "wasAssociatedWith": [
-                {
-                    "id": "urn:uuid:b200d8ea-9de8-4d0a-9741-5c42decf4d42",
-                    "name": "DANDI API",
-                    "version": "0.1.0",
-                    "schemaKey": "Software",
-                    "identifier": "RRID:SCR_017571"
-                }
-            ]
-        },
-        "assetsSummary": {
-            "species": [
-                {
-                    "name": "Rattus norvegicus - Norway rat",
-                    "schemaKey": "SpeciesType",
-                    "identifier": "http://purl.obolibrary.org/obo/NCBITaxon_10116"
-                }
-            ],
-            "approach": [
-                {
-                    "name": "behavioral approach",
-                    "schemaKey": "ApproachType"
-                },
-                {
-                    "name": "electrophysiological approach",
-                    "schemaKey": "ApproachType"
-                }
-            ],
-            "schemaKey": "AssetsSummary",
-            "dataStandard": [
-                {
-                    "name": "Neurodata Without Borders (NWB)",
-                    "schemaKey": "StandardsType",
-                    "identifier": "RRID:SCR_015242"
-                }
-            ],
-            "numberOfBytes": 2802041975041,
-            "numberOfFiles": 22,
-            "numberOfSubjects": 5,
-            "variableMeasured": [
-                "SpatialSeries",
-                "ProcessingModule",
-                "Position",
-                "BehavioralEvents",
-                "ElectricalSeries"
-            ],
-            "measurementTechnique": [
-                {
-                    "name": "behavioral technique",
-                    "schemaKey": "MeasurementTechniqueType"
-                },
-                {
-                    "name": "analytical technique",
-                    "schemaKey": "MeasurementTechniqueType"
-                },
-                {
-                    "name": "multi electrode extracellular electrophysiology recording technique",
-                    "schemaKey": "MeasurementTechniqueType"
-                }
-            ]
-        },
-        "datePublished": "2023-02-25T03:37:38.847599+00:00",
-        "schemaVersion": "0.6.3",
-        "manifestLocation": [
-            "https://api.dandiarchive.org/api/dandisets/000410/versions/draft/assets/"
         ]
     },
     "000411": {
@@ -5866,6 +6601,7 @@
     },
     "000458": {
         "id": "DANDI:000458/0.230317.0039",
+        "doi": "10.48324/dandi.000458/0.230317.0039",
         "url": "https://dandiarchive.org/dandiset/000458/0.230317.0039",
         "name": "Simultaneous electroencephalography, extracellular electrophysiology, and cortical electrical stimulation in head-fixed mice",
         "about": [],
@@ -5880,7 +6616,7 @@
         ],
         "version": "0.230317.0039",
         "@context": "https://raw.githubusercontent.com/dandi/schema/master/releases/0.6.4/context.json",
-        "citation": "Claar, Leslie D; Rembado, Irene; Kuyat, Jacqulyn R; Russo, Simone; Marks, Lydia C; Olsen, Shawn R; Koch, Christof (2023) Simultaneous electroencephalography, extracellular electrophysiology, and cortical electrical stimulation in head-fixed mice (Version 0.230317.0039) [Data set]. DANDI archive. https://dandiarchive.org/dandiset/000458/0.230317.0039",
+        "citation": "Claar, Leslie D; Rembado, Irene; Kuyat, Jacqulyn R; Russo, Simone; Marks, Lydia C; Olsen, Shawn R; Koch, Christof (2023) Simultaneous electroencephalography, extracellular electrophysiology, and cortical electrical stimulation in head-fixed mice (Version 0.230317.0039) [Data set]. DANDI archive. https://doi.org/10.48324/dandi.000458/0.230317.0039",
         "keywords": [
             "EEG",
             "Neuropixels",
@@ -6142,8 +6878,9 @@
     },
     "000463": {
         "id": "DANDI:000463/draft",
+        "doi": "10.80507/dandi.123456/0.123456.1234",
         "url": "https://dandiarchive.org/dandiset/000463/draft",
-        "name": "Electrophysiological Recordings in Anesthetized Rats in the Primary Somatosensory Cortex with Trials of Phased Ultrasound Array Stimulation",
+        "name": "Electrophysiological Recordings in Anesthetized Rats in the Primary Somatosensory Cortex with Phased Ultrasound Array Stimulation",
         "about": [],
         "access": [
             {
@@ -6156,7 +6893,7 @@
         ],
         "version": "draft",
         "@context": "https://raw.githubusercontent.com/dandi/schema/master/releases/0.6.4/context.json",
-        "citation": "Ramachandran, Sandhya (2023) Electrophysiological Recordings in Anesthetized Rats in the Primary Somatosensory Cortex with Trials of Phased Ultrasound Array Stimulation (Version draft) [Data set]. DANDI archive. https://dandiarchive.org/dandiset/000463/draft",
+        "citation": "Ramachandran, Sandhya; He, Bin; Yu, Kai; Gao, Huan (2023) Electrophysiological Recordings in Anesthetized Rats in the Primary Somatosensory Cortex with Phased Ultrasound Array Stimulation (Version draft) [Data set]. DANDI archive. https://doi.org/10.80507/dandi.123456/0.123456.1234",
         "keywords": [],
         "protocol": [],
         "schemaKey": "Dandiset",
@@ -6172,10 +6909,80 @@
                 "schemaKey": "Person",
                 "affiliation": [],
                 "includeInCitation": true
+            },
+            {
+                "name": "He, Bin",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Yu, Kai",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Gao, Huan",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "NIH NS124564",
+                "roleName": [
+                    "dcite:Funder"
+                ],
+                "schemaKey": "Organization",
+                "contactPoint": [],
+                "includeInCitation": false
+            },
+            {
+                "name": "NIH EB029354",
+                "roleName": [
+                    "dcite:Funder"
+                ],
+                "schemaKey": "Organization",
+                "contactPoint": [],
+                "includeInCitation": false
+            },
+            {
+                "name": "Carnegie Mellon University",
+                "roleName": [
+                    "dcite:Affiliation"
+                ],
+                "schemaKey": "Organization",
+                "contactPoint": [],
+                "includeInCitation": false
             }
         ],
         "dateCreated": "2023-03-23T01:45:58.892864+00:00",
         "description": "In these recordings, we test different intensities and PRFs (pulse repetition frequencies) of ultrasound stimulation using a phased ultrasound array to stimulate the somatosensory cortex of rats anesthetized with 2% isoflurane through inhalation. Recordings are taken using 32 channel Neuronexus electrodes. Ultrasound stimulation is delivered every 2.5 seconds, and each recording has either 200 or 500 trials. ",
+        "publishedBy": {
+            "id": "urn:uuid:1409e156-bbf7-4ef1-89cc-76bd14bddd14",
+            "name": "DANDI publish",
+            "endDate": "2023-05-02T21:23:09.404959+00:00",
+            "schemaKey": "PublishActivity",
+            "startDate": "2023-05-02T21:23:09.404959+00:00",
+            "wasAssociatedWith": [
+                {
+                    "id": "urn:uuid:10dce6dd-edb4-436f-80c0-3e36b67b9677",
+                    "name": "DANDI API",
+                    "version": "0.1.0",
+                    "schemaKey": "Software",
+                    "identifier": "RRID:SCR_017571"
+                }
+            ]
+        },
         "studyTarget": [],
         "assetsSummary": {
             "species": [
@@ -6199,18 +7006,968 @@
                     "identifier": "RRID:SCR_015242"
                 }
             ],
-            "numberOfBytes": 40104361888,
-            "numberOfFiles": 15,
-            "numberOfSubjects": 2,
+            "numberOfBytes": 64199969632,
+            "numberOfFiles": 29,
+            "numberOfSubjects": 4,
+            "variableMeasured": [
+                "ElectrodeGroup",
+                "LFP",
+                "ElectricalSeries",
+                "ProcessingModule"
+            ],
+            "measurementTechnique": [
+                {
+                    "name": "multi electrode extracellular electrophysiology recording technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "surgical technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "signal filtering technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "analytical technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                }
+            ]
+        },
+        "datePublished": "2023-05-02T21:23:09.404959+00:00",
+        "schemaVersion": "0.6.4",
+        "ethicsApproval": [],
+        "wasGeneratedBy": [],
+        "relatedResource": [],
+        "manifestLocation": [
+            "https://api.dandiarchive.org/api/dandisets/000463/versions/draft/assets/"
+        ]
+    },
+    "000465": {
+        "id": "DANDI:000465/0.230530.2349",
+        "doi": "10.48324/dandi.000465/0.230530.2349",
+        "url": "https://dandiarchive.org/dandiset/000465/0.230530.2349",
+        "name": "Human brain mapping with multithousand-channel PtNRGrids resolves spatiotemporal dynamics",
+        "about": [],
+        "access": [
+            {
+                "status": "dandi:OpenAccess",
+                "schemaKey": "AccessRequirements"
+            }
+        ],
+        "license": [
+            "spdx:CC-BY-4.0"
+        ],
+        "version": "0.230530.2349",
+        "@context": "https://raw.githubusercontent.com/dandi/schema/master/releases/0.6.4/context.json",
+        "citation": "Tchoe, Youngbin (2023) Human brain mapping with multithousand-channel PtNRGrids resolves spatiotemporal dynamics (Version 0.230530.2349) [Data set]. DANDI archive. https://doi.org/10.48324/dandi.000465/0.230530.2349",
+        "keywords": [
+            "micro-ECoG, barrel cortex, high gamma activity"
+        ],
+        "protocol": [],
+        "schemaKey": "Dandiset",
+        "identifier": "DANDI:000465",
+        "repository": "https://dandiarchive.org",
+        "contributor": [
+            {
+                "name": "Tchoe, Youngbin",
+                "email": "ybtchoe@gmail.com",
+                "roleName": [
+                    "dcite:ContactPerson"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            }
+        ],
+        "dateCreated": "2023-03-24T01:50:09.368401+00:00",
+        "description": "This dataset contains recordings from PtNRGrids, which are devices designed to record electrocorticography (ECoG) activities from the brain surface at high-spatial resolution. PtNRGrids used here were a square-shaped array with 1024 channels and a 150-µm pitch, which was implanted to record neural activity from the entire right primary somatosensory barrel cortex. The sensory response on the brain was evoked by delivering air puffs through a microcapillary tube to individually stimulate individual whiskers on the contralateral side. This dataset demonstrates the high-spatial resolution recording capability of PtNRGrids isolate functional cortical columns in sub-mm resolution from the surface of the brain.\n\n[Publication corresponding to this dataset] Tchoe, Youngbin, et al. \"Human brain mapping with multithousand-channel PtNRGrids resolves spatiotemporal dynamics.\" Science translational medicine 14.628 (2022): eabj1441.\n[Electrode mapping information & Basic analysis codes] Github: https://ytchoe.github.io/",
+        "publishedBy": {
+            "id": "urn:uuid:9d7498b5-0a49-44ce-8ad3-e8849bd61a37",
+            "name": "DANDI publish",
+            "endDate": "2023-05-30T23:49:47.503996+00:00",
+            "schemaKey": "PublishActivity",
+            "startDate": "2023-05-30T23:49:47.503996+00:00",
+            "wasAssociatedWith": [
+                {
+                    "id": "urn:uuid:3828bba8-a456-4a82-9430-c4245baff79c",
+                    "name": "DANDI API",
+                    "version": "0.1.0",
+                    "schemaKey": "Software",
+                    "identifier": "RRID:SCR_017571"
+                }
+            ]
+        },
+        "studyTarget": [],
+        "assetsSummary": {
+            "species": [
+                {
+                    "name": "Rattus norvegicus - Norway rat",
+                    "schemaKey": "SpeciesType",
+                    "identifier": "http://purl.obolibrary.org/obo/NCBITaxon_10116"
+                }
+            ],
+            "approach": [
+                {
+                    "name": "electrophysiological approach",
+                    "schemaKey": "ApproachType"
+                }
+            ],
+            "schemaKey": "AssetsSummary",
+            "dataStandard": [
+                {
+                    "name": "Neurodata Without Borders (NWB)",
+                    "schemaKey": "StandardsType",
+                    "identifier": "RRID:SCR_015242"
+                }
+            ],
+            "numberOfBytes": 129066795249,
+            "numberOfFiles": 36,
+            "numberOfSubjects": 4,
+            "variableMeasured": [
+                "ElectrodeGroup",
+                "ElectricalSeries"
+            ],
+            "measurementTechnique": [
+                {
+                    "name": "multi electrode extracellular electrophysiology recording technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "surgical technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                }
+            ]
+        },
+        "datePublished": "2023-05-30T23:49:47.503996+00:00",
+        "schemaVersion": "0.6.4",
+        "ethicsApproval": [],
+        "wasGeneratedBy": [],
+        "relatedResource": [],
+        "manifestLocation": [
+            "https://dandiarchive.s3.amazonaws.com/dandisets/000465/0.230530.2349/assets.yaml"
+        ]
+    },
+    "000473": {
+        "id": "DANDI:000473/0.230417.1502",
+        "doi": "10.48324/dandi.000473/0.230417.1502",
+        "url": "https://dandiarchive.org/dandiset/000473/0.230417.1502",
+        "name": "Esr1+ hypothalamic-habenula neurons shape aversive states.",
+        "about": [],
+        "access": [
+            {
+                "status": "dandi:OpenAccess",
+                "schemaKey": "AccessRequirements"
+            }
+        ],
+        "license": [
+            "spdx:CC-BY-4.0"
+        ],
+        "version": "0.230417.1502",
+        "@context": "https://raw.githubusercontent.com/dandi/schema/master/releases/0.6.4/context.json",
+        "citation": "Calvigioni, Daniela; Fuzik, Janos; Le Merre, Pierre; Slashcheva, Marina; Jung, Felix; Ortiz, Cantin; Lentini, Antonio; Csillag, Veronika; Graziano, Marta; Nikolakopoulou, Ifigeneia; Weglage, Moritz; Lazaridis, Iakovos; Kim, Hoseok; Lenzi, Irene; Park, Hyunsoo; Reinius, Björn; Carlén, Marie; Meletis, Konstantinos (2023) Esr1+ hypothalamic-habenula neurons shape aversive states (Version 0.230417.1502) [Data set]. DANDI archive. https://doi.org/10.48324/dandi.000473/0.230417.1502",
+        "keywords": [
+            "Neuropixels",
+            "Mouse",
+            "Head-fixed",
+            "Lateral Hypothalamus",
+            "Lateral Habenula",
+            "Prefrontal cortex",
+            "Aversion"
+        ],
+        "protocol": [],
+        "schemaKey": "Dandiset",
+        "identifier": "DANDI:000473",
+        "repository": "https://dandiarchive.org",
+        "contributor": [
+            {
+                "name": "Calvigioni, Daniela",
+                "email": "daniela.calvigioni@ki.se",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "identifier": "0000-0002-6122-9744",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Fuzik, Janos",
+                "email": "janos.fuzik@ki.se",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "identifier": "0000-0002-5408-4882",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Le Merre, Pierre",
+                "email": "pierre.le.merre@ki.se",
+                "roleName": [
+                    "dcite:ContactPerson",
+                    "dcite:Author",
+                    "dcite:DataCollector",
+                    "dcite:DataCurator",
+                    "dcite:DataManager"
+                ],
+                "schemaKey": "Person",
+                "identifier": "0000-0003-4205-7411",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Slashcheva, Marina",
+                "email": "marina.slashcheva@ki.se",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Jung, Felix",
+                "email": "felix.jung@ki.se",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Ortiz, Cantin",
+                "email": "cantin.ortiz@pasteur.fr",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Lentini, Antonio",
+                "email": "antonio.lentini@ki.se",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Csillag, Veronika",
+                "email": "veronika.csillag@ki.se",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Graziano, Marta",
+                "email": "marta.graziano@ki.se",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Nikolakopoulou, Ifigeneia",
+                "email": "ifigeneia.nikolakopoulou@ki.se",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Weglage, Moritz",
+                "email": "moritz.weglage@ki.se",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Lazaridis, Iakovos",
+                "email": "iaklaz@mit.edu",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Kim, Hoseok",
+                "email": "kim.hoseok@ki.se",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Lenzi, Irene",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Park, Hyunsoo",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Reinius, Björn",
+                "email": "Björn Reinius <bjorn.reinius@ki.se>",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Carlén, Marie",
+                "email": "marie.carlen@ki.se",
+                "roleName": [
+                    "dcite:Author",
+                    "dcite:Conceptualization"
+                ],
+                "schemaKey": "Person",
+                "identifier": "0000-0003-1658-1631",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Meletis, Konstantinos",
+                "email": "dinos.meletis@ki.se",
+                "roleName": [
+                    "dcite:Author",
+                    "dcite:Conceptualization"
+                ],
+                "schemaKey": "Person",
+                "identifier": "0000-0001-5665-4781",
+                "affiliation": [],
+                "includeInCitation": true
+            }
+        ],
+        "dateCreated": "2023-04-12T14:12:01.809823+00:00",
+        "description": "Prefrontal cortex (PFC) high-density extracellular recordings (Neuropixels) in head-fixed mice during an aversive-conditioning task. Neuronal responses to internally generated (i.e. pathway-specific optogenetic activation, see the main article for details) and externally derived (i.e. air puffs) aversive signals have been recorded.",
+        "publishedBy": {
+            "id": "urn:uuid:117a2086-0878-46c1-b2ae-703da48e89da",
+            "name": "DANDI publish",
+            "endDate": "2023-04-17T15:02:02.873022+00:00",
+            "schemaKey": "PublishActivity",
+            "startDate": "2023-04-17T15:02:02.873022+00:00",
+            "wasAssociatedWith": [
+                {
+                    "id": "urn:uuid:97bc73bb-2db6-473f-a45a-950fe246dbc5",
+                    "name": "DANDI API",
+                    "version": "0.1.0",
+                    "schemaKey": "Software",
+                    "identifier": "RRID:SCR_017571"
+                }
+            ]
+        },
+        "studyTarget": [],
+        "assetsSummary": {
+            "species": [
+                {
+                    "name": "Mus musculus - House mouse",
+                    "schemaKey": "SpeciesType",
+                    "identifier": "http://purl.obolibrary.org/obo/NCBITaxon_10090"
+                }
+            ],
+            "approach": [
+                {
+                    "name": "electrophysiological approach",
+                    "schemaKey": "ApproachType"
+                },
+                {
+                    "name": "optogenetic approach",
+                    "schemaKey": "ApproachType"
+                },
+                {
+                    "name": "behavioral approach",
+                    "schemaKey": "ApproachType"
+                }
+            ],
+            "schemaKey": "AssetsSummary",
+            "dataStandard": [
+                {
+                    "name": "Neurodata Without Borders (NWB)",
+                    "schemaKey": "StandardsType",
+                    "identifier": "RRID:SCR_015242"
+                }
+            ],
+            "numberOfBytes": 113558681447,
+            "numberOfFiles": 25,
+            "numberOfSubjects": 25,
+            "variableMeasured": [
+                "PupilTracking",
+                "ElectrodeGroup",
+                "ElectricalSeries",
+                "ProcessingModule",
+                "OptogeneticSeries",
+                "Units",
+                "LFP",
+                "BehavioralTimeSeries"
+            ],
+            "measurementTechnique": [
+                {
+                    "name": "behavioral technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "analytical technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "surgical technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "spike sorting technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "multi electrode extracellular electrophysiology recording technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "signal filtering technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                }
+            ]
+        },
+        "datePublished": "2023-04-17T15:02:02.873022+00:00",
+        "schemaVersion": "0.6.4",
+        "ethicsApproval": [],
+        "wasGeneratedBy": [],
+        "relatedResource": [
+            {
+                "url": "https://github.com/PierreLeMerre/Esr1_NPX_code",
+                "name": "Github code",
+                "relation": "dcite:IsRequiredBy",
+                "schemaKey": "Resource",
+                "identifier": "Github",
+                "repository": "Esr1_NPX_code"
+            }
+        ],
+        "manifestLocation": [
+            "https://dandiarchive.s3.amazonaws.com/dandisets/000473/0.230417.1502/assets.yaml"
+        ]
+    },
+    "000482": {
+        "id": "DANDI:000482/draft",
+        "doi": "10.80507/dandi.123456/0.123456.1234",
+        "url": "https://dandiarchive.org/dandiset/000482/draft",
+        "name": "State-dependent processing in visual cortex",
+        "access": [
+            {
+                "status": "dandi:OpenAccess",
+                "schemaKey": "AccessRequirements"
+            }
+        ],
+        "license": [
+            "spdx:CC-BY-4.0"
+        ],
+        "version": "draft",
+        "@context": "https://raw.githubusercontent.com/dandi/schema/master/releases/0.6.4/context.json",
+        "citation": "Bereshpolova, Yulia (2023) State-dependent processing in visual cortex (Version draft) [Data set]. DANDI archive. https://doi.org/10.80507/dandi.123456/0.123456.1234",
+        "schemaKey": "Dandiset",
+        "identifier": "DANDI:000482",
+        "repository": "https://dandiarchive.org",
+        "contributor": [
+            {
+                "name": "Bereshpolova, Yulia",
+                "email": "yuliya.bereshpolova@uconn.edu",
+                "roleName": [
+                    "dcite:ContactPerson"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            }
+        ],
+        "dateCreated": "2023-04-18T02:06:34.582548+00:00",
+        "description": "Test upload. Extracellular recordings from rabbit visual cortex neurons. Orientation testing with drifting grating stimuli. Hippocampal EEG for the state scoring procedure.",
+        "publishedBy": {
+            "id": "urn:uuid:db41a921-cec6-4e59-8db6-e7618afd557a",
+            "name": "DANDI publish",
+            "endDate": "2023-04-18T02:07:18.622986+00:00",
+            "schemaKey": "PublishActivity",
+            "startDate": "2023-04-18T02:07:18.622986+00:00",
+            "wasAssociatedWith": [
+                {
+                    "id": "urn:uuid:e972251c-0e2c-430e-9706-7e939801c28d",
+                    "name": "DANDI API",
+                    "version": "0.1.0",
+                    "schemaKey": "Software",
+                    "identifier": "RRID:SCR_017571"
+                }
+            ]
+        },
+        "assetsSummary": {
+            "species": [
+                {
+                    "name": "Oryctolagus cuniculus - Rabbits",
+                    "schemaKey": "SpeciesType",
+                    "identifier": "http://purl.obolibrary.org/obo/NCBITaxon_9986"
+                }
+            ],
+            "approach": [
+                {
+                    "name": "electrophysiological approach",
+                    "schemaKey": "ApproachType"
+                }
+            ],
+            "schemaKey": "AssetsSummary",
+            "dataStandard": [
+                {
+                    "name": "Neurodata Without Borders (NWB)",
+                    "schemaKey": "StandardsType",
+                    "identifier": "RRID:SCR_015242"
+                }
+            ],
+            "numberOfBytes": 79941664,
+            "numberOfFiles": 1,
+            "numberOfSubjects": 1,
             "variableMeasured": [
                 "LFP",
                 "ElectricalSeries",
-                "ProcessingModule",
-                "ElectrodeGroup"
+                "Units",
+                "ElectrodeGroup",
+                "ProcessingModule"
+            ],
+            "measurementTechnique": [
+                {
+                    "name": "analytical technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "spike sorting technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "signal filtering technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "multi electrode extracellular electrophysiology recording technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "surgical technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                }
+            ]
+        },
+        "datePublished": "2023-04-18T02:07:18.622986+00:00",
+        "schemaVersion": "0.6.4",
+        "manifestLocation": [
+            "https://api.dandiarchive.org/api/dandisets/000482/versions/draft/assets/"
+        ]
+    },
+    "000481": {
+        "id": "DANDI:000481/0.230417.2148",
+        "doi": "10.48324/dandi.000481/0.230417.2148",
+        "url": "https://dandiarchive.org/dandiset/000481/0.230417.2148",
+        "name": "State-dependent processing in visual cortex",
+        "about": [],
+        "access": [
+            {
+                "status": "dandi:OpenAccess",
+                "schemaKey": "AccessRequirements"
+            }
+        ],
+        "license": [
+            "spdx:CC-BY-4.0"
+        ],
+        "version": "0.230417.2148",
+        "@context": "https://raw.githubusercontent.com/dandi/schema/master/releases/0.6.4/context.json",
+        "citation": "Bereshpolova, Yulia (2023) State-dependent processing in visual cortex (Version 0.230417.2148) [Data set]. DANDI archive. https://doi.org/10.48324/dandi.000481/0.230417.2148",
+        "keywords": [
+            "electrophysiology, signal processing"
+        ],
+        "protocol": [],
+        "schemaKey": "Dandiset",
+        "identifier": "DANDI:000481",
+        "repository": "https://dandiarchive.org",
+        "contributor": [
+            {
+                "name": "Bereshpolova, Yulia",
+                "email": "yuliya.bereshpolova@uconn.edu",
+                "roleName": [
+                    "dcite:ContactPerson"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            }
+        ],
+        "dateCreated": "2023-04-17T18:35:01.452343+00:00",
+        "description": "Extracellular recordings from rabbit visual cortex neurons. Orientation testing with drifting grating stimuli. Hippocampal EEG for the state scoring procedure. ",
+        "publishedBy": {
+            "id": "urn:uuid:8998f873-1f6b-4890-8a6b-50d68c1ca014",
+            "name": "DANDI publish",
+            "endDate": "2023-04-17T21:48:59.790268+00:00",
+            "schemaKey": "PublishActivity",
+            "startDate": "2023-04-17T21:48:59.790268+00:00",
+            "wasAssociatedWith": [
+                {
+                    "id": "urn:uuid:d1b731e1-81db-4b5e-be81-402e53d4801b",
+                    "name": "DANDI API",
+                    "version": "0.1.0",
+                    "schemaKey": "Software",
+                    "identifier": "RRID:SCR_017571"
+                }
+            ]
+        },
+        "studyTarget": [
+            "Simple cell of L4"
+        ],
+        "assetsSummary": {
+            "species": [
+                {
+                    "name": "Oryctolagus cuniculus - Rabbits",
+                    "schemaKey": "SpeciesType",
+                    "identifier": "http://purl.obolibrary.org/obo/NCBITaxon_9986"
+                }
+            ],
+            "approach": [
+                {
+                    "name": "electrophysiological approach",
+                    "schemaKey": "ApproachType"
+                }
+            ],
+            "schemaKey": "AssetsSummary",
+            "dataStandard": [
+                {
+                    "name": "Neurodata Without Borders (NWB)",
+                    "schemaKey": "StandardsType",
+                    "identifier": "RRID:SCR_015242"
+                }
+            ],
+            "numberOfBytes": 6457880,
+            "numberOfFiles": 2,
+            "numberOfSubjects": 1,
+            "variableMeasured": [
+                "ElectrodeGroup",
+                "Units",
+                "ElectricalSeries",
+                "LFP",
+                "ProcessingModule"
+            ],
+            "measurementTechnique": [
+                {
+                    "name": "signal filtering technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "analytical technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "surgical technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "spike sorting technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "multi electrode extracellular electrophysiology recording technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                }
+            ]
+        },
+        "datePublished": "2023-04-17T21:48:59.790268+00:00",
+        "schemaVersion": "0.6.4",
+        "ethicsApproval": [],
+        "wasGeneratedBy": [],
+        "relatedResource": [],
+        "manifestLocation": [
+            "https://dandiarchive.s3.amazonaws.com/dandisets/000481/0.230417.2148/assets.yaml"
+        ]
+    },
+    "000546": {
+        "id": "DANDI:000546/draft",
+        "url": "https://dandiarchive.org/dandiset/000546/draft",
+        "name": "vStr_phase_stim",
+        "access": [
+            {
+                "status": "dandi:OpenAccess",
+                "schemaKey": "AccessRequirements"
+            }
+        ],
+        "license": [
+            "spdx:CC-BY-4.0"
+        ],
+        "version": "draft",
+        "@context": "https://raw.githubusercontent.com/dandi/schema/master/releases/0.6.4/context.json",
+        "citation": "Christian, Horea (2023) vStr_phase_stim (Version draft) [Data set]. DANDI archive. https://dandiarchive.org/dandiset/000546/draft",
+        "schemaKey": "Dandiset",
+        "identifier": "DANDI:000546",
+        "repository": "https://dandiarchive.org",
+        "contributor": [
+            {
+                "name": "Christian, Horea",
+                "email": "chr@chymera.eu",
+                "roleName": [
+                    "dcite:ContactPerson"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            }
+        ],
+        "dateCreated": "2023-05-15T16:19:45.680866+00:00",
+        "description": "Extracellular ephys recording in the ventral Striatum",
+        "assetsSummary": {
+            "species": [
+                {
+                    "name": "Mus musculus - House mouse",
+                    "schemaKey": "SpeciesType",
+                    "identifier": "http://purl.obolibrary.org/obo/NCBITaxon_10090"
+                }
+            ],
+            "approach": [
+                {
+                    "name": "electrophysiological approach",
+                    "schemaKey": "ApproachType"
+                }
+            ],
+            "schemaKey": "AssetsSummary",
+            "dataStandard": [
+                {
+                    "name": "Neurodata Without Borders (NWB)",
+                    "schemaKey": "StandardsType",
+                    "identifier": "RRID:SCR_015242"
+                }
+            ],
+            "numberOfBytes": 7785862944,
+            "numberOfFiles": 1,
+            "numberOfSubjects": 1,
+            "variableMeasured": [
+                "ElectrodeGroup",
+                "ElectricalSeries"
             ],
             "measurementTechnique": [
                 {
                     "name": "surgical technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "multi electrode extracellular electrophysiology recording technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                }
+            ]
+        },
+        "schemaVersion": "0.6.4",
+        "manifestLocation": [
+            "https://api.dandiarchive.org/api/dandisets/000546/versions/draft/assets/"
+        ]
+    },
+    "000552": {
+        "id": "DANDI:000552/0.230630.2304",
+        "doi": "10.48324/dandi.000552/0.230630.2304",
+        "url": "https://dandiarchive.org/dandiset/000552/0.230630.2304",
+        "name": "Preconfigured dynamics in the hippocampus are guided by embryonic birthdate and rate of neurogenesis",
+        "about": [
+            {
+                "name": "hippocampus",
+                "schemaKey": "Anatomy",
+                "identifier": "UBERON:0002421"
+            }
+        ],
+        "access": [
+            {
+                "status": "dandi:OpenAccess",
+                "schemaKey": "AccessRequirements"
+            }
+        ],
+        "license": [
+            "spdx:CC-BY-4.0"
+        ],
+        "version": "0.230630.2304",
+        "@context": "https://raw.githubusercontent.com/dandi/schema/master/releases/0.6.4/context.json",
+        "citation": "Huszár, Roman; Zhang, Yunchang; Blockus, Heike; Buzsáki, György (2023) Preconfigured dynamics in the hippocampus are guided by embryonic birthdate and rate of neurogenesis (Version 0.230630.2304) [Data set]. DANDI archive. https://doi.org/10.48324/dandi.000552/0.230630.2304",
+        "keywords": [
+            "Hippocampus",
+            "Neural circuits",
+            "Development of the nervous system"
+        ],
+        "protocol": [],
+        "schemaKey": "Dandiset",
+        "identifier": "DANDI:000552",
+        "repository": "https://dandiarchive.org",
+        "contributor": [
+            {
+                "name": "Huszár, Roman",
+                "email": "rh2618@nyu.edu",
+                "roleName": [
+                    "dcite:Author",
+                    "dcite:ContactPerson"
+                ],
+                "schemaKey": "Person",
+                "identifier": "0000-0002-8426-8308",
+                "affiliation": [
+                    {
+                        "name": "New York University Langone Medical Center",
+                        "schemaKey": "Affiliation",
+                        "identifier": "https://ror.org/005dvqh91"
+                    }
+                ],
+                "includeInCitation": true
+            },
+            {
+                "name": "Zhang, Yunchang",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [
+                    {
+                        "name": "New York University Langone Medical Center",
+                        "schemaKey": "Affiliation",
+                        "identifier": "https://ror.org/005dvqh91"
+                    }
+                ],
+                "includeInCitation": true
+            },
+            {
+                "name": "Blockus, Heike",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "identifier": "0000-0001-5274-2805",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Buzsáki, György",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "identifier": "0000-0002-3100-4800",
+                "affiliation": [
+                    {
+                        "name": "New York University Langone Medical Center",
+                        "schemaKey": "Affiliation",
+                        "identifier": "https://ror.org/005dvqh91"
+                    }
+                ],
+                "includeInCitation": true
+            },
+            {
+                "url": "http://www.nih.gov/",
+                "name": "National Institutes of Health",
+                "roleName": [
+                    "dcite:Funder"
+                ],
+                "schemaKey": "Organization",
+                "identifier": "https://ror.org/01cwqze88",
+                "awardNumber": "U19NS104590-01, MH122391",
+                "contactPoint": [],
+                "includeInCitation": false
+            },
+            {
+                "name": "Flynn, Garrett",
+                "email": "garrett.flynn@catalystneuro.com",
+                "roleName": [
+                    "dcite:DataCurator"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": false
+            }
+        ],
+        "dateCreated": "2023-05-23T17:23:37.163308+00:00",
+        "description": "The incorporation of novel information into the hippocampal network is likely be constrained by its innate architecture and internally generated activity patterns. However, the origin, organization, and consequences of such patterns remain poorly understood. Here, we show that hippocampal network dynamics are affected by sequential neurogenesis. We birthdated CA1 pyramidal neurons with in-utero electroporation over 4 embryonic days encompassing the peak of hippocampal neurogenesis, and compared their functional features in freely moving, adult mice. Neurons of the same birthdate displayed distinct connectivity, coactivity across brain states, and assembly dynamics. Same birthdate hippocampal neurons were topographically organized, in that anatomically clustered (<500µm) neurons exhibited overlapping spatial representations. Overall, the wiring and functional features of CA1 pyramidal neurons reflected a combination of birthdate and the rate of neurogenesis. These observations demonstrate that sequential neurogenesis in embryonic development shapes the preconfigured forms of adult network dynamics.",
+        "publishedBy": {
+            "id": "urn:uuid:49d09422-25e3-437b-8ef8-f20d94715b8a",
+            "name": "DANDI publish",
+            "endDate": "2023-06-30T23:04:09.703387+00:00",
+            "schemaKey": "PublishActivity",
+            "startDate": "2023-06-30T23:04:09.703387+00:00",
+            "wasAssociatedWith": [
+                {
+                    "id": "urn:uuid:54e57ab8-86fd-4fbe-a94d-85b76497382c",
+                    "name": "DANDI API",
+                    "version": "0.1.0",
+                    "schemaKey": "Software",
+                    "identifier": "RRID:SCR_017571"
+                }
+            ]
+        },
+        "studyTarget": [],
+        "assetsSummary": {
+            "species": [
+                {
+                    "name": "Mus musculus - House mouse",
+                    "schemaKey": "SpeciesType",
+                    "identifier": "http://purl.obolibrary.org/obo/NCBITaxon_10090"
+                }
+            ],
+            "approach": [
+                {
+                    "name": "electrophysiological approach",
+                    "schemaKey": "ApproachType"
+                },
+                {
+                    "name": "behavioral approach",
+                    "schemaKey": "ApproachType"
+                }
+            ],
+            "schemaKey": "AssetsSummary",
+            "dataStandard": [
+                {
+                    "name": "Neurodata Without Borders (NWB)",
+                    "schemaKey": "StandardsType",
+                    "identifier": "RRID:SCR_015242"
+                }
+            ],
+            "numberOfBytes": 1545387836482,
+            "numberOfFiles": 117,
+            "numberOfSubjects": 17,
+            "variableMeasured": [
+                "ElectricalSeries",
+                "ProcessingModule",
+                "ElectrodeGroup",
+                "LFP",
+                "SpatialSeries",
+                "Position",
+                "Units"
+            ],
+            "measurementTechnique": [
+                {
+                    "name": "surgical technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "signal filtering technique",
                     "schemaKey": "MeasurementTechniqueType"
                 },
                 {
@@ -6222,7 +7979,410 @@
                     "schemaKey": "MeasurementTechniqueType"
                 },
                 {
+                    "name": "behavioral technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "spike sorting technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                }
+            ]
+        },
+        "datePublished": "2023-06-30T23:04:09.703387+00:00",
+        "schemaVersion": "0.6.4",
+        "ethicsApproval": [
+            {
+                "schemaKey": "EthicsApproval",
+                "identifier": "IA15-01466",
+                "contactPoint": {
+                    "url": "https://med.nyu.edu/research/office-science-research/regulatory-compliance-resources/institutional-animal-care-use#:~:text=NYU%20Grossman%20School%20of%20Medicine's,Laboratory%20Animals%E2%80%9D%20and%20the%20National",
+                    "email": "iacuc@nyulangone.org",
+                    "schemaKey": "ContactPoint"
+                }
+            }
+        ],
+        "wasGeneratedBy": [],
+        "relatedResource": [
+            {
+                "url": "https://www.nature.com/articles/s41593-022-01138-x",
+                "name": "Preconfigured dynamics in the hippocampus are guided by embryonic birthdate and rate of neurogenesis",
+                "relation": "dcite:IsDescribedBy",
+                "schemaKey": "Resource",
+                "identifier": "https://doi.org/10.1038/s41593-022-01138-x",
+                "repository": "Nature"
+            }
+        ],
+        "manifestLocation": [
+            "https://dandiarchive.s3.amazonaws.com/dandisets/000552/0.230630.2304/assets.yaml"
+        ]
+    },
+    "000554": {
+        "id": "DANDI:000554/0.230531.1237",
+        "doi": "10.48324/dandi.000554/0.230531.1237",
+        "url": "https://dandiarchive.org/dandiset/000554/0.230531.1237",
+        "name": "Human brain mapping with multithousand-channel PtNRGrids resolves spatiotemporal dynamics",
+        "about": [],
+        "access": [
+            {
+                "status": "dandi:OpenAccess",
+                "schemaKey": "AccessRequirements"
+            }
+        ],
+        "license": [
+            "spdx:CC-BY-4.0"
+        ],
+        "version": "0.230531.1237",
+        "@context": "https://raw.githubusercontent.com/dandi/schema/master/releases/0.6.4/context.json",
+        "citation": "Tchoe, Youngbin (2023) Human brain mapping with multithousand-channel PtNRGrids resolves spatiotemporal dynamics (Version 0.230531.1237) [Data set]. DANDI archive. https://doi.org/10.48324/dandi.000554/0.230531.1237",
+        "keywords": [],
+        "protocol": [],
+        "schemaKey": "Dandiset",
+        "identifier": "DANDI:000554",
+        "repository": "https://dandiarchive.org",
+        "contributor": [
+            {
+                "name": "Tchoe, Youngbin",
+                "email": "ybtchoe@gmail.com",
+                "roleName": [
+                    "dcite:ContactPerson"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            }
+        ],
+        "dateCreated": "2023-05-31T12:15:43.584820+00:00",
+        "description": "This dataset contains recordings from PtNRGrids, which are devices designed to record electrocorticography (ECoG) activities from the brain surface at high-spatial resolution. PtNRGrids used here were a square-shaped array with 1024 channels and a 150-µm pitch, which was implanted to record neural activity from the entire right primary somatosensory barrel cortex. The sensory response on the brain was evoked by delivering air puffs through a microcapillary tube to individually stimulate individual whiskers on the contralateral side. This dataset demonstrates the high-spatial resolution recording capability of PtNRGrids isolate functional cortical columns in sub-mm resolution from the surface of the brain.\n\n[Publication corresponding to this dataset] Tchoe, Youngbin, et al. \"Human brain mapping with multithousand-channel PtNRGrids resolves spatiotemporal dynamics.\" Science translational medicine 14.628 (2022): eabj1441.\n[Electrode mapping information & Basic analysis codes] Github: https://ytchoe.github.io/",
+        "publishedBy": {
+            "id": "urn:uuid:95d91de6-34bb-4c27-9470-c30ef2c34836",
+            "name": "DANDI publish",
+            "endDate": "2023-05-31T12:37:34.601908+00:00",
+            "schemaKey": "PublishActivity",
+            "startDate": "2023-05-31T12:37:34.601908+00:00",
+            "wasAssociatedWith": [
+                {
+                    "id": "urn:uuid:614eddae-4907-4adc-9150-3369ac8d8bdf",
+                    "name": "DANDI API",
+                    "version": "0.1.0",
+                    "schemaKey": "Software",
+                    "identifier": "RRID:SCR_017571"
+                }
+            ]
+        },
+        "studyTarget": [],
+        "assetsSummary": {
+            "species": [
+                {
+                    "name": "Rattus norvegicus - Norway rat",
+                    "schemaKey": "SpeciesType",
+                    "identifier": "http://purl.obolibrary.org/obo/NCBITaxon_10116"
+                }
+            ],
+            "approach": [
+                {
+                    "name": "electrophysiological approach",
+                    "schemaKey": "ApproachType"
+                }
+            ],
+            "schemaKey": "AssetsSummary",
+            "dataStandard": [
+                {
+                    "name": "Neurodata Without Borders (NWB)",
+                    "schemaKey": "StandardsType",
+                    "identifier": "RRID:SCR_015242"
+                }
+            ],
+            "numberOfBytes": 129066795249,
+            "numberOfFiles": 36,
+            "numberOfSubjects": 4,
+            "variableMeasured": [
+                "ElectrodeGroup",
+                "ElectricalSeries"
+            ],
+            "measurementTechnique": [
+                {
+                    "name": "surgical technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "multi electrode extracellular electrophysiology recording technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                }
+            ]
+        },
+        "datePublished": "2023-05-31T12:37:34.601908+00:00",
+        "schemaVersion": "0.6.4",
+        "ethicsApproval": [],
+        "wasGeneratedBy": [
+            {
+                "name": "Thin, High-Density, High-Performance, Depth and Surface Microelectrodes for Diagnosis and Treatment of Epilepsy",
+                "used": [],
+                "schemaKey": "Project",
+                "identifier": "UG3NS123723-02",
+                "wasAssociatedWith": []
+            },
+            {
+                "name": "Bringing Light to Functional Mapping in Resective Neurosurgery",
+                "used": [],
+                "schemaKey": "Project",
+                "identifier": "DP2EB029757-01",
+                "wasAssociatedWith": []
+            },
+            {
+                "name": "Integration of High Definition Display Technologies with Platinum Nanorod Microelectrodes for Large Scale in-vivo Recording and Stimulation",
+                "used": [],
+                "schemaKey": "Project",
+                "identifier": "R01NS123655-01",
+                "wasAssociatedWith": []
+            }
+        ],
+        "relatedResource": [],
+        "manifestLocation": [
+            "https://dandiarchive.s3.amazonaws.com/dandisets/000554/0.230531.1237/assets.yaml"
+        ]
+    },
+    "000574": {
+        "id": "DANDI:000574/draft",
+        "url": "https://dandiarchive.org/dandiset/000574/draft",
+        "name": "Dataset of human medial temporal lobe neurons, scalp and intracranial EEG during a verbal working memory task",
+        "about": [],
+        "access": [
+            {
+                "status": "dandi:OpenAccess",
+                "schemaKey": "AccessRequirements"
+            }
+        ],
+        "license": [
+            "spdx:CC-BY-4.0"
+        ],
+        "version": "draft",
+        "@context": "https://raw.githubusercontent.com/dandi/schema/master/releases/0.6.4/context.json",
+        "citation": "Boran, Ece; Fedele, Tommaso; Hilfiker, Peter; Stieglitz, Lennart; Grunwald, Thomas; Hohenheim, Jan; Sarnthein, Johannes (2023) Dataset of human medial temporal lobe neurons, scalp and intracranial EEG during a verbal working memory task (Version draft) [Data set]. DANDI archive. https://dandiarchive.org/dandiset/000574/draft",
+        "keywords": [
+            "Electrophysiology ",
+            "Human",
+            "Awake",
+            "Local field potential",
+            "Neuronal action potential",
+            "Spikes",
+            "Medial temporal lobe",
+            "Hippocampus",
+            "Entorhinal cortex",
+            "Amygdala",
+            "Scalp EEG",
+            "Intracranial EEG",
+            "Cognitive task",
+            "Verbal working memory",
+            "Epilepsy"
+        ],
+        "protocol": [],
+        "schemaKey": "Dandiset",
+        "identifier": "DANDI:000574",
+        "repository": "https://dandiarchive.org",
+        "contributor": [
+            {
+                "name": "Boran, Ece",
+                "roleName": [],
+                "schemaKey": "Person",
+                "identifier": "0000-0002-0395-7575",
+                "affiliation": [
+                    {
+                        "name": "Klinik für Neurochirurgie, UniversitätsSpital und Universität Zürich, 8091 Zürich, Switzerland",
+                        "schemaKey": "Affiliation",
+                        "identifier": "https://ror.org/01462r250"
+                    }
+                ],
+                "includeInCitation": true
+            },
+            {
+                "name": "Fedele, Tommaso",
+                "email": "fedele.tm@gmail.com",
+                "roleName": [],
+                "schemaKey": "Person",
+                "identifier": "0000-0001-7574-8062",
+                "affiliation": [
+                    {
+                        "name": "Klinik für Neurochirurgie, UniversitätsSpital und Universität Zürich, 8091 Zürich, Switzerland.",
+                        "schemaKey": "Affiliation",
+                        "identifier": "https://ror.org/01462r250"
+                    },
+                    {
+                        "name": "Zentrum für Neurowissenschaften Zürich, ETH Zürich, Zürich, Switzerland.",
+                        "schemaKey": "Affiliation",
+                        "identifier": "https://ror.org/05a28rw58"
+                    },
+                    {
+                        "name": "Institute for Cognitive Neuroscience, National Research University Higher School of Economics, Russian Federation.",
+                        "schemaKey": "Affiliation",
+                        "identifier": "https://ror.org/055f7t516"
+                    }
+                ],
+                "includeInCitation": true
+            },
+            {
+                "name": "Hilfiker, Peter",
+                "roleName": [],
+                "schemaKey": "Person",
+                "identifier": "0000-0001-7729-4754",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Stieglitz, Lennart",
+                "roleName": [],
+                "schemaKey": "Person",
+                "identifier": "0000-0002-3744-5105",
+                "affiliation": [
+                    {
+                        "name": "Klinik für Neurochirurgie, UniversitätsSpital und Universität Zürich, 8091 Zürich, Switzerland.",
+                        "schemaKey": "Affiliation",
+                        "identifier": "https://ror.org/01462r250"
+                    }
+                ],
+                "includeInCitation": true
+            },
+            {
+                "name": "Grunwald, Thomas",
+                "roleName": [],
+                "schemaKey": "Person",
+                "affiliation": [
+                    {
+                        "name": "Schweizerisches Epilepsie-Zentrum, 8008 Zürich, Switzerland.",
+                        "schemaKey": "Affiliation"
+                    },
+                    {
+                        "name": "Klinik für Neurologie, UniversitätsSpital Zürich, 8091 Zürich, Switzerland.",
+                        "schemaKey": "Affiliation",
+                        "identifier": "https://ror.org/01462r250"
+                    }
+                ],
+                "includeInCitation": true
+            },
+            {
+                "url": "https://www.hohenheim.ch",
+                "name": "Hohenheim, Jan",
+                "email": "jan@hohenheim.ch",
+                "roleName": [
+                    "dcite:ContactPerson",
+                    "dcite:DataCurator"
+                ],
+                "schemaKey": "Person",
+                "identifier": "0000-0001-9436-8348",
+                "affiliation": [
+                    {
+                        "name": "Institute of Neuroinformatics, University of Zurich",
+                        "schemaKey": "Affiliation",
+                        "identifier": "https://ror.org/02crff812"
+                    },
+                    {
+                        "name": "Institute of Neuroinformatics, ETH Zurich",
+                        "schemaKey": "Affiliation",
+                        "identifier": "https://ror.org/05a28rw58"
+                    }
+                ],
+                "includeInCitation": true
+            },
+            {
+                "name": "Sarnthein, Johannes",
+                "email": "Johannes.Sarnthein@usz.ch",
+                "roleName": [
+                    "dcite:ContactPerson",
+                    "dcite:Author",
+                    "dcite:Conceptualization"
+                ],
+                "schemaKey": "Person",
+                "identifier": "0000-0001-9141-381X",
+                "affiliation": [
+                    {
+                        "name": "Klinik für Neurochirurgie, UniversitätsSpital und Universität Zürich, 8091 Zürich, Switzerland.",
+                        "schemaKey": "Affiliation",
+                        "identifier": "https://ror.org/01462r250"
+                    },
+                    {
+                        "name": "Zentrum für Neurowissenschaften Zürich, ETH Zürich, Zürich, Switzerland.",
+                        "schemaKey": "Affiliation",
+                        "identifier": "https://ror.org/05a28rw58"
+                    }
+                ],
+                "includeInCitation": true
+            },
+            {
+                "url": "http://www.snf.ch/en",
+                "name": " Swiss National Science Foundation",
+                "email": "projects.ls@snf.ch",
+                "roleName": [
+                    "dcite:Funder"
+                ],
+                "schemaKey": "Organization",
+                "identifier": "https://ror.org/00yjd3n13",
+                "awardNumber": "204651",
+                "contactPoint": [],
+                "includeInCitation": false
+            }
+        ],
+        "dateCreated": "2023-07-04T13:52:07.557094+00:00",
+        "description": "We present an electrophysiological dataset recorded from nine subjects during a verbal working memory task. Subjects were epilepsy patients undergoing intracranial monitoring for localization of epileptic seizures. Subjects performed a modified Sternberg task in which the encoding of memory items, maintenance, and recall were temporally separated. The dataset includes simultaneously recorded scalp EEG with the 10-20 system, intracranial EEG (iEEG) recorded with depth electrodes, waveforms and spike times of 1526 units recorded in the medial temporal lobe, and the MNI coordinates and anatomical labels of all intracranial electrodes. Subject characteristics and information on sessions (set size, match/mismatch, correct/incorrect, response, response time for each trial) are also provided. This dataset enables the investigation of working memory by providing simultaneous scalp EEG and iEEG recordings, which can be used for connectivity analysis, alongside hard to obtain unit recordings from humans.",
+        "studyTarget": [],
+        "assetsSummary": {
+            "species": [
+                {
+                    "name": "Homo sapiens - Human",
+                    "schemaKey": "SpeciesType",
+                    "identifier": "http://purl.obolibrary.org/obo/NCBITaxon_9606"
+                }
+            ],
+            "approach": [
+                {
+                    "name": "behavioral approach",
+                    "schemaKey": "ApproachType"
+                },
+                {
+                    "name": "electrophysiological approach",
+                    "schemaKey": "ApproachType"
+                }
+            ],
+            "schemaKey": "AssetsSummary",
+            "dataStandard": [
+                {
+                    "name": "Neurodata Without Borders (NWB)",
+                    "schemaKey": "StandardsType",
+                    "identifier": "RRID:SCR_015242"
+                }
+            ],
+            "numberOfBytes": 13067234538,
+            "numberOfFiles": 37,
+            "numberOfSubjects": 9,
+            "variableMeasured": [
+                "Units",
+                "ElectrodeGroup",
+                "BehavioralEvents",
+                "ElectricalSeries",
+                "LFP",
+                "ProcessingModule"
+            ],
+            "measurementTechnique": [
+                {
+                    "name": "behavioral technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "surgical technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
                     "name": "signal filtering technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "analytical technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "multi electrode extracellular electrophysiology recording technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "spike sorting technique",
                     "schemaKey": "MeasurementTechniqueType"
                 }
             ]
@@ -6230,9 +8390,1074 @@
         "schemaVersion": "0.6.4",
         "ethicsApproval": [],
         "wasGeneratedBy": [],
-        "relatedResource": [],
+        "relatedResource": [
+            {
+                "url": "https://github.com/janhohenheim/usz-neuro-conversion",
+                "name": "USZ Neuro Conversion",
+                "relation": "dcite:IsCompiledBy",
+                "schemaKey": "Resource",
+                "identifier": "usz-neuro-conversion",
+                "repository": "GitHub"
+            },
+            {
+                "url": "http://doi.org/10.1126/sciadv.aav3687",
+                "name": "Persistent hippocampal neural firing and hippocampal-cortical coupling predict verbal working memory load",
+                "relation": "dcite:IsSupplementTo",
+                "schemaKey": "Resource",
+                "identifier": "10.1126/sciadv.aav3687",
+                "repository": "Science Advances"
+            },
+            {
+                "url": "https://gin.g-node.org/USZ_NCH/Human_MTL_units_scalp_EEG_and_iEEG_verbal_WM",
+                "name": "Dataset of human medial temporal lobe neurons, scalp and intracranial EEG during a verbal working memory task",
+                "relation": "dcite:IsVariantFormOf",
+                "schemaKey": "Resource",
+                "identifier": "Human_MTL_units_scalp_EEG_and_iEEG_verbal_WM",
+                "repository": "G-Node"
+            },
+            {
+                "url": "https://doi.org/10.1038/s41597-020-0364-3",
+                "name": "Data descriptor",
+                "relation": "dcite:IsDescribedBy",
+                "schemaKey": "Resource",
+                "identifier": "doi.org/10.1038/s41597-020-0364-3",
+                "repository": "scientific data"
+            },
+            {
+                "url": "http://www.neurobs.com/ex_files/expt_view?id=266",
+                "name": "Presentation Files",
+                "relation": "dcite:IsSupplementedBy",
+                "schemaKey": "Resource",
+                "identifier": "Verbal working memory Sternberg task with simultaneous presentation of letters.",
+                "repository": "Neurobehavioral Systems"
+            }
+        ],
         "manifestLocation": [
-            "https://api.dandiarchive.org/api/dandisets/000463/versions/draft/assets/"
+            "https://api.dandiarchive.org/api/dandisets/000574/versions/draft/assets/"
+        ]
+    },
+    "000568": {
+        "id": "DANDI:000568/0.230705.1633",
+        "doi": "10.48324/dandi.000568/0.230705.1633",
+        "url": "https://dandiarchive.org/dandiset/000568/0.230705.1633",
+        "name": "Probing subthreshold dynamics of hippocampal neurons by pulsed optogenetics",
+        "about": [
+            {
+                "name": "hippocampus",
+                "schemaKey": "Anatomy",
+                "identifier": "UBERON:0002421"
+            }
+        ],
+        "access": [
+            {
+                "status": "dandi:OpenAccess",
+                "schemaKey": "AccessRequirements"
+            }
+        ],
+        "license": [
+            "spdx:CC-BY-4.0"
+        ],
+        "version": "0.230705.1633",
+        "@context": "https://raw.githubusercontent.com/dandi/schema/master/releases/0.6.4/context.json",
+        "citation": "Valero, Manuel;  Zutshi, Ipshita; Yoon, Euisik; Buzsáki, György (2023) Probing subthreshold dynamics of hippocampal neurons by pulsed optogenetics (Version 0.230705.1633) [Data set]. DANDI archive. https://doi.org/10.48324/dandi.000568/0.230705.1633",
+        "keywords": [],
+        "protocol": [],
+        "schemaKey": "Dandiset",
+        "identifier": "DANDI:000568",
+        "repository": "https://dandiarchive.org",
+        "contributor": [
+            {
+                "url": "https://valeroneuroscience.com/",
+                "name": "Valero, Manuel",
+                "email": "valegarman@gmail.com",
+                "roleName": [
+                    "dcite:Author",
+                    "dcite:ContactPerson",
+                    "dcite:Researcher",
+                    "dcite:Conceptualization",
+                    "dcite:DataCurator",
+                    "dcite:FundingAcquisition",
+                    "dcite:Investigation",
+                    "dcite:Methodology",
+                    "dcite:ProjectAdministration",
+                    "dcite:FormalAnalysis",
+                    "dcite:Software",
+                    "dcite:Validation",
+                    "dcite:Visualization"
+                ],
+                "schemaKey": "Person",
+                "identifier": "0000-0001-7860-577X",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": " Zutshi, Ipshita",
+                "roleName": [
+                    "dcite:Methodology",
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "identifier": "0000-0001-8180-0816",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Yoon, Euisik",
+                "roleName": [
+                    "dcite:Author",
+                    "dcite:FundingAcquisition",
+                    "dcite:Supervision",
+                    "dcite:ProjectAdministration"
+                ],
+                "schemaKey": "Person",
+                "identifier": "0000-0002-2127-1200",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Buzsáki, György",
+                "email": "gyorgy.buzsaki@nyumc.org",
+                "roleName": [
+                    "dcite:Author",
+                    "dcite:Conceptualization",
+                    "dcite:FundingAcquisition",
+                    "dcite:Methodology",
+                    "dcite:ProjectAdministration",
+                    "dcite:Supervision",
+                    "dcite:Researcher"
+                ],
+                "schemaKey": "Person",
+                "identifier": "0000-0002-3100-4800",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "url": "http://www.hfsp.org/",
+                "name": "International Human Frontier Science Program Organization",
+                "roleName": [
+                    "dcite:Funder"
+                ],
+                "schemaKey": "Organization",
+                "identifier": "https://ror.org/02ebx7v45",
+                "awardNumber": " LT0000717/2018, NIH MH107396, NS 090583 NSF PIRE, 1545858, U19 NS107616, U19 NS104590, LT0000717/2018",
+                "contactPoint": [],
+                "includeInCitation": false
+            },
+            {
+                "url": "http://www.nih.gov/",
+                "name": "National Institutes of Health",
+                "roleName": [
+                    "dcite:Funder"
+                ],
+                "schemaKey": "Organization",
+                "identifier": "https://ror.org/01cwqze88",
+                "awardNumber": "MH107396, U19NS107616",
+                "contactPoint": [],
+                "includeInCitation": false
+            },
+            {
+                "url": "https://www.nimh.nih.gov/",
+                "name": "National Institute of Mental Health",
+                "roleName": [
+                    "dcite:Funder"
+                ],
+                "schemaKey": "Organization",
+                "identifier": "https://ror.org/04xeg9z08",
+                "awardNumber": "NS107616",
+                "contactPoint": [],
+                "includeInCitation": false
+            },
+            {
+                "url": "https://www.embo.org/",
+                "name": "European Molecular Biology Organization",
+                "roleName": [
+                    "dcite:Funder"
+                ],
+                "schemaKey": "Organization",
+                "identifier": "https://ror.org/04wfr2810",
+                "awardNumber": "EMBO ALTF 1161-2017",
+                "contactPoint": [],
+                "includeInCitation": false
+            },
+            {
+                "url": "http://www.nsf.gov/",
+                "name": "National Science Foundation",
+                "roleName": [
+                    "dcite:Funder"
+                ],
+                "schemaKey": "Organization",
+                "identifier": "https://ror.org/021nxhr62",
+                "awardNumber": "NeuroNex MINT grant 1707316",
+                "contactPoint": [],
+                "includeInCitation": false
+            },
+            {
+                "url": "http://leonlevyfoundation.org/",
+                "name": "Leon Levy Foundation",
+                "roleName": [
+                    "dcite:Funder"
+                ],
+                "schemaKey": "Organization",
+                "identifier": "https://ror.org/033hnyq61",
+                "awardNumber": "NIH MH107396,  NS 090583 NSF PIRE, 1545858, U19 NS107616",
+                "contactPoint": [],
+                "includeInCitation": false
+            },
+            {
+                "name": "Mayorquin, Heberto",
+                "email": "h.mayorquin@gmail.com",
+                "roleName": [
+                    "dcite:DataCurator"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": false
+            }
+        ],
+        "dateCreated": "2023-06-28T15:39:24.241528+00:00",
+        "description": "Understanding how excitatory (E) and inhibitory (I) inputs are integrated by neurons requires monitoring their subthreshold behavior. We probed the subthreshold dynamics using optogenetic depolarizing pulses in hippocampal neuronal assemblies in freely moving mice. Excitability decreased during sharp- wave ripples coupled with increased I. In contrast to this “negative gain,” optogenetic probing showed increased within-field excitability in place cells by weakening I and unmasked stable place fields in initially non–place cells. Neuronal assemblies active during sharp-wave ripples in the home cage predicted spatial overlap and sequences of place fields of both place cells and unmasked preexisting place fields of non–place cells during track running. Thus, indirect probing of subthreshold dynamics in neuronal populations permits the disclosing of preexisting assemblies and modes of neuronal operations.",
+        "publishedBy": {
+            "id": "urn:uuid:1cd55cbc-aa01-4116-ae73-5f819b258bc4",
+            "name": "DANDI publish",
+            "endDate": "2023-07-05T16:33:28.271502+00:00",
+            "schemaKey": "PublishActivity",
+            "startDate": "2023-07-05T16:33:28.271502+00:00",
+            "wasAssociatedWith": [
+                {
+                    "id": "urn:uuid:7aa68bbb-416a-4f66-bdd2-5d6ef65a14d0",
+                    "name": "DANDI API",
+                    "version": "0.1.0",
+                    "schemaKey": "Software",
+                    "identifier": "RRID:SCR_017571"
+                }
+            ]
+        },
+        "studyTarget": [],
+        "assetsSummary": {
+            "species": [
+                {
+                    "name": "Mus musculus - House mouse",
+                    "schemaKey": "SpeciesType",
+                    "identifier": "http://purl.obolibrary.org/obo/NCBITaxon_10090"
+                }
+            ],
+            "approach": [
+                {
+                    "name": "behavioral approach",
+                    "schemaKey": "ApproachType"
+                },
+                {
+                    "name": "electrophysiological approach",
+                    "schemaKey": "ApproachType"
+                },
+                {
+                    "name": "optogenetic approach",
+                    "schemaKey": "ApproachType"
+                }
+            ],
+            "schemaKey": "AssetsSummary",
+            "dataStandard": [
+                {
+                    "name": "Neurodata Without Borders (NWB)",
+                    "schemaKey": "StandardsType",
+                    "identifier": "RRID:SCR_015242"
+                }
+            ],
+            "numberOfBytes": 904756915175,
+            "numberOfFiles": 138,
+            "numberOfSubjects": 4,
+            "variableMeasured": [
+                "LFP",
+                "Units",
+                "SpatialSeries",
+                "ElectrodeGroup",
+                "ElectricalSeries",
+                "Position",
+                "ProcessingModule",
+                "OptogeneticSeries"
+            ],
+            "measurementTechnique": [
+                {
+                    "name": "spike sorting technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "behavioral technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "signal filtering technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "analytical technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "surgical technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "multi electrode extracellular electrophysiology recording technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                }
+            ]
+        },
+        "datePublished": "2023-07-05T16:33:28.271502+00:00",
+        "schemaVersion": "0.6.4",
+        "ethicsApproval": [],
+        "wasGeneratedBy": [],
+        "relatedResource": [
+            {
+                "url": "https://www.science.org/doi/10.1126/science.abm1891",
+                "name": " Probing subthreshold dynamics of hippocampal neurons by pulsed optogenetics",
+                "relation": "dcite:IsDescribedBy",
+                "schemaKey": "Resource",
+                "identifier": "https://doi.org/10.1126/science.abm1891",
+                "repository": "Science"
+            }
+        ],
+        "manifestLocation": [
+            "https://dandiarchive.s3.amazonaws.com/dandisets/000568/0.230705.1633/assets.yaml"
+        ]
+    },
+    "000576": {
+        "id": "DANDI:000576/draft",
+        "url": "https://dandiarchive.org/dandiset/000576/draft",
+        "name": "Dataset of neurons and intracranial EEG from human amygdala during aversive dynamic visual stimulation",
+        "about": [],
+        "access": [
+            {
+                "status": "dandi:OpenAccess",
+                "schemaKey": "AccessRequirements"
+            }
+        ],
+        "license": [
+            "spdx:CC-BY-4.0"
+        ],
+        "version": "draft",
+        "@context": "https://raw.githubusercontent.com/dandi/schema/master/releases/0.6.4/context.json",
+        "citation": "Fedele, Tommaso; Hilfiker, Peter ; Grunwald, Thomas ; Stieglitz, Lennart ; Jokeit, Hennric; Hohenheim, Jan; Sarnthein, Johannes  (2023) Dataset of neurons and intracranial EEG from human amygdala during aversive dynamic visual stimulation (Version draft) [Data set]. DANDI archive. https://dandiarchive.org/dandiset/000576/draft",
+        "keywords": [],
+        "protocol": [],
+        "schemaKey": "Dandiset",
+        "identifier": "DANDI:000576",
+        "repository": "https://dandiarchive.org",
+        "contributor": [
+            {
+                "name": "Fedele, Tommaso",
+                "email": "fedele.tm@gmail.com",
+                "roleName": [
+                    "dcite:Author",
+                    "dcite:ContactPerson"
+                ],
+                "schemaKey": "Person",
+                "identifier": "0000-0001-7574-8062",
+                "affiliation": [
+                    {
+                        "name": "National Research University Higher School of Economics, Moscow, Russian Federation",
+                        "schemaKey": "Affiliation",
+                        "identifier": "https://ror.org/055f7t516"
+                    }
+                ],
+                "includeInCitation": true
+            },
+            {
+                "name": "Hilfiker, Peter ",
+                "roleName": [],
+                "schemaKey": "Person",
+                "identifier": "0000-0001-7729-4754",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Grunwald, Thomas ",
+                "roleName": [],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Stieglitz, Lennart ",
+                "roleName": [],
+                "schemaKey": "Person",
+                "identifier": "0000-0002-3744-5105",
+                "affiliation": [
+                    {
+                        "name": "Klinik für Neurochirurgie, UniversitätsSpital Zürich und Universität Zürich, Zurich, Switzerland",
+                        "schemaKey": "Affiliation",
+                        "identifier": "https://ror.org/01462r250"
+                    }
+                ],
+                "includeInCitation": true
+            },
+            {
+                "name": "Jokeit, Hennric",
+                "roleName": [],
+                "schemaKey": "Person",
+                "identifier": "0000-0001-6969-9639",
+                "affiliation": [
+                    {
+                        "name": "Zentrum für Neurowissenschaften Zürich, Switzerland",
+                        "schemaKey": "Affiliation",
+                        "identifier": "https://ror.org/01462r250"
+                    }
+                ],
+                "includeInCitation": true
+            },
+            {
+                "url": "https://www.hohenheim.ch",
+                "name": "Hohenheim, Jan",
+                "email": "jan@hohenheim.ch",
+                "roleName": [
+                    "dcite:ContactPerson",
+                    "dcite:DataManager"
+                ],
+                "schemaKey": "Person",
+                "identifier": "0000-0001-9436-8348",
+                "affiliation": [
+                    {
+                        "name": "Institute of Neuroinformatics, University of Zurich & ETH Zurich",
+                        "schemaKey": "Affiliation",
+                        "identifier": "https://ror.org/02crff812"
+                    },
+                    {
+                        "name": "Institute of Neuroinformatics, University of Zurich & ETH Zurich",
+                        "schemaKey": "Affiliation",
+                        "identifier": "https://ror.org/05a28rw58"
+                    }
+                ],
+                "includeInCitation": true
+            },
+            {
+                "name": "Sarnthein, Johannes ",
+                "email": "johannes.sarnthein@usz.ch",
+                "roleName": [
+                    "dcite:Author",
+                    "dcite:ContactPerson"
+                ],
+                "schemaKey": "Person",
+                "identifier": "0000-0001-9141-381X",
+                "affiliation": [
+                    {
+                        "name": "Klinik für Neurochirurgie, UniversitätsSpital Zürich und Universität Zürich, Zurich, Switzerland",
+                        "schemaKey": "Affiliation",
+                        "identifier": "https://ror.org/01462r250"
+                    },
+                    {
+                        "name": "Zentrum für Neurowissenschaften Zürich, Switzerland",
+                        "schemaKey": "Affiliation",
+                        "identifier": "https://ror.org/01462r250"
+                    }
+                ],
+                "includeInCitation": true
+            },
+            {
+                "url": "http://www.snf.ch/en",
+                "name": " Swiss National Science Foundation",
+                "email": "projects.ls@snf.ch",
+                "roleName": [
+                    "dcite:Funder"
+                ],
+                "schemaKey": "Organization",
+                "identifier": "https://ror.org/00yjd3n13",
+                "awardNumber": "204651",
+                "contactPoint": [],
+                "includeInCitation": false
+            }
+        ],
+        "dateCreated": "2023-07-04T17:10:34.084138+00:00",
+        "description": "We present an electrophysiological dataset collected from the amygdalae of nine subjects attending a visual dynamic stimulation of emotional aversive content. The subjects were patients affected by epilepsy who underwent preoperative invasive monitoring in the mesial temporal lobe. Subjects were presented with dynamic visual sequences of fearful faces (aversive condition), interleaved with sequences of neutral landscapes (neutral condition).\n\nWe provide simultaneous recordings of intracranial EEG (iEEG) and neuronal spike times and waveforms, and metadata related to the task, subjects, sessions and electrodes in the NIX standard. We technically validated this dataset and provide here the spike sorting quality metrics and the spectra of iEEG signals.\nThis dataset allows the investigation of amygdalar response to dynamic aversive stimuli at multiple spatial scales, from the macroscopic EEG to the neuronal firing in the human brain.",
+        "studyTarget": [],
+        "assetsSummary": {
+            "species": [
+                {
+                    "name": "Homo sapiens - Human",
+                    "schemaKey": "SpeciesType",
+                    "identifier": "http://purl.obolibrary.org/obo/NCBITaxon_9606"
+                }
+            ],
+            "approach": [
+                {
+                    "name": "electrophysiological approach",
+                    "schemaKey": "ApproachType"
+                }
+            ],
+            "schemaKey": "AssetsSummary",
+            "dataStandard": [
+                {
+                    "name": "Neurodata Without Borders (NWB)",
+                    "schemaKey": "StandardsType",
+                    "identifier": "RRID:SCR_015242"
+                }
+            ],
+            "numberOfBytes": 161075597,
+            "numberOfFiles": 9,
+            "numberOfSubjects": 9,
+            "variableMeasured": [
+                "ProcessingModule",
+                "LFP",
+                "Units",
+                "ElectricalSeries",
+                "ElectrodeGroup"
+            ],
+            "measurementTechnique": [
+                {
+                    "name": "surgical technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "analytical technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "signal filtering technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "multi electrode extracellular electrophysiology recording technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "spike sorting technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                }
+            ]
+        },
+        "schemaVersion": "0.6.4",
+        "ethicsApproval": [],
+        "wasGeneratedBy": [],
+        "relatedResource": [
+            {
+                "url": "https://doi.org/10.1016/j.neuroimage.2020.116705",
+                "name": "The relation between neuronal firing, local field potentials and hemodynamic activity in the human amygdala in response to aversive dynamic visual stimuli",
+                "relation": "dcite:IsSupplementTo",
+                "schemaKey": "Resource",
+                "identifier": "10.1016/j.neuroimage.2020.116705",
+                "repository": "NeuroImage"
+            },
+            {
+                "url": "https://doi.org/10.18112/openneuro.ds003374.v1.1.1",
+                "name": "Dataset of neurons and intracranial EEG from human amygdala during aversive dynamic visual stimulation",
+                "relation": "dcite:IsVariantFormOf",
+                "schemaKey": "Resource",
+                "identifier": "10.18112/openneuro.ds003374.v1.1.1",
+                "repository": "OpenNeuro"
+            },
+            {
+                "url": "https://github.com/janhohenheim/usz-neuro-conversion",
+                "name": "USZ Neuro Conversion",
+                "relation": "dcite:IsCompiledBy",
+                "schemaKey": "Resource",
+                "identifier": "usz-neuro-conversion",
+                "repository": "GitHub"
+            },
+            {
+                "url": "https://gin.g-node.org/USZ_NCH/Human_Amygdala_MUA_sEEG_FearVideo",
+                "name": "Dataset of neurons and intracranial EEG from human amygdala during aversive dynamic visual stimulation",
+                "relation": "dcite:IsVariantFormOf",
+                "schemaKey": "Resource",
+                "identifier": "Human_Amygdala_MUA_sEEG_FearVideo",
+                "repository": "G-Node"
+            },
+            {
+                "url": "https://doi.org/10.1038/s41597-020-00790-x",
+                "name": "Data descriptor",
+                "relation": "dcite:IsDescribedBy",
+                "schemaKey": "Resource",
+                "identifier": "doi.org/10.1038/s41597-020-00790-x",
+                "repository": "scientific data"
+            },
+            {
+                "url": "https://www.neurobs.com/ex_files/expt_view?id=283",
+                "name": "Presentation Files",
+                "relation": "dcite:IsSupplementedBy",
+                "schemaKey": "Resource",
+                "identifier": "Dynamic visual sequences of fearful faces",
+                "repository": "Neurobehavioral Systems"
+            }
+        ],
+        "manifestLocation": [
+            "https://api.dandiarchive.org/api/dandisets/000576/versions/draft/assets/"
+        ]
+    },
+    "000582": {
+        "id": "DANDI:000582/draft",
+        "url": "https://dandiarchive.org/dandiset/000582/draft",
+        "name": "Conjunctive Representation of Position, Direction, and Velocity in Entorhinal Cortex",
+        "about": [],
+        "access": [
+            {
+                "status": "dandi:OpenAccess",
+                "schemaKey": "AccessRequirements"
+            }
+        ],
+        "license": [
+            "spdx:CC-BY-4.0"
+        ],
+        "version": "draft",
+        "@context": "https://raw.githubusercontent.com/dandi/schema/master/releases/0.6.4/context.json",
+        "citation": "Sargolini, Francesca; Fyhn, Marianne; Hafting, Torkel; McNaughton, Bruce L.; Witter, Menno P.; Moser, May-Britt; Moser, Edvard I.; Waade, Haagen; Ball, Simon (2023) Conjunctive Representation of Position, Direction, and Velocity in Entorhinal Cortex (Version draft) [Data set]. DANDI archive. https://dandiarchive.org/dandiset/000582/draft",
+        "keywords": [],
+        "protocol": [],
+        "schemaKey": "Dandiset",
+        "identifier": "DANDI:000582",
+        "repository": "https://dandiarchive.org",
+        "contributor": [
+            {
+                "name": "Sargolini, Francesca",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "identifier": "0000-0002-5038-3746",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Fyhn, Marianne",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Hafting, Torkel",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "McNaughton, Bruce L.",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Witter, Menno P.",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Moser, May-Britt",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Moser, Edvard I.",
+                "roleName": [
+                    "dcite:Author"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Waade, Haagen",
+                "email": "haagen.waade@ntnu.no",
+                "roleName": [
+                    "dcite:ContactPerson"
+                ],
+                "schemaKey": "Person",
+                "identifier": "0000-0003-4675-2569",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Ball, Simon",
+                "email": "simon.ball@ntnu.no",
+                "roleName": [
+                    "dcite:ContactPerson"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            }
+        ],
+        "dateCreated": "2023-07-17T08:18:23.034598+00:00",
+        "description": "The dataset includes spike times for recorded grid cells from the medial entorhinal cortex (MEC) in rats that explored two-dimensional environments. The behavioral data includes position from the tracking LEDs. \n\nThis sample was published in Sargolini et al. (Science, 2006).\n\nGrid cells in the medial entorhinal cortex (MEC) are part of an environment-independent spatial coordinate system. To determine how information about location, direction, and distance is integrated in the grid-cell network, we recorded from each principal cell layer of MEC in rats that explored two-dimensional environments. Whereas layer II was predominated by grid cells, grid cells colocalized with head-direction cells and conjunctive grid x head-direction cells in the deeper layers. All cell types were modulated by running speed. The conjunction of positional, directional, and translational information in a single MEC cell type may enable grid coordinates to be updated during self-motion-based navigation.\n",
+        "studyTarget": [],
+        "assetsSummary": {
+            "species": [
+                {
+                    "name": "Rattus norvegicus - Norway rat",
+                    "schemaKey": "SpeciesType",
+                    "identifier": "http://purl.obolibrary.org/obo/NCBITaxon_10116"
+                }
+            ],
+            "approach": [
+                {
+                    "name": "electrophysiological approach",
+                    "schemaKey": "ApproachType"
+                },
+                {
+                    "name": "behavioral approach",
+                    "schemaKey": "ApproachType"
+                }
+            ],
+            "schemaKey": "AssetsSummary",
+            "dataStandard": [
+                {
+                    "name": "Neurodata Without Borders (NWB)",
+                    "schemaKey": "StandardsType",
+                    "identifier": "RRID:SCR_015242"
+                }
+            ],
+            "numberOfBytes": 1705196087,
+            "numberOfFiles": 109,
+            "numberOfSubjects": 12,
+            "variableMeasured": [
+                "ElectrodeGroup",
+                "Position",
+                "Units",
+                "ElectricalSeries",
+                "ProcessingModule",
+                "SpatialSeries",
+                "LFP"
+            ],
+            "measurementTechnique": [
+                {
+                    "name": "spike sorting technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "surgical technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "multi electrode extracellular electrophysiology recording technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "behavioral technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "signal filtering technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "analytical technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                }
+            ]
+        },
+        "schemaVersion": "0.6.4",
+        "ethicsApproval": [],
+        "wasGeneratedBy": [
+            {
+                "id": "urn:uuid:b5a3e1e4-7c9d-4247-ab5b-ac772a85ba59",
+                "name": "Metadata extraction from DOI",
+                "used": [],
+                "schemaKey": "Project",
+                "description": "Metadata (contributor, name, relatedResource) was enhanced with data from DOI https://doi.org/10.1126/science.1125572 by DANDI cli",
+                "wasAssociatedWith": [
+                    {
+                        "url": "https://github.com/dandi/dandi-cli",
+                        "name": "DANDI Command Line Interface",
+                        "version": "0.55.1",
+                        "schemaKey": "Software",
+                        "identifier": "RRID:SCR_019009"
+                    }
+                ]
+            }
+        ],
+        "relatedResource": [
+            {
+                "url": "https://doi.org/10.1126/science.1125572",
+                "name": "Conjunctive Representation of Position, Direction, and Velocity in Entorhinal Cortex",
+                "relation": "dcite:IsDescribedBy",
+                "schemaKey": "Resource",
+                "identifier": "https://doi.org/10.1126/science.1125572"
+            },
+            {
+                "url": "https://www.ntnu.edu/kavli/research/grid-cell-data",
+                "name": "Grid cell data",
+                "relation": "dcite:IsSupplementTo",
+                "schemaKey": "Resource"
+            }
+        ],
+        "manifestLocation": [
+            "https://api.dandiarchive.org/api/dandisets/000582/versions/draft/assets/"
+        ]
+    },
+    "000618": {
+        "id": "DANDI:000618/draft",
+        "url": "https://dandiarchive.org/dandiset/000618/draft",
+        "name": "SpikeForest ground truth datasets",
+        "about": [
+            {}
+        ],
+        "access": [
+            {
+                "status": "dandi:OpenAccess",
+                "schemaKey": "AccessRequirements"
+            }
+        ],
+        "license": [
+            "spdx:CC-BY-4.0"
+        ],
+        "version": "draft",
+        "@context": "https://raw.githubusercontent.com/dandi/schema/master/releases/0.6.4/context.json",
+        "citation": "Magland, Jeremy; Jun, James J; Lovero, Elizabeth; Morley, Alexander J; Hurwitz, Cole Lincoln; Buccino, Alessio Paolo; Garcia, Samuel; Barnett, Alex H; English, Daniel (2023) SpikeForest ground truth datasets (Version draft) [Data set]. DANDI archive. https://dandiarchive.org/dandiset/000618/draft",
+        "keywords": [],
+        "protocol": [],
+        "schemaKey": "Dandiset",
+        "identifier": "DANDI:000618",
+        "repository": "https://dandiarchive.org",
+        "contributor": [
+            {
+                "name": "Magland, Jeremy",
+                "email": "jmagland@flatironinstitute.org",
+                "roleName": [
+                    "dcite:ContactPerson"
+                ],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Jun, James J",
+                "roleName": [],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Lovero, Elizabeth",
+                "roleName": [],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Morley, Alexander J",
+                "roleName": [],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Hurwitz, Cole Lincoln",
+                "roleName": [],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Buccino, Alessio Paolo",
+                "roleName": [],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Garcia, Samuel",
+                "roleName": [],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "Barnett, Alex H",
+                "roleName": [],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            },
+            {
+                "name": "English, Daniel",
+                "roleName": [],
+                "schemaKey": "Person",
+                "affiliation": [],
+                "includeInCitation": true
+            }
+        ],
+        "dateCreated": "2023-08-04T13:32:03.181333+00:00",
+        "description": "The SpikeForest project contains a collection of electrophysiological recordings together with ground truth spiking information for the purpose of benchmarking the performance of spike sorting algorithms. In this dandiset we provide a subset of these recordings together with ground truth.\n\nThis dataset was prepared using the following script: https://github.com/flatironinstitute/spikeforest/blob/main/devel/dandiset/prepare_dandiset.py\n\nFor more information, see https://elifesciences.org/articles/55167",
+        "studyTarget": [],
+        "assetsSummary": {
+            "species": [
+                {
+                    "name": "Mus musculus - House mouse",
+                    "schemaKey": "SpeciesType",
+                    "identifier": "http://purl.obolibrary.org/obo/NCBITaxon_10090"
+                },
+                {
+                    "name": "Rattus norvegicus - Norway rat",
+                    "schemaKey": "SpeciesType",
+                    "identifier": "http://purl.obolibrary.org/obo/NCBITaxon_10116"
+                }
+            ],
+            "approach": [
+                {
+                    "name": "electrophysiological approach",
+                    "schemaKey": "ApproachType"
+                }
+            ],
+            "schemaKey": "AssetsSummary",
+            "dataStandard": [
+                {
+                    "name": "Neurodata Without Borders (NWB)",
+                    "schemaKey": "StandardsType",
+                    "identifier": "RRID:SCR_015242"
+                }
+            ],
+            "numberOfBytes": 145521718882,
+            "numberOfFiles": 124,
+            "numberOfSubjects": 4,
+            "variableMeasured": [
+                "Units",
+                "ElectricalSeries",
+                "ElectrodeGroup",
+                "ProcessingModule"
+            ],
+            "measurementTechnique": [
+                {
+                    "name": "spike sorting technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "surgical technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "multi electrode extracellular electrophysiology recording technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "analytical technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                }
+            ]
+        },
+        "schemaVersion": "0.6.4",
+        "ethicsApproval": [],
+        "wasGeneratedBy": [
+            {}
+        ],
+        "relatedResource": [
+            {
+                "url": "https://www.biorxiv.org/content/10.1101/370080v1",
+                "name": "Recording from the same neuron with high-density CMOS probes and patch-clamp: a ground-truth dataset and an experiment in collaboration",
+                "relation": "dcite:HasPart",
+                "schemaKey": "Resource",
+                "identifier": "paired-kampff"
+            },
+            {
+                "url": "https://journals.physiology.org/doi/full/10.1152/jn.00650.2017",
+                "name": "Automated in vivo patch-clamp evaluation of extracellular multielectrode array spike recording capability",
+                "relation": "dcite:HasPart",
+                "schemaKey": "Resource",
+                "identifier": "paired-boyden"
+            }
+        ],
+        "manifestLocation": [
+            "https://api.dandiarchive.org/api/dandisets/000618/versions/draft/assets/"
+        ]
+    },
+    "000620": {
+        "id": "DANDI:000620/draft",
+        "url": "https://dandiarchive.org/dandiset/000620/draft",
+        "name": "JazLab Processing",
+        "access": [
+            {
+                "status": "dandi:EmbargoedAccess",
+                "schemaKey": "AccessRequirements"
+            }
+        ],
+        "version": "draft",
+        "@context": "https://raw.githubusercontent.com/dandi/schema/master/releases/0.6.4/context.json",
+        "citation": "JazLab Processing (2023). (Version draft) [Data set]. DANDI archive. https://dandiarchive.org/dandiset/000620/draft",
+        "schemaKey": "Dandiset",
+        "identifier": "DANDI:000620",
+        "repository": "https://dandiarchive.org",
+        "contributor": [
+            {
+                "name": "National Institutes of Health (NIH)",
+                "roleName": [
+                    "dcite:Funder"
+                ],
+                "schemaKey": "Organization",
+                "awardNumber": "5 R01 NS 119519-03"
+            }
+        ],
+        "dateCreated": "2023-08-09T18:02:50.024110+00:00",
+        "description": "Work in progress dataset for the Jazayeri lab while prototyping the conversion and intermediate data processing such as spike sorting",
+        "assetsSummary": {
+            "species": [
+                {
+                    "name": "Macaca mulatta - Rhesus monkey",
+                    "schemaKey": "SpeciesType",
+                    "identifier": "http://purl.obolibrary.org/obo/NCBITaxon_9544"
+                }
+            ],
+            "approach": [
+                {
+                    "name": "electrophysiological approach",
+                    "schemaKey": "ApproachType"
+                }
+            ],
+            "schemaKey": "AssetsSummary",
+            "dataStandard": [
+                {
+                    "name": "Neurodata Without Borders (NWB)",
+                    "schemaKey": "StandardsType",
+                    "identifier": "RRID:SCR_015242"
+                }
+            ],
+            "numberOfBytes": 171668130307,
+            "numberOfFiles": 4,
+            "numberOfSubjects": 2,
+            "variableMeasured": [
+                "ProcessingModule",
+                "Units",
+                "ElectricalSeries",
+                "ElectrodeGroup",
+                "LFP"
+            ],
+            "measurementTechnique": [
+                {
+                    "name": "spike sorting technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "multi electrode extracellular electrophysiology recording technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "analytical technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "surgical technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                },
+                {
+                    "name": "signal filtering technique",
+                    "schemaKey": "MeasurementTechniqueType"
+                }
+            ]
+        },
+        "schemaVersion": "0.6.4",
+        "manifestLocation": [
+            "https://api.dandiarchive.org/api/dandisets/000620/versions/draft/assets/"
         ]
     }
 }

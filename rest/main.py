@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 
+from core.settings import settings
 from routes.user import router as router_user
 from routes.dandi import router as router_dandi
 from routes.sorting import router as router_sorting
@@ -37,11 +38,10 @@ except Exception as e:
 
 # Load Dandisets metadata - run only at the startup, and if metadata is not yet present
 metadata_path = Path().cwd().joinpath("data/dandisets_metadata.json")
-if not metadata_path.exists():
-    print("Loading dandisets metadata...")
-    dandi_client = DandiClient()
-    dandi_client.save_dandisets_metadata_to_json()
-
+print("Loading dandisets metadata...")
+dandi_client = DandiClient(token=settings.DANDI_API_TOKEN)
+dandi_client.save_dandisets_metadata_to_json()
+print("Done loading dandisets metadata.")
 
 
 if __name__ == "__main__":
