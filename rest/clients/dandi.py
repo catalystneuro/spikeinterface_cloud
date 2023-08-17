@@ -181,6 +181,9 @@ class DandiClient:
                 "duration": v.data.shape[0] / v.rate,
                 "n_traces": v.data.shape[1],
             }
+        file_info["subject"] = dict()
+        for k, v in nwbfile.subject.fields.items():
+            file_info["subject"][k] = v
         return file_info
 
 

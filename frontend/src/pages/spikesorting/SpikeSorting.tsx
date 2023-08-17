@@ -144,6 +144,22 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
         setSubjectMetadata((prevMetadata) => ({ ...prevMetadata, [key]: value }));
     };
 
+    const updateSubjectMetadata = (file_info: any) => {
+        const subjectInfo = file_info.subject;
+        // Extract fields from the subjectInfo or use current value as default
+        const updatedMetadata = {
+            description: subjectInfo.description || '',
+            age: subjectInfo.age || '',
+            genotype: subjectInfo.genotype || '',
+            sex: subjectInfo.sex || '',
+            species: subjectInfo.species || '',
+            strain: subjectInfo.strain || '',
+            subjectID: subjectInfo.subject_id || '',
+            weight: subjectInfo.weight || 0
+        };
+        setSubjectMetadata(updatedMetadata);
+    };
+
     // Update Recording Kwargs
     const handleRecordingKwargsChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, key: string) => {
         const value = event.target.value;
@@ -202,6 +218,7 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
             setListOfES(ESNames)
             setSelectedDandiFileInfo(response.data.file_info);
             setSourceDataPaths({ 'file': response.data.file_info.url });
+            updateSubjectMetadata(response.data.file_info);
         } catch (error) {
             console.error('Error fetching DANDIset metadata:', error);
         } finally {
@@ -596,6 +613,7 @@ ${selectedDandisetMetadata.description}`}
                         <Typography sx={{ marginRight: 2, marginLeft: 2 }}>Description:</Typography>
                         <TextField
                             fullWidth
+                            value={subjectMetadata.description}
                             onChange={(event) => handleSubjectChange(event, 'description')}
                         />
                         <Tooltip title="A description of the subject, e.g., 'mouse A10'." arrow>
@@ -608,6 +626,7 @@ ${selectedDandisetMetadata.description}`}
                         <Typography sx={{ marginRight: 2, marginLeft: 2 }}>Age:</Typography>
                         <TextField
                             fullWidth
+                            value={subjectMetadata.age}
                             onChange={(event) => handleSubjectChange(event, 'age')}
                         />
                         <Tooltip title="The age of the subject. The ISO 8601 Duration format is recommended, e.g., 'P90D' for 90 days old." arrow>
@@ -620,6 +639,7 @@ ${selectedDandisetMetadata.description}`}
                         <Typography sx={{ marginRight: 2, marginLeft: 2 }}>Genotype:</Typography>
                         <TextField
                             fullWidth
+                            value={subjectMetadata.genotype}
                             onChange={(event) => handleSubjectChange(event, 'genotype')}
                         />
                         <Tooltip title="The genotype of the subject, e.g., 'Sst-IRES-Cre/wt;Ai32(RCL-ChR2(H134R)_EYFP)/wt'." arrow>
@@ -630,7 +650,11 @@ ${selectedDandisetMetadata.description}`}
                     </Box>
                     <Box className="formItem">
                         <Typography sx={{ marginRight: 2, marginLeft: 2 }}>Sex:</Typography>
-                        <Select fullWidth onChange={(event) => handleSubjectChange(event, 'sex')}>
+                        <Select
+                            fullWidth
+                            value={subjectMetadata.sex}
+                            onChange={(event) => handleSubjectChange(event, 'sex')}
+                        >
                             <MenuItem value="F">F</MenuItem>
                             <MenuItem value="M">M</MenuItem>
                             <MenuItem value="U">U</MenuItem>
@@ -646,6 +670,7 @@ ${selectedDandisetMetadata.description}`}
                         <Typography sx={{ marginRight: 2, marginLeft: 2 }}>Species:</Typography>
                         <TextField
                             fullWidth
+                            value={subjectMetadata.species}
                             onChange={(event) => handleSubjectChange(event, 'species')}
                         />
                         <Tooltip title="The species of the subject. The formal latin binomal name is recommended, e.g., 'Mus musculus'." arrow>
@@ -658,6 +683,7 @@ ${selectedDandisetMetadata.description}`}
                         <Typography sx={{ marginRight: 2, marginLeft: 2 }}>Strain:</Typography>
                         <TextField
                             fullWidth
+                            value={subjectMetadata.strain}
                             onChange={(event) => handleSubjectChange(event, 'strain')}
                         />
                         <Tooltip title="The strain of the subject, e.g., 'C57BL/6J'." arrow>
@@ -670,6 +696,7 @@ ${selectedDandisetMetadata.description}`}
                         <Typography sx={{ marginRight: 2, marginLeft: 2 }}>Subject ID:</Typography>
                         <TextField
                             fullWidth
+                            value={subjectMetadata.subjectID}
                             onChange={(event) => handleSubjectChange(event, 'subjectID')}
                         />
                         <Tooltip title="A unique identifier for the subject, e.g., 'A10'." arrow>
@@ -684,6 +711,7 @@ ${selectedDandisetMetadata.description}`}
                             fullWidth
                             type="number"
                             inputProps={{ step: .01, min: 0 }}
+                            value={subjectMetadata.weight}
                             onChange={(event) => handleSubjectChange(event, 'weight')}
                         />
                         <Tooltip title="The weight of the subject in kilograms." arrow>
