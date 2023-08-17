@@ -58,7 +58,7 @@ interface SubjectMetadataType {
 const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
     const [description, setDescription] = useState<string>('');
     const [source, setSource] = useState<string>('DANDI');
-    const [sourceDataType, setSourceDataType] = useState<string>('');
+    const [sourceDataType, setSourceDataType] = useState<string>('NWB');
     const [sourceDataPaths, setSourceDataPaths] = useState<Record<string, any>>({});
     const [recordingKwargs, setRecordingKwargs] = useState<Record<string, any>>({});
     const [selectedDandiset, setSelectedDandiset] = useState<string>('');
