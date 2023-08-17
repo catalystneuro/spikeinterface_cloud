@@ -1,5 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from pathlib import Path
 
 from core.settings import settings
@@ -9,7 +12,11 @@ from routes.sorting import router as router_sorting
 from routes.runs import router as router_runs
 from clients.dandi import DandiClient
 from db.utils import initialize_db
+import logging
 
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
@@ -21,6 +28,19 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Add exception handlers
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    # Log the validation errors
+    logger.error(f"Validation error for request {request.url}: {exc.errors()}")
+
+    # Return the default response
+    return JSONResponse(
+        status_code=422,
+        content={"detail": exc.errors(), "body": exc.body},
+    )
+
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
 
 # Include routers
 app.include_router(router_user, prefix="/api/user", tags=["user"])
@@ -38,10 +58,11 @@ except Exception as e:
 
 # Load Dandisets metadata - run only at the startup, and if metadata is not yet present
 metadata_path = Path().cwd().joinpath("data/dandisets_metadata.json")
-print("Loading dandisets metadata...")
-dandi_client = DandiClient(token=settings.DANDI_API_TOKEN)
-dandi_client.save_dandisets_metadata_to_json()
-print("Done loading dandisets metadata.")
+if not metadata_path.exists():
+    print("Loading dandisets metadata...")
+    dandi_client = DandiClient(token=settings.DANDI_API_TOKEN)
+    dandi_client.save_dandisets_metadata_to_json()
+    print("Done loading dandisets metadata.")
 
 
 if __name__ == "__main__":

@@ -118,6 +118,9 @@ const SpikeSorting: React.FC<SpikeSortingProps> = ({ dandisets_labels }) => {
     // Change Data Source
     const handleSourceChange = (event: SelectChangeEvent<string>) => {
         setSource(event.target.value as string);
+        if (event.target.value === 'DANDI') {
+            setSourceDataType('NWB');
+        }
     };
 
     // Change Source Data Type
