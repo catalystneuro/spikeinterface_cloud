@@ -14,6 +14,7 @@ export AWS_ACCESS_KEY_ID=
 export AWS_SECRET_ACCESS_KEY=
 export AWS_BATCH_JOB_QUEUE=
 export AWS_BATCH_JOB_DEFINITION=
+export DANDI_API_TOKEN=
 ```
 
 Running with docker compose pulling images from github packages:

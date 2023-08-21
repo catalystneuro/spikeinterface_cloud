@@ -14,7 +14,7 @@ router = APIRouter()
 def route_get_dandisets_labels() -> JSONResponse:
     try:
         dandi_client = DandiClient(token=settings.DANDI_API_TOKEN)
-        labels = dandi_client.get_all_dandisets_labels()
+        labels = sorted(dandi_client.get_all_dandisets_labels())
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal server error")
     return JSONResponse(content={"labels": labels})

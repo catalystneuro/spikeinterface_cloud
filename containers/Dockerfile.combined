@@ -1,6 +1,6 @@
 # Spike sorters images
-FROM spikeinterface/kilosort2_5-compiled-base as ks25base
-FROM spikeinterface/kilosort3-compiled-base as ks3base
+FROM spikeinterface/kilosort2_5-compiled-base:0.2.0 as ks25base
+FROM spikeinterface/kilosort3-compiled-base:0.2.0 as ks3base
 
 # NVIDIA-ready image
 FROM nvidia/cuda:11.6.2-base-ubuntu20.04
@@ -13,9 +13,8 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-ENV MINICONDA_VERSION 4.8.2
 ENV CONDA_DIR /home/miniconda3
-ENV LATEST_CONDA_SCRIPT "Miniconda3-py38_$MINICONDA_VERSION-Linux-x86_64.sh"
+ENV LATEST_CONDA_SCRIPT "Miniconda3-py39_23.5.2-0-Linux-x86_64.sh"
 
 RUN wget --quiet https://repo.anaconda.com/miniconda/$LATEST_CONDA_SCRIPT -O ~/miniconda.sh && \
     bash ~/miniconda.sh -b -p $CONDA_DIR && \
@@ -31,7 +30,7 @@ ENV PATH="/opt/matlabruntime:${PATH}"
 COPY --from=ks25base /usr/lib/x86_64-linux-gnu/libXt.so.6 /usr/lib/x86_64-linux-gnu/libXt.so.6
 COPY --from=ks25base /usr/lib/x86_64-linux-gnu/libSM.so.6 /usr/lib/x86_64-linux-gnu/libSM.so.6
 COPY --from=ks25base /usr/lib/x86_64-linux-gnu/libICE.so.6 /usr/lib/x86_64-linux-gnu/libICE.so.6
-ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/matlabruntime/v911/runtime/glnxa64:/opt/matlabruntime/v911/bin/glnxa64:/opt/matlabruntime/v911/sys/os/glnxa64:/opt/matlabruntime/v911/sys/opengl/lib/glnxa64:/opt/matlabruntime/v911/extern/bin/glnxa64
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/matlabruntime/R2022b/runtime/glnxa64:/opt/matlabruntime/R2022b/bin/glnxa64:/opt/matlabruntime/R2022b/sys/os/glnxa64:/opt/matlabruntime/R2022b/sys/opengl/lib/glnxa64:/opt/matlabruntime/R2022b/extern/bin/glnxa64
 
 # Copy requirements and script
 COPY requirements.txt .

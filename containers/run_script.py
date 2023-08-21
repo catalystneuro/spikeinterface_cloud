@@ -283,7 +283,7 @@ def main(
     if test_with_toy_recording:
         logger.info("Generating toy recording...")
         recording, _ = se.toy_example(
-            duration=10,
+            duration=20,
             seed=0,
             num_channels=64,
             num_segments=1
