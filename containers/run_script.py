@@ -288,6 +288,7 @@ def main(
             num_channels=64,
             num_segments=1
         )
+        recording = recording.save()
     
     # Load data from S3
     elif source == "s3":
@@ -422,6 +423,9 @@ def main(
             "session_start_time": datetime.now().isoformat(),
         }
     }
+    results_nwb_path = Path("/results/nwb/")
+    if not results_nwb_path.exists():
+        results_nwb_path.mkdir(parents=True)
     output_nwbfile_path = f"/results/nwb/{run_identifier}.nwb"
     nwbfile = write_sorting(
         sorting=sorting,
