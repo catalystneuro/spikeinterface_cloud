@@ -14,7 +14,7 @@ from spikeinterface.sorters import run_sorter_local
 import spikeinterface.comparison as sc
 from neuroconv.tools.spikeinterface import write_sorting, write_recording
 from nwbinspector import inspect_nwbfile_object
-from pynwb import NWBFile
+from pynwb import NWBHDF5IO, NWBFile
 from dandi.validate import validate
 
 
@@ -427,7 +427,7 @@ def main(
     if not results_nwb_path.exists():
         results_nwb_path.mkdir(parents=True)
     output_nwbfile_path = f"/results/nwb/{run_identifier}.nwb"
-    nwbfile = write_sorting(
+    write_sorting(
         sorting=sorting,
         nwbfile_path=output_nwbfile_path,
         metadata=metadata,
@@ -436,7 +436,9 @@ def main(
 
     # Inspect nwb file for CRITICAL best practices violations
     logger.info("Inspecting NWB file...")
-    critical_violations = list(inspect_nwbfile_object(nwbfile_object=nwbfile, importance_threshold="CRITICAL"))
+    with NWBHDF5IO(path=output_nwbfile_path, mode="r", load_namespaces=True) as io:
+        nwbfile = io.read()
+        critical_violations = list(inspect_nwbfile_object(nwbfile_object=nwbfile, importance_threshold="CRITICAL"))
     if len(critical_violations) > 0:
         logger.info(f"Found critical violations in resulting NWB file: {critical_violations}")
         raise Exception(f"Found critical violations in resulting NWB file: {critical_violations}")
