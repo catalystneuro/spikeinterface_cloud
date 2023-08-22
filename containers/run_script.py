@@ -207,7 +207,7 @@ def main(
     - AWS_SECRET_ACCESS_KEY
 
     If saving results to DANDI archive, the following ENV variables should be present:
-    - DANDI_API_TOKEN
+    - DANDI_API_KEY
     """
 
     # Order of priority for definition of running arguments:
@@ -423,10 +423,10 @@ def main(
             "session_start_time": datetime.now().isoformat(),
         }
     }
-    results_nwb_path = Path("/results/nwb/")
+    results_nwb_path = Path(f"/results/nwb/{run_identifier}/")
     if not results_nwb_path.exists():
         results_nwb_path.mkdir(parents=True)
-    output_nwbfile_path = f"/results/nwb/{run_identifier}.nwb"
+    output_nwbfile_path = f"/results/nwb/{run_identifier}/{run_identifier}.nwb"
     write_sorting(
         sorting=sorting,
         nwbfile_path=output_nwbfile_path,
@@ -454,6 +454,9 @@ def main(
             local_file_path=output_nwbfile_path,
         )
     elif output_destination == "dandi":
+        DANDI_API_KEY = os.environ.get("DANDI_API_KEY", None)
+        if DANDI_API_KEY is None:
+            raise Exception("DANDI_API_KEY not found in ENV variables. Cannot upload results to DANDI.")
         # Validate nwb file for DANDI
         logger.info("Validating NWB file for DANDI...")
         validation_errors = validate_nwbfile_dandi(nwbfile_path=output_nwbfile_path)

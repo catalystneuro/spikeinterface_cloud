@@ -60,7 +60,7 @@ except Exception as e:
 metadata_path = Path().cwd().joinpath("data/dandisets_metadata.json")
 if not metadata_path.exists():
     print("Loading dandisets metadata...")
-    dandi_client = DandiClient(token=settings.DANDI_API_TOKEN)
+    dandi_client = DandiClient(token=settings.DANDI_API_KEY)
     dandi_client.save_dandisets_metadata_to_json()
     print("Done loading dandisets metadata.")
 
