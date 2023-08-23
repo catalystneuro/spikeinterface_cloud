@@ -784,7 +784,7 @@ ${selectedDandisetMetadata.description}`}
                     ) : outputDestination === 'DANDI' ? (
                         <TextField
                             fullWidth
-                            label="DANDI set name"
+                            label="DANDIset url"
                             key="output_path_dandi"
                             onChange={handleOutputPathChange}
                         />

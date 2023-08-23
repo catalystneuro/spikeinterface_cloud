@@ -6,6 +6,7 @@ import shutil
 import requests
 import logging
 import sys
+import subprocess
 from warnings import filterwarnings
 from datetime import datetime
 from pathlib import Path
@@ -16,6 +17,9 @@ from neuroconv.tools.spikeinterface import write_sorting, write_recording
 from nwbinspector import inspect_nwbfile_object
 from pynwb import NWBHDF5IO, NWBFile
 from dandi.validate import validate
+from dandi.organize import organize
+from dandi.upload import upload
+from dandi.download import download
 
 
 # TODO - complete with more data types
@@ -124,10 +128,6 @@ def download_all_files_from_bucket_folder(
                 Key=f["Key"], 
                 Filename=f"/data/{file_name}"
             )
-
-
-def validate_nwbfile_dandi(nwbfile_path: str) -> list:
-    return [v for v in validate(nwbfile_path)]
 
 
 def upload_file_to_bucket(
@@ -421,7 +421,15 @@ def main(
     metadata = {
         "NWBFile": {
             "session_start_time": datetime.now().isoformat(),
-        }
+        },
+        # TODO - use subject metadata from Job request data
+        "Subject": {
+            "age": "P23W",
+            "sex": "M",
+            "species": "Mus musculus",
+            "subject_id": "test_subject",
+            "weight": "20g",
+        },
     }
     results_nwb_path = Path(f"/results/nwb/{run_identifier}/")
     if not results_nwb_path.exists():
@@ -453,25 +461,55 @@ def main(
             bucket_folder=output_s3_bucket_folder,
             local_file_path=output_nwbfile_path,
         )
+
     elif output_destination == "dandi":
+        # Check if DANDI_API_KEY is present in ENV variables
         DANDI_API_KEY = os.environ.get("DANDI_API_KEY", None)
         if DANDI_API_KEY is None:
             raise Exception("DANDI_API_KEY not found in ENV variables. Cannot upload results to DANDI.")
+        
+        # Download DANDI dataset
+        logger.info(f"Downloading dandiset: {output_path}")
+        dandiset_id_number = output_path.split("/")[-1]
+        dandiset_local_base_path = Path("dandiset").resolve()
+        dandiset_local_full_path = dandiset_local_base_path / dandiset_id_number
+        if not dandiset_local_base_path.exists():
+            dandiset_local_base_path.mkdir(parents=True)
+        try:
+            download(
+                urls=[output_path],
+                output_dir=str(dandiset_local_base_path),
+                get_metadata=True,
+                get_assets=False,
+                sync=False,
+            )
+        except subprocess.CalledProcessError as e:
+            raise Exception("Error downloading DANDI dataset.\n{e}")
+        
+        # Organize DANDI dataset
+        logger.info(f"Organizing dandiset: {dandiset_id_number}")
+        organize(
+            paths=output_nwbfile_path,
+            dandiset_path=str(dandiset_local_full_path),
+        )
+
         # Validate nwb file for DANDI
         logger.info("Validating NWB file for DANDI...")
-        validation_errors = validate_nwbfile_dandi(nwbfile_path=output_nwbfile_path)
+        validation_errors = [v for v in validate(str(dandiset_local_full_path))]
         if len(validation_errors) > 0:
             logger.info(f"Found DANDI validation errors in resulting NWB file: {validation_errors}")
             raise Exception(f"Found DANDI validation errors in resulting NWB file: {validation_errors}")
+
         # Upload results to DANDI
-        logger.info(f"Uploading results to DANDI: {output_dandi_url}")
-        # dandi_upload(
-        #     logger=logger,
-        #     dandi_url=output_dandi_url,
-        #     dandi_token=output_dandi_token,
-        #     dandi_path=output_dandi_path,
-        #     local_file_path=output_nwbfile_path,
-        # )
+        logger.info(f"Uploading results to DANDI: {output_path}")
+        dandi_instance = "dandi-staging" if "staging" in output_path else "dandi"
+        upload(
+            paths=[str(dandiset_local_full_path)],
+            existing="refresh",
+            validation="require",
+            dandi_instance=dandi_instance,
+            sync=True,
+        )
     else:
         # Upload results to local - already done by mounted volume
         pass

@@ -39,11 +39,11 @@ services:
       - database
 
   worker:
-    # build:
-    #   context: containers
-    #   dockerfile: Dockerfile.combined
-    # image: si-sorting-worker
-    image: ghcr.io/catalystneuro/si-sorting-worker:latest
+    build:
+      context: containers
+      dockerfile: Dockerfile.combined
+    image: si-sorting-worker
+    # image: ghcr.io/catalystneuro/si-sorting-worker:latest
     container_name: si-sorting-worker
     ports:
       - "5000:5000"
