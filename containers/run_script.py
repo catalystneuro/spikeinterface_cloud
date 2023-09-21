@@ -185,19 +185,23 @@ def main(
     2. run a SpikeInterface pipeline on the raw traces
     3. save the results in a target S3 bucket
 
-    The arguments for this script are passsed as ENV variables:
-    - SOURCE_AWS_S3_BUCKET : S3 bucket name for source data.
-    - SOURCE_AWS_S3_BUCKET_FOLDER : Folder path within bucket for source data.
-    - DANDISET_S3_FILE_URL : Url for S3 path of input data, if it comes from a NWB file hosted in DANDI archive.
-    - TARGET_AWS_S3_BUCKET : S3 bucket name for saving results.
-    - TARGET_AWS_S3_BUCKET_FOLDER : Folder path within bucket for saving results.
-    - DATA_TYPE : Data type to be read.
-    - READ_RECORDING_KWARGS : Keyword arguments specific to chosen dataset type.
-    - SORTERS : List of sorters to run on source data, stored as comma-separated values.
-    - SORTERS_PARAMS : Parameters for each sorter, stored as a dictionary.
+    The arguments for this script can be passsed as ENV variables:
+    - RUN_IDENTIFIER : Unique identifier for this run.
+    - SOURCE : Source of input data. Choose from: local, s3, dandi.
+    - SOURCE_DATA_PATHS : Dictionary with paths to source data. Keys are names of data files, values are urls.
+    - SOURCE_DATA_TYPE : Data type to be read. Choose from: nwb, spikeglx.
+    - RECORDING_KWARGS : SpikeInterface extractor keyword arguments, specific to chosen dataset type.
+    - OUTPUT_DESTINATION : Destination for saving results. Choose from: local, s3, dandi.
+    - OUTPUT_PATH : Path for saving results. 
+        If S3, should be a valid S3 path, E.g. s3://...
+        If local, should be a valid local path, E.g. /data/results
+        If dandi, should be a valid Dandiset uri, E.g. https://dandiarchive.org/dandiset/000001
+    - SORTERS_NAMES_LIST : List of sorters to run on source data, stored as comma-separated values.
+    - SORTERS_KWARGS : Parameters for each sorter, stored as a dictionary.
     - TEST_WITH_TOY_RECORDING : Runs script with a toy dataset.
     - TEST_WITH_SUB_RECORDING : Runs script with the first 4 seconds of target dataset.
-    - SUB_RECORDING_N_FRAMES : Number of frames to use for sub-recording.
+    - TEST_SUB_RECORDING_N_FRAMES : Number of frames to use for sub-recording.
+    - LOG_TO_FILE : If True, logs will be saved to a file in /logs folder.
 
     If running this in any AWS service (e.g. Batch, ECS, EC2...) the access to other AWS services 
     such as S3 storage can be given to the container by an IAM role.
@@ -206,7 +210,7 @@ def main(
     - AWS_ACCESS_KEY_ID
     - AWS_SECRET_ACCESS_KEY
 
-    If saving results to DANDI archive, the following ENV variables should be present:
+    If saving results to DANDI archive, or reading from embargoed dandisets, the following ENV variable should be present in the running container:
     - DANDI_API_KEY
     """
 
