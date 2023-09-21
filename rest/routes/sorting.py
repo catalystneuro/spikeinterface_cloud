@@ -45,7 +45,6 @@ async def route_run_sorting(data: SortingData, background_tasks: BackgroundTasks
         run_identifier = datetime.now().strftime("%Y%m%d%H%M%S")
     else:
         run_identifier = data.run_identifier
-    payload = data.dict()
     try:
         # Create Database entries
         db_client = DatabaseClient(connection_string=settings.DB_CONNECTION_STRING)
@@ -67,13 +66,17 @@ async def route_run_sorting(data: SortingData, background_tasks: BackgroundTasks
             status="running",
             data_source_id=data_source.id,
             user_id=user.id,
-            metadata=str(payload),
+            metadata=str(data.json()),
             output_destination=data.output_destination,
             output_path=data.output_path,
         )
 
         # Run sorting job
-        background_tasks.add_task(sorting_background_task, payload, run_identifier=run_identifier)
+        background_tasks.add_task(
+            sorting_background_task, 
+            payload=data.dict(), 
+            run_identifier=run_identifier
+        )
 
     except Exception as e:
         print(e)

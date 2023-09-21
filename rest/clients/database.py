@@ -2,6 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from contextlib import contextmanager
 import ast
+import json
 
 from db.models import User, DataSource, Run
 
@@ -108,7 +109,7 @@ class DatabaseClient:
                 "lastRun": obj.last_run,
                 "status": obj.status,
                 "dataSourceName": data_source.name,
-                "metadata": ast.literal_eval(obj.metadata_),
+                "metadata": json.loads(obj.metadata_),
                 "logs": obj.logs,
                 "outputPath": obj.output_path
             }
