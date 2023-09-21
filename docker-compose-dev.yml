@@ -53,6 +53,7 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       DANDI_API_KEY: ${DANDI_API_KEY}
+      DANDI_API_KEY_STAGING: ${DANDI_API_KEY_STAGING}
     volumes:
       - ./containers:/app
       - ./results:/results
