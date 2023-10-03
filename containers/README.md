@@ -94,7 +94,7 @@ If having difficulties pushing the image to ECR:
 4. Create a Job Definition (EC2)
     - Choose suitable Execution Timeout, Job Attempts and Retry Strategies
     - Select the base image
-    - Command = `python run_script.py`
+    - Command = `python main.py`
     - For the Execution role and Job role configuration, choose the `BatchJobsAccessRole`
     - Configure the resource requirements. Remember to choose a value for Memory slightly smaller than the value for the machines you're hoping to use, otherwise ECS might not find suitable instances.
     - Add any fixed ENV variables that should be used by any Jobs using this definition

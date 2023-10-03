@@ -2,12 +2,12 @@ boto3>=1.26
 requests
 fsspec
 aiohttp
-spikeinterface[full]==0.97.1
-neo
-pynwb
-threadpoolctl==3.1.0   # https://stackoverflow.com/a/72840515/11483674
+threadpoolctl==3.2.0   # https://stackoverflow.com/a/72840515/11483674
 Flask[async]==2.2.3
-pydantic[email,dotenv]==1.10.7
-uvicorn==0.21.1
-# neuroconv==0.2.4
-git+https://github.com/catalystneuro/neuroconv
+pydantic[email]==1.10.12
+pynwb==2.5.0
+spikeinterface[full]==0.98.2
+neo==0.12.0
+neuroconv==0.4.1
+nwbinspector==0.4.29
+dandi==0.56.0

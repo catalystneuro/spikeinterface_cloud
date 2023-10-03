@@ -87,11 +87,6 @@
     width: 100px;
 }
 
-.label {
-    width: 200px;
-    margin-right: 1rem;
-}
-
 .MuiAccordionSummary-content {
     font-weight: bold !important;
 }

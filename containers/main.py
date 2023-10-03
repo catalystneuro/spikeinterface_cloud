@@ -1,159 +1,28 @@
 import boto3
-import botocore
 import os
 import ast
-import shutil
-import requests
-import logging
-import sys
+import subprocess
+from warnings import filterwarnings
 from datetime import datetime
 from pathlib import Path
 import spikeinterface.extractors as se
 from spikeinterface.sorters import run_sorter_local
 import spikeinterface.comparison as sc
 from neuroconv.tools.spikeinterface import write_sorting, write_recording
+from nwbinspector import inspect_nwbfile_object
+from pynwb import NWBHDF5IO, NWBFile
+from dandi.validate import validate
+from dandi.organize import organize
+from dandi.upload import upload
+from dandi.download import download
 
-
-# TODO - complete with more data types
-DATA_TYPE_TO_READER = {
-    "spikeglx": se.read_spikeglx,
-    "nwb": se.read_nwb_recording,
-}
-
-# # TODO - create data models for inputs of each data type reader
-# DATA_TYPE_READER_DATA_MODELS = {
-#     "spikeglx": ,
-#     "nwb": ,
-# }
-
-# # TODO - complete with more sorters
-# SORTER_DATA_MODELS = {
-#     "kilosort3": ,
-#     "kilosort2_5":,
-# }
-
-
-class Tee(object):
-    def __init__(self, *files):
-        self.files = files
-    def write(self, obj):
-        for f in self.files:
-            f.write(obj)
-            f.flush()
-    def flush(self) :
-        for f in self.files:
-            f.flush()
-
-
-def make_logger(run_identifier: str, log_to_file: bool):
-    logging.basicConfig()
-    logger = logging.getLogger("sorting_worker")
-    logger.handlers.clear()
-    logger.setLevel(logging.DEBUG)
-    log_formatter = logging.Formatter(
-        fmt="%(asctime)s %(levelname)s %(name)s -- %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-    )
-
-    if log_to_file:
-        # Add a logging handler for the log file
-        fileHandler = logging.FileHandler(
-            filename=f"/logs/sorting_worker_{run_identifier}.log",
-            mode="a",
-        )
-        fileHandler.setFormatter(log_formatter)
-        fileHandler.setLevel(level=logging.DEBUG)
-        logger.addHandler(fileHandler)
-
-        # Add a logging handler for stdout
-        stdoutHandler = logging.StreamHandler(sys.stdout)
-        stdoutHandler.setLevel(logging.DEBUG)
-        stdoutHandler.setFormatter(log_formatter)
-        logger.addHandler(stdoutHandler)
-        
-        # Redirect stdout to a file-like object that writes to both stdout and the log file
-        stdout_log_file = open(f"/logs/sorting_worker_{run_identifier}.log", "a")
-        sys.stdout = Tee(sys.stdout, stdout_log_file)
-    else:
-        # Handler to print to console as well
-        handler = logging.StreamHandler(sys.stdout)
-        handler.setLevel(logging.DEBUG)
-        handler.setFormatter(log_formatter)
-        logger.addHandler(handler)
-    return logger
-
-
-def download_file_from_url(url):
-    # ref: https://stackoverflow.com/a/39217788/11483674
-    local_filename = "/data/filename.nwb"
-    with requests.get(url, stream=True) as r:
-        with open(local_filename, 'wb') as f:
-            shutil.copyfileobj(r.raw, f)
-
-
-def download_file_from_s3(
-    client:botocore.client.BaseClient, 
-    bucket_name:str, 
-    file_path:str
-):    
-    file_name = file_path.split("/")[-1]
-    client.download_file(
-        Bucket=bucket_name, 
-        Key=file_path, 
-        Filename=f"/data/{file_name}"
-    )
-    return file_name       
-
-
-def download_all_files_from_bucket_folder(
-    client:botocore.client.BaseClient, 
-    bucket_name:str, 
-    bucket_folder:str
-):    
-    # List files in folder, download all files with content
-    res = client.list_objects_v2(Bucket=bucket_name, Prefix=bucket_folder)
-    for f in res["Contents"]:
-        if f["Size"] > 0:
-            file_name = f["Key"].split("/")[-1]
-            client.download_file(
-                Bucket=bucket_name, 
-                Key=f["Key"], 
-                Filename=f"/data/{file_name}"
-            )
-
-
-def upload_file_to_bucket(
-    logger:logging.Logger,
-    client:botocore.client.BaseClient, 
-    bucket_name:str, 
-    bucket_folder:str,
-    local_file_path:str
-):
-    # Upload file to S3
-    logger.info(f"Uploading {local_file_path}...")
-    client.upload_file(
-        Filename=local_file_path,
-        Bucket=bucket_name,
-        Key=f"{bucket_folder}/{local_file_path}",
-    )
-
-
-def upload_all_files_to_bucket_folder(
-    logger:logging.Logger,
-    client:botocore.client.BaseClient, 
-    bucket_name:str, 
-    bucket_folder:str,
-    local_folder:str
-):
-    # List files from results, upload them to S3
-    files_list = [f for f in Path(local_folder).rglob("*") if f.is_file()]
-    for f in files_list:
-        logger.info(f"Uploading {str(f)}...")
-        client.upload_file(
-            Filename=str(f),
-            Bucket=bucket_name,
-            Key=f"{bucket_folder}{str(f)}",
-        )
+from utils import (
+    make_logger,
+    download_file_from_s3,
+    upload_file_to_bucket,
+    upload_all_files_to_bucket_folder,
+    download_file_from_url,
+)
 
 
 def main(
@@ -177,19 +46,23 @@ def main(
     2. run a SpikeInterface pipeline on the raw traces
     3. save the results in a target S3 bucket
 
-    The arguments for this script are passsed as ENV variables:
-    - SOURCE_AWS_S3_BUCKET : S3 bucket name for source data.
-    - SOURCE_AWS_S3_BUCKET_FOLDER : Folder path within bucket for source data.
-    - DANDISET_S3_FILE_URL : Url for S3 path of input data, if it comes from a NWB file hosted in DANDI archive.
-    - TARGET_AWS_S3_BUCKET : S3 bucket name for saving results.
-    - TARGET_AWS_S3_BUCKET_FOLDER : Folder path within bucket for saving results.
-    - DATA_TYPE : Data type to be read.
-    - READ_RECORDING_KWARGS : Keyword arguments specific to chosen dataset type.
-    - SORTERS : List of sorters to run on source data, stored as comma-separated values.
-    - SORTERS_PARAMS : Parameters for each sorter, stored as a dictionary.
+    The arguments for this script can be passsed as ENV variables:
+    - RUN_IDENTIFIER : Unique identifier for this run.
+    - SOURCE : Source of input data. Choose from: local, s3, dandi.
+    - SOURCE_DATA_PATHS : Dictionary with paths to source data. Keys are names of data files, values are urls.
+    - SOURCE_DATA_TYPE : Data type to be read. Choose from: nwb, spikeglx.
+    - RECORDING_KWARGS : SpikeInterface extractor keyword arguments, specific to chosen dataset type.
+    - OUTPUT_DESTINATION : Destination for saving results. Choose from: local, s3, dandi.
+    - OUTPUT_PATH : Path for saving results. 
+        If S3, should be a valid S3 path, E.g. s3://...
+        If local, should be a valid local path, E.g. /data/results
+        If dandi, should be a valid Dandiset uri, E.g. https://dandiarchive.org/dandiset/000001
+    - SORTERS_NAMES_LIST : List of sorters to run on source data, stored as comma-separated values.
+    - SORTERS_KWARGS : Parameters for each sorter, stored as a dictionary.
     - TEST_WITH_TOY_RECORDING : Runs script with a toy dataset.
     - TEST_WITH_SUB_RECORDING : Runs script with the first 4 seconds of target dataset.
-    - SUB_RECORDING_N_FRAMES : Number of frames to use for sub-recording.
+    - TEST_SUB_RECORDING_N_FRAMES : Number of frames to use for sub-recording.
+    - LOG_TO_FILE : If True, logs will be saved to a file in /logs folder.
 
     If running this in any AWS service (e.g. Batch, ECS, EC2...) the access to other AWS services 
     such as S3 storage can be given to the container by an IAM role.
@@ -197,6 +70,10 @@ def main(
     - AWS_DEFAULT_REGION
     - AWS_ACCESS_KEY_ID
     - AWS_SECRET_ACCESS_KEY
+
+    If saving results to DANDI archive, or reading from embargoed dandisets, the following ENV variables should be present in the running container:
+    - DANDI_API_KEY
+    - DANDI_API_KEY_STAGING
     """
 
     # Order of priority for definition of running arguments:
@@ -205,7 +82,6 @@ def main(
     # 3. default value
     if not run_identifier:
         run_identifier = os.environ.get("RUN_IDENTIFIER", datetime.now().strftime("%Y%m%d%H%M%S"))
-    
     if not source:
         source = os.environ.get("SOURCE", None)
         if source == "None":
@@ -216,22 +92,6 @@ def main(
         source_data_type = os.environ.get("SOURCE_DATA_TYPE", "nwb")
     if not recording_kwargs:
         recording_kwargs = ast.literal_eval(os.environ.get("RECORDING_KWARGS", "{}"))
-
-    # if not source_aws_s3_bucket:
-    #     source_aws_s3_bucket = os.environ.get("SOURCE_AWS_S3_BUCKET", None)
-    #     if source_aws_s3_bucket == "None":
-    #         source_aws_s3_bucket = None
-    # if not source_aws_s3_bucket_folder:
-    #     source_aws_s3_bucket_folder = os.environ.get("SOURCE_AWS_S3_BUCKET_FOLDER", None)
-    #     if source_aws_s3_bucket_folder == "None":
-    #         source_aws_s3_bucket_folder = None
-    # if not dandiset_s3_file_url:
-    #     dandiset_s3_file_url = os.environ.get("DANDISET_S3_FILE_URL", None)
-    #     if dandiset_s3_file_url == "None":
-    #         dandiset_s3_file_url = None
-    # if not dandiset_file_es_name:
-    #     dandiset_file_es_name = os.environ.get("DANDISET_FILE_ES_NAME", "ElectricalSeries")
-
     if not output_destination:
         output_destination = os.environ.get("OUTPUT_DESTINATION", "s3")
     if not output_path:
@@ -254,7 +114,9 @@ def main(
 
     # Set up logging
     logger = make_logger(run_identifier=run_identifier, log_to_file=log_to_file)
-    # logger = logging.getLogger("sorting_worker")
+    
+    filterwarnings(action="ignore", message="No cached namespaces found in .*")
+    filterwarnings(action="ignore", message="Ignoring cached namespace .*")
 
     # Checks
     if source not in ["local", "s3", "dandi"]:
@@ -287,11 +149,12 @@ def main(
     if test_with_toy_recording:
         logger.info("Generating toy recording...")
         recording, _ = se.toy_example(
-            duration=10,
+            duration=20,
             seed=0,
             num_channels=64,
             num_segments=1
         )
+        recording = recording.save()
     
     # Load data from S3
     elif source == "s3":
@@ -324,7 +187,7 @@ def main(
 
     elif source == "dandi":
         dandiset_s3_file_url = source_data_paths["file"]
-        if not dandiset_s3_file_url.startswith("https://dandiarchive.s3.amazonaws.com"):
+        if not dandiset_s3_file_url.startswith("https://dandiarchive"):
             raise Exception(f"DANDISET_S3_FILE_URL should be a valid Dandiset S3 url. Value received was: {dandiset_s3_file_url}")
 
         if not test_with_subrecording:            
@@ -424,21 +287,102 @@ def main(
     metadata = {
         "NWBFile": {
             "session_start_time": datetime.now().isoformat(),
-        }
+        },
+        # TODO - use subject metadata from Job request data
+        "Subject": {
+            "age": "P23W",
+            "sex": "M",
+            "species": "Mus musculus",
+            "subject_id": "test_subject",
+            "weight": "20g",
+        },
     }
+    results_nwb_path = Path(f"/results/nwb/{run_identifier}/")
+    if not results_nwb_path.exists():
+        results_nwb_path.mkdir(parents=True)
+    output_nwbfile_path = f"/results/nwb/{run_identifier}/{run_identifier}.nwb"
     write_sorting(
         sorting=sorting,
-        nwbfile_path=f"{run_identifier}.nwb",
+        nwbfile_path=output_nwbfile_path,
         metadata=metadata,
         overwrite=True
     )
-    upload_file_to_bucket(
-        logger=logger,
-        client=s3_client,
-        bucket_name=output_s3_bucket,
-        bucket_folder=output_s3_bucket_folder,
-        local_file_path=f"{run_identifier}.nwb"
-    )
+
+    # Inspect nwb file for CRITICAL best practices violations
+    logger.info("Inspecting NWB file...")
+    with NWBHDF5IO(path=output_nwbfile_path, mode="r", load_namespaces=True) as io:
+        nwbfile = io.read()
+        critical_violations = list(inspect_nwbfile_object(nwbfile_object=nwbfile, importance_threshold="CRITICAL"))
+    if len(critical_violations) > 0:
+        logger.info(f"Found critical violations in resulting NWB file: {critical_violations}")
+        raise Exception(f"Found critical violations in resulting NWB file: {critical_violations}")
+
+    # Upload results
+    if output_destination == "s3":
+        # Upload results to S3
+        upload_file_to_bucket(
+            logger=logger,
+            client=s3_client,
+            bucket_name=output_s3_bucket,
+            bucket_folder=output_s3_bucket_folder,
+            local_file_path=output_nwbfile_path,
+        )
+
+    elif output_destination == "dandi":
+        # Check if DANDI_API_KEY is present in ENV variables
+        DANDI_API_KEY = os.environ.get("DANDI_API_KEY", None)
+        if DANDI_API_KEY is None:
+            raise Exception("DANDI_API_KEY not found in ENV variables. Cannot upload results to DANDI.")
+        
+        # Download DANDI dataset
+        logger.info(f"Downloading dandiset: {output_path}")
+        dandiset_id_number = output_path.split("/")[-1]
+        dandiset_local_base_path = Path("dandiset").resolve()
+        dandiset_local_full_path = dandiset_local_base_path / dandiset_id_number
+        if not dandiset_local_base_path.exists():
+            dandiset_local_base_path.mkdir(parents=True)
+        try:
+            download(
+                urls=[output_path],
+                output_dir=str(dandiset_local_base_path),
+                get_metadata=True,
+                get_assets=False,
+                sync=False,
+            )
+        except subprocess.CalledProcessError as e:
+            raise Exception("Error downloading DANDI dataset.\n{e}")
+        
+        # Organize DANDI dataset
+        logger.info(f"Organizing dandiset: {dandiset_id_number}")
+        organize(
+            paths=output_nwbfile_path,
+            dandiset_path=str(dandiset_local_full_path),
+        )
+
+        # Validate nwb file for DANDI
+        logger.info("Validating NWB file for DANDI...")
+        validation_errors = [v for v in validate(str(dandiset_local_full_path))]
+        if len(validation_errors) > 0:
+            logger.info(f"Found DANDI validation errors in resulting NWB file: {validation_errors}")
+            raise Exception(f"Found DANDI validation errors in resulting NWB file: {validation_errors}")
+
+        # Upload results to DANDI
+        logger.info(f"Uploading results to DANDI: {output_path}")
+        dandi_instance = "dandi-staging" if "staging" in output_path else "dandi"
+        if dandi_instance == "dandi-staging":
+            DANDI_API_KEY = os.environ.get("DANDI_API_KEY_STAGING", None)
+            if DANDI_API_KEY is None:
+                raise Exception("DANDI_API_KEY_STAGING not found in ENV variables. Cannot upload results to DANDI staging.")
+        # upload(
+        #     paths=[str(dandiset_local_full_path)],
+        #     existing="refresh",
+        #     validation="require",
+        #     dandi_instance=dandi_instance,
+        #     sync=True,
+        # )
+    else:
+        # Upload results to local - already done by mounted volume
+        pass
 
     logger.info("Sorting job completed successfully!")
 

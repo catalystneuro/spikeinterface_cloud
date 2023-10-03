@@ -1,3 +1,4 @@
+import concurrent.futures
 from dandi.dandiapi import DandiAPIClient
 from dandischema.models import Dandiset
 from pynwb import NWBHDF5IO, NWBFile
@@ -5,13 +6,14 @@ import fsspec
 import pynwb
 import h5py
 import json
+import requests
 from fsspec.implementations.cached import CachingFileSystem
 from typing import List
 
 
 class DandiClient:
 
-    def __init__(self):
+    def __init__(self, token: str = None):
         """
         Initialize DandiClient object, to interact with DANDI API.
         """
@@ -19,6 +21,7 @@ class DandiClient:
             fs=fsspec.filesystem("http"),
             cache_storage="data/nwb-cache",  # Local folder for the cache
         )
+        self.token = token
 
 
     def get_all_dandisets_labels(self) -> List[str]:
@@ -55,7 +58,7 @@ class DandiClient:
             all_metadata = json.load(f)
         return all_metadata
 
-
+    
     def get_all_dandisets_metadata_from_dandi(self) -> List:
         """
         Get metadata for all dandisets, directly from DANDI.
@@ -63,20 +66,28 @@ class DandiClient:
         Returns:
             List: List of dandisets metadata.
         """
-        with DandiAPIClient() as client:
-            dandisets_list = list(client.get_dandisets())
+        with DandiAPIClient(token=self.token) as client:
             all_metadata = dict()
-            for ii, dandiset in enumerate(dandisets_list):
-                if 1 < ii < 500:
-                    try:
-                        metadata = dandiset.get_raw_metadata()
-                        if self.has_nwb(metadata) and self.has_ecephys(metadata):
-                            all_metadata[metadata["id"].split(":")[-1].split("/")[0].strip()] = metadata
-                    except:
-                        pass
-                else:
-                    pass
+            dandisets_list = list(client.get_dandisets())
+            total_dandisets = len(dandisets_list)
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                futures = [executor.submit(self.process_dandiset, dandiset) for dandiset in dandisets_list]
+                for future in concurrent.futures.as_completed(futures):
+                    metadata = future.result()
+                    if metadata:
+                        all_metadata[metadata["id"].split(":")[-1].split("/")[0].strip()] = metadata
+                    print(f"Processed {len(all_metadata)} of {total_dandisets} dandisets.")
         return all_metadata
+    
+
+    def process_dandiset(self, dandiset):
+        try:
+            metadata = dandiset.get_raw_metadata()
+            if self.has_nwb(metadata) and self.has_ecephys(metadata):
+                return metadata
+        except:
+            pass
+        return None
     
 
     def get_dandiset_metadata(self, dandiset_id: str) -> dict:
@@ -89,7 +100,7 @@ class DandiClient:
         Returns:
             dict: Metadata for the dandiset.
         """
-        with DandiAPIClient() as client:
+        with DandiAPIClient(token=self.token) as client:
             dandiset = client.get_dandiset(dandiset_id=dandiset_id, version_id="draft")
             return dandiset.get_raw_metadata()
 
@@ -104,7 +115,7 @@ class DandiClient:
         Returns:
             List[str]: List of files in the dandiset.
         """
-        with DandiAPIClient() as client:
+        with DandiAPIClient(token=self.token) as client:
             dandiset = client.get_dandiset(dandiset_id=dandiset_id, version_id="draft")
             return [i.dict().get("path") for i in dandiset.get_assets() if i.dict().get("path").endswith(".nwb")]
         
@@ -121,11 +132,15 @@ class DandiClient:
             dict: Information extracted from the NWBFile object.
         """
         file_s3_url = self.get_file_url(dandiset_id, file_path)
+        if "dandiarchive-embargo" in file_s3_url:
+            file_s3_url = self.get_file_url_embargo(dandiset_id, file_path)
         with self.fs.open(file_s3_url, "rb") as f:
             with h5py.File(f) as file:
                 with pynwb.NWBHDF5IO(file=file, load_namespaces=True) as io:
                     nwbfile = io.read()
-                    return self.extract_nwbfile_info(nwbfile=nwbfile)
+                    file_info = self.extract_nwbfile_info(nwbfile=nwbfile)
+                    file_info["url"] = file_s3_url
+                    return file_info
 
 
     def get_nwbfile_info_ros3(self, dandiset_id: str, file_path: str) -> dict:
@@ -166,6 +181,9 @@ class DandiClient:
                 "duration": v.data.shape[0] / v.rate,
                 "n_traces": v.data.shape[1],
             }
+        file_info["subject"] = dict()
+        for k, v in nwbfile.subject.fields.items():
+            file_info["subject"][k] = v
         return file_info
 
 
@@ -180,9 +198,31 @@ class DandiClient:
         Returns:
             str: S3 URL of the file.
         """
-        with DandiAPIClient() as client:
+        with DandiAPIClient(token=self.token) as client:
             asset = client.get_dandiset(dandiset_id, "draft").get_asset_by_path(file_path)
             return asset.get_content_url(follow_redirects=1, strip_query=True)
+    
+
+    def get_file_url_embargo(self, dandiset_id: str, file_path: str) -> str:
+        """
+        Get the S3 URL of a file in a dandiset in embargo mode.
+
+        Args:
+            dandiset_id (str): Numerical ID of the dandiset. E.g. 000001
+            file_path (str): File path within Dandiset. E.g. sub-000001/sub-000001.nwb
+
+        Returns:
+            str: S3 URL of the file.
+        """
+        with DandiAPIClient(token=self.token) as client:
+            asset = client.get_dandiset(dandiset_id, "draft").get_asset_by_path(file_path)
+            base_download_url = asset.base_download_url
+            headers = {
+                "Authorization": f'token {self.token}'
+            }
+            response = requests.get(base_download_url, headers=headers, stream=True)
+            authorized_url = response.url
+            return authorized_url
     
 
     def has_nwb(self, metadata: Dandiset) -> bool:
@@ -201,7 +241,7 @@ class DandiClient:
             if data_standard:
                 return any(x.get("identifier", "") == "RRID:SCR_015242" for x in data_standard)
         return False
-    
+        
 
     def has_ecephys(self, metadata: Dandiset) -> bool:
         """

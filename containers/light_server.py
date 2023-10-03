@@ -3,7 +3,7 @@ import asyncio
 import logging
 import functools
 
-from run_script import main
+from main import main
 
 
 app = Flask(__name__)

@@ -31,6 +31,7 @@ class SortingData(BaseModel):
     source: Source = None
     source_data_type: SourceDataType = None
     source_data_paths: dict = None
+    subject_metadata: dict = None
     recording_kwargs: dict = None
     output_destination: OutputDestination = None
     output_path: str = None
