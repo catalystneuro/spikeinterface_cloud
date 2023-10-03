@@ -1,9 +1,10 @@
 # Dockerfile for the frontend
-FROM node:16-alpine
+FROM node:19.2-bullseye-slim
 
 WORKDIR /app
 
 COPY package*.json ./
+COPY yarn.lock ./
 RUN yarn install
 
 COPY . ./

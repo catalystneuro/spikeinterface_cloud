@@ -3,7 +3,8 @@ requests
 fsspec
 aiohttp
 threadpoolctl==3.2.0   # https://stackoverflow.com/a/72840515/11483674
-Flask[async]==2.2.3
+Flask[async]==2.3.3
+Werkzeug==2.3.7
 pydantic[email]==1.10.12
 pynwb==2.5.0
 spikeinterface[full]==0.98.2
