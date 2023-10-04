@@ -8,11 +8,14 @@ export interface IEnvironment {
     USE_MOCK: boolean
 }
 
+
+const global = (globalThis.process ?? import.meta)
+
 /**
  * Stores all environment variables for easier access
  */
 export const environment: IEnvironment = {
-    NODE_ENV: process.env.NODE_ENV as INodeEnv,
-    DEPLOY_MODE: process.env.DEPLOY_MODE as IApiEnv,
-    USE_MOCK: !!process.env.REACT_APP_USE_MOCK
+    NODE_ENV: global.env?.NODE_ENV as INodeEnv,
+    DEPLOY_MODE: global.env?.DEPLOY_MODE as IApiEnv,
+    USE_MOCK: !!global.env?.REACT_APP_USE_MOCK
 }
