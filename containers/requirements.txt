@@ -7,7 +7,7 @@ Flask[async]==2.3.3
 Werkzeug==2.3.7
 pydantic[email]==1.10.12
 pynwb==2.5.0
-spikeinterface[full]==0.98.2
+spikeinterface[full,widgets]==0.98.2
 neo==0.12.0
 neuroconv==0.4.1
 nwbinspector==0.4.29
