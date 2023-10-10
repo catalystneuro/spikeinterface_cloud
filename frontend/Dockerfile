@@ -3,12 +3,13 @@ FROM node:19.2-bullseye-slim
 
 WORKDIR /app
 
-COPY package*.json ./
-COPY yarn.lock ./
+COPY package.json yarn.lock ./
 RUN yarn install
 
 COPY . ./
-# RUN yarn build
-EXPOSE 3000
 
-CMD ["yarn", "start"]
+# RUN yarn build
+
+EXPOSE 5173
+
+CMD ["npm", "run", "start"]

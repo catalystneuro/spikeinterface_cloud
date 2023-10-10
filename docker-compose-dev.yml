@@ -7,8 +7,9 @@ services:
       dockerfile: Dockerfile
     image: si-sorting-frontend
     container_name: si-sorting-frontend
+    command: ["npm", "run", "start"]
     ports:
-      - "3000:3000"
+      - "5173:5173"
     environment:
       DEPLOY_MODE: compose
     volumes:
