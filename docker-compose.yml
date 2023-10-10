@@ -4,8 +4,9 @@ services:
   frontend:
     image: ghcr.io/catalystneuro/si-sorting-frontend:latest
     container_name: si-sorting-frontend
+    command: ["npm", "run", "start"]
     ports:
-      - "3000:3000"
+      - "5173:5173"
     environment:
       DEPLOY_MODE: compose
     depends_on:
@@ -38,6 +39,7 @@ services:
       AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      DANDI_API_KEY: ${DANDI_API_KEY}
     volumes:
       - ./results:/results
       - ./logs:/logs
