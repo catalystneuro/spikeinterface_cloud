@@ -1,21 +1,30 @@
 version: "3"
 
 services:
-  frontend:
-    build:
-      context: frontend
-      dockerfile: Dockerfile
-    image: si-sorting-frontend
-    container_name: si-sorting-frontend
-    command: ["npm", "run", "start"]
+  docker-proxy:
+    image: bobrik/socat
+    container_name: si-docker-proxy
+    command: "TCP4-LISTEN:2375,fork,reuseaddr UNIX-CONNECT:/var/run/docker.sock"
     ports:
-      - "5173:5173"
-    environment:
-      DEPLOY_MODE: compose
+      - "2376:2375"
     volumes:
-      - ./frontend:/app
-    depends_on:
-      - rest
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  # frontend:
+  #   build:
+  #     context: frontend
+  #     dockerfile: Dockerfile
+  #   image: si-sorting-frontend
+  #   container_name: si-sorting-frontend
+  #   command: ["npm", "run", "start"]
+  #   ports:
+  #     - "5173:5173"
+  #   environment:
+  #     DEPLOY_MODE: compose
+  #   volumes:
+  #     - ./frontend:/app
+  #   depends_on:
+  #     - rest
 
   rest:
     build:
@@ -23,6 +32,7 @@ services:
       dockerfile: Dockerfile
     image: si-sorting-rest
     container_name: si-sorting-rest
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload", "--reload-dir", "/app"]
     ports:
       - "8000:8000"
     environment:
@@ -39,33 +49,33 @@ services:
     depends_on:
       - database
 
-  worker:
-    build:
-      context: containers
-      dockerfile: Dockerfile.combined
-    image: si-sorting-worker
-    # image: ghcr.io/catalystneuro/si-sorting-worker:latest
-    container_name: si-sorting-worker
-    ports:
-      - "5000:5000"
-    environment:
-      WORKER_DEPLOY_MODE: compose
-      AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      DANDI_API_KEY: ${DANDI_API_KEY}
-      DANDI_API_KEY_STAGING: ${DANDI_API_KEY_STAGING}
-    volumes:
-      - ./containers:/app
-      - ./results:/results
-      - ./logs:/logs
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+  # worker:
+  #   build:
+  #     context: containers
+  #     dockerfile: Dockerfile.combined
+  #   image: si-sorting-worker
+  #   # image: ghcr.io/catalystneuro/si-sorting-worker:latest
+  #   container_name: si-sorting-worker
+  #   ports:
+  #     - "5000:5000"
+  #   environment:
+  #     WORKER_DEPLOY_MODE: compose
+  #     AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
+  #     AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+  #     AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+  #     DANDI_API_KEY: ${DANDI_API_KEY}
+  #     DANDI_API_KEY_STAGING: ${DANDI_API_KEY_STAGING}
+  #   volumes:
+  #     - ./containers:/app
+  #     - ./results:/results
+  #     - ./logs:/logs
+  #   deploy:
+  #     resources:
+  #       reservations:
+  #         devices:
+  #           - driver: nvidia
+  #             count: 1
+  #             capabilities: [gpu]
 
   database:
     image: postgres:latest

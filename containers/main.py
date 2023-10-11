@@ -109,10 +109,8 @@ qm_metric_names = [
     "d_prime",
 ]
 
-sparsity_params = dict(method="radius", radius_um=100)
-
 postprocessing_params = dict(
-    sparsity=sparsity_params,
+    sparsity=dict(method="radius", radius_um=100),
     waveforms_deduplicate=dict(
         ms_before=0.5,
         ms_after=1.5,
@@ -148,7 +146,11 @@ postprocessing_params = dict(
     locations=dict(method="monopolar_triangulation"),
     template_metrics=dict(upsampling_factor=10, sparsity=None),
     principal_components=dict(n_components=5, mode="by_channel_local", whiten=True),
-    quality_metrics=dict(qm_params=qm_params, metric_names=qm_metric_names, n_jobs=1),
+    quality_metrics=dict(
+        qm_params=qm_params, 
+        metric_names=qm_metric_names, 
+        n_jobs=1
+    ),
 )
 
 curation_params = dict(

@@ -4,7 +4,7 @@ from contextlib import contextmanager
 import ast
 import json
 
-from db.models import User, DataSource, Run
+from ..db.models import User, DataSource, Run
 
 
 class DatabaseClient:
