@@ -53,6 +53,7 @@ class LocalDockerClient:
         }
 
         container = self.client.containers.run(
+            name=f'si-sorting-run-{run_kwargs.run_identifier}',
             image='python:slim',
             command=['python', '-c', 'import os; print(os.environ.get("SI_RUN_KWARGS"))'],
             detach=True,
@@ -64,12 +65,7 @@ class LocalDockerClient:
                     capabilities=[['gpu']]
                 )
             ]
-        )
-        # if response.status_code == 200:
-        #     self.logger.info("Success!")
-        # else:
-        #     self.logger.info(f"Error {response.status_code}: {response.content}")
-    
+        )    
 
     def get_run_logs(self, run_identifier):
         # TODO: Implement this
