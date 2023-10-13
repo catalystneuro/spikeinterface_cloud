@@ -371,7 +371,7 @@ def main(
         recording_processed, sorting, folder=wf_dedup_folder, **postprocessing_kwargs["waveforms_deduplicate"]
     )
     # de-duplication
-    sorting_deduplicated = sc.remove_redundant_units(we_raw, duplicate_threshold=curation_params["duplicate_threshold"])
+    sorting_deduplicated = sc.remove_redundant_units(we_raw, duplicate_threshold=curation_kwargs["duplicate_threshold"])
     logger.info(
         f"\tNumber of original units: {len(we_raw.sorting.unit_ids)} -- Number of units after de-duplication: {len(sorting_deduplicated.unit_ids)}"
     )
@@ -380,7 +380,7 @@ def main(
     )
     deduplicated_unit_ids = sorting_deduplicated.unit_ids
     # use existing deduplicated waveforms to compute sparsity
-    sparsity_raw = si.compute_sparsity(we_raw, **sparsity_params)
+    sparsity_raw = si.compute_sparsity(we_raw, **postprocessing_kwargs["sparsity"])
     sparsity_mask = sparsity_raw.mask[sorting.ids_to_indices(deduplicated_unit_ids), :]
     sparsity = si.ChannelSparsity(mask=sparsity_mask, unit_ids=deduplicated_unit_ids, channel_ids=recording.channel_ids)
     shutil.rmtree(wf_dedup_folder)
@@ -430,9 +430,9 @@ def main(
     t_curation_start = time.perf_counter()
 
     # curation query
-    isi_violations_ratio_thr = curation_params["isi_violations_ratio_threshold"]
-    presence_ratio_thr = curation_params["presence_ratio_threshold"]
-    amplitude_cutoff_thr = curation_params["amplitude_cutoff_threshold"]
+    isi_violations_ratio_thr = curation_kwargs["isi_violations_ratio_threshold"]
+    presence_ratio_thr = curation_kwargs["presence_ratio_threshold"]
+    amplitude_cutoff_thr = curation_kwargs["amplitude_cutoff_threshold"]
 
     curation_query = f"isi_violations_ratio < {isi_violations_ratio_thr} and presence_ratio > {presence_ratio_thr} and amplitude_cutoff < {amplitude_cutoff_thr}"
     logger.info(f"Curation query: {curation_query}")
@@ -489,7 +489,7 @@ def main(
     results_nwb_folder.mkdir(parents=True, exist_ok=True)
     output_nwbfile_path = results_nwb_folder / f"{run_identifier}.nwb"
 
-    # TODO: Condider writing waveforms instead of sorting
+    # TODO: Consider writing waveforms instead of sorting
     # add sorting properties
     # unit locations
     sorting.set_property("unit_locations", unit_locations)
