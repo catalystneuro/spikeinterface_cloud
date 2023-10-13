@@ -28,9 +28,9 @@ class RunKwargs(BaseModel):
 # Source Data Models
 # ------------------------------
 class SourceName(str, Enum):
+    local = "local"
     s3 = "s3"
     dandi = "dandi"
-    local = "local"
 
 class SourceDataType(str, Enum):
     nwb = "nwb"
@@ -46,9 +46,9 @@ class SourceDataKwargs(BaseModel):
 # Output Data Models
 # ------------------------------
 class OutputDestination(str, Enum):
+    local = "local"
     s3 = "s3"
     dandi = "dandi"
-    local = "local"
 
 class OutputDataKwargs(BaseModel):
     output_destination: OutputDestination = Field(..., description="Destination of output data. Choose from: s3, dandi, local.")

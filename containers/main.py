@@ -622,28 +622,7 @@ if __name__ == "__main__":
     output_destination = validate_not_none(output_kwargs, "output_destination")
     output_path = validate_not_none(output_kwargs, "output_path")
 
-    # # Run main function
-    # main(
-    #     run_at=run_at,
-    #     run_identifier=run_identifier,
-    #     run_description=run_description,
-    #     test_with_toy_recording=test_with_toy_recording,
-    #     test_with_subrecording=test_with_subrecording,
-    #     test_subrecording_n_frames=test_subrecording_n_frames,
-    #     log_to_file=log_to_file,
-    #     source_name=source_name,
-    #     source_data_type=source_data_type,
-    #     source_data_paths=source_data_paths,
-    #     recording_kwargs=recording_kwargs,
-    #     preprocessing_kwargs=preprocessing_kwargs,
-    #     sorter_kwargs=sorter_kwargs,
-    #     postprocessing_kwargs=postprocessing_kwargs,
-    #     curation_kwargs=curation_kwargs,
-    #     visualization_kwargs=visualization_kwargs,
-    #     output_destination=output_destination,
-    #     output_path=output_path,
-    # )
-
+    # Just for checking for now - REMOVE LATER
     print("\nRun at: ", run_at)
     print("\nRun identifier: ", run_identifier)
     print("\nRun description: ", run_description)
@@ -662,6 +641,28 @@ if __name__ == "__main__":
     print("\nVisualization kwargs: ", visualization_kwargs)
     print("\nOutput destination: ", output_destination)
     print("\nOutput path: ", output_path)
+
+    # Run main function
+    main(
+        run_at=run_at,
+        run_identifier=run_identifier,
+        run_description=run_description,
+        test_with_toy_recording=test_with_toy_recording,
+        test_with_subrecording=test_with_subrecording,
+        test_subrecording_n_frames=test_subrecording_n_frames,
+        log_to_file=log_to_file,
+        source_name=source_name,
+        source_data_type=source_data_type,
+        source_data_paths=source_data_paths,
+        recording_kwargs=recording_kwargs,
+        preprocessing_kwargs=preprocessing_kwargs,
+        sorter_kwargs=sorter_kwargs,
+        postprocessing_kwargs=postprocessing_kwargs,
+        curation_kwargs=curation_kwargs,
+        visualization_kwargs=visualization_kwargs,
+        output_destination=output_destination,
+        output_path=output_path,
+    )
 
 
 
