@@ -34,8 +34,8 @@ class SourceDataType(str, Enum):
 
 class SourceDataKwargs(BaseModel):
     source_name: SourceName = Field(..., description="Source of input data. Choose from: s3, dandi, local.")
-    source_data_paths: Dict[str, str] = Field(..., description="Dictionary with paths to source data. Keys are names of data files, values are urls.")
     source_data_type: SourceDataType = Field(..., description="Type of input data. Choose from: nwb, spikeglx.")
+    source_data_paths: Dict[str, str] = Field(..., description="Dictionary with paths to source data. Keys are names of data files, values are urls.")
 
 
 # ------------------------------

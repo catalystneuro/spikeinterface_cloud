@@ -5,7 +5,7 @@ ECR:
 - transfer out: $0.09 per GB transferred
 
 S3:
-- storage: $0.023 per GB / mont
+- storage: $0.023 per GB / month
 - requests: $0.005 (PUT, COPY, POST, LIST) or $0.0004 (GET, SELECT)
 - transfer out: 100GB free per month, after that $0.02 per GB (other aws services) or $0.09 per GB (outside of aws)
 

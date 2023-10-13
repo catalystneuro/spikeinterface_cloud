@@ -1,34 +1,34 @@
 # Spike sorters image
 FROM spikeinterface/kilosort2_5-compiled-base:0.2.0 as ks25base
 
-# NVIDIA-ready Image
-FROM nvidia/cuda:11.6.2-base-ubuntu20.04
+# # NVIDIA-ready Image
+# FROM nvidia/cuda:11.6.2-base-ubuntu20.04
 
-# Installing Python with miniconda
-RUN apt-get update && \
-    apt-get install -y build-essential  && \
-    apt-get install -y wget && \
-    apt-get install -y git && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+# # Installing Python with miniconda
+# RUN apt-get update && \
+#     apt-get install -y build-essential  && \
+#     apt-get install -y wget && \
+#     apt-get install -y git && \
+#     apt-get clean && \
+#     rm -rf /var/lib/apt/lists/*
 
-ENV CONDA_DIR /home/miniconda3
-ENV LATEST_CONDA_SCRIPT "Miniconda3-py39_23.5.2-0-Linux-x86_64.sh"
+# ENV CONDA_DIR /home/miniconda3
+# ENV LATEST_CONDA_SCRIPT "Miniconda3-py39_23.5.2-0-Linux-x86_64.sh"
 
-RUN wget --quiet https://repo.anaconda.com/miniconda/$LATEST_CONDA_SCRIPT -O ~/miniconda.sh && \
-    bash ~/miniconda.sh -b -p $CONDA_DIR && \
-    rm ~/miniconda.sh
-ENV PATH=$CONDA_DIR/bin:$PATH
+# RUN wget --quiet https://repo.anaconda.com/miniconda/$LATEST_CONDA_SCRIPT -O ~/miniconda.sh && \
+#     bash ~/miniconda.sh -b -p $CONDA_DIR && \
+#     rm ~/miniconda.sh
+# ENV PATH=$CONDA_DIR/bin:$PATH
 
-# Bring Sorter and matlab-related files
-COPY --from=ks25base /usr/bin/mlrtapp/ks2_5_compiled /usr/bin/mlrtapp/ks2_5_compiled
-ENV PATH="/usr/bin/mlrtapp:${PATH}"
-COPY --from=ks25base /opt/matlabruntime /opt/matlabruntime
-ENV PATH="/opt/matlabruntime:${PATH}"
-COPY --from=ks25base /usr/lib/x86_64-linux-gnu/libXt.so.6 /usr/lib/x86_64-linux-gnu/libXt.so.6
-COPY --from=ks25base /usr/lib/x86_64-linux-gnu/libSM.so.6 /usr/lib/x86_64-linux-gnu/libSM.so.6
-COPY --from=ks25base /usr/lib/x86_64-linux-gnu/libICE.so.6 /usr/lib/x86_64-linux-gnu/libICE.so.6
-ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/matlabruntime/R2022b/runtime/glnxa64:/opt/matlabruntime/R2022b/bin/glnxa64:/opt/matlabruntime/R2022b/sys/os/glnxa64:/opt/matlabruntime/R2022b/sys/opengl/lib/glnxa64:/opt/matlabruntime/R2022b/extern/bin/glnxa64
+# # Bring Sorter and matlab-related files
+# COPY --from=ks25base /usr/bin/mlrtapp/ks2_5_compiled /usr/bin/mlrtapp/ks2_5_compiled
+# ENV PATH="/usr/bin/mlrtapp:${PATH}"
+# COPY --from=ks25base /opt/matlabruntime /opt/matlabruntime
+# ENV PATH="/opt/matlabruntime:${PATH}"
+# COPY --from=ks25base /usr/lib/x86_64-linux-gnu/libXt.so.6 /usr/lib/x86_64-linux-gnu/libXt.so.6
+# COPY --from=ks25base /usr/lib/x86_64-linux-gnu/libSM.so.6 /usr/lib/x86_64-linux-gnu/libSM.so.6
+# COPY --from=ks25base /usr/lib/x86_64-linux-gnu/libICE.so.6 /usr/lib/x86_64-linux-gnu/libICE.so.6
+# ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/matlabruntime/R2022b/runtime/glnxa64:/opt/matlabruntime/R2022b/bin/glnxa64:/opt/matlabruntime/R2022b/sys/os/glnxa64:/opt/matlabruntime/R2022b/sys/opengl/lib/glnxa64:/opt/matlabruntime/R2022b/extern/bin/glnxa64
 
 # Copy requirements and script
 COPY requirements.txt .
@@ -37,11 +37,11 @@ RUN pip install -r requirements.txt
 WORKDIR /app
 COPY main.py .
 COPY utils.py .
-COPY light_server.py .
+# COPY light_server.py .
 RUN mkdir /data
 RUN mkdir /logs
 
 # Get Python stdout logs
 ENV PYTHONUNBUFFERED=1
 
-CMD ["python", "light_server.py"]
+CMD ["python", "main.py"]

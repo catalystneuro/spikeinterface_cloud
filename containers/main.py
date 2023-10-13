@@ -1,4 +1,5 @@
 import boto3
+import json
 import os
 import ast
 import subprocess
@@ -33,6 +34,7 @@ from dandi.download import download
 
 from utils import (
     make_logger,
+    validate_not_none,
     download_file_from_s3,
     upload_file_to_bucket,
     upload_all_files_to_bucket_folder,
@@ -40,185 +42,31 @@ from utils import (
 )
 
 
-### PARAMS: # TODO: probably we should pass a JSON file
-n_jobs = os.cpu_count()
-job_kwargs = dict(n_jobs=n_jobs, chunk_duration="1s", progress_bar=False)
-
-preprocessing_params = dict(
-    preprocessing_strategy="cmr",  # 'destripe' or 'cmr'
-    highpass_filter=dict(freq_min=300.0, margin_ms=5.0),
-    phase_shift=dict(margin_ms=100.0),
-    detect_bad_channels=dict(
-        method="coherence+psd",
-        dead_channel_threshold=-0.5,
-        noisy_channel_threshold=1.0,
-        outside_channel_threshold=-0.3,
-        n_neighbors=11,
-        seed=0,
-    ),
-    remove_out_channels=False,
-    remove_bad_channels=False,
-    max_bad_channel_fraction_to_remove=1.1,
-    common_reference=dict(reference="global", operator="median"),
-    highpass_spatial_filter=dict(
-        n_channel_pad=60,
-        n_channel_taper=None,
-        direction="y",
-        apply_agc=True,
-        agc_window_length_s=0.01,
-        highpass_butter_order=3,
-        highpass_butter_wn=0.01,
-    ),
-)
-
-qm_params = {
-    "presence_ratio": {"bin_duration_s": 60},
-    "snr": {"peak_sign": "neg", "peak_mode": "extremum", "random_chunk_kwargs_dict": None},
-    "isi_violation": {"isi_threshold_ms": 1.5, "min_isi_ms": 0},
-    "rp_violation": {"refractory_period_ms": 1, "censored_period_ms": 0.0},
-    "sliding_rp_violation": {
-        "bin_size_ms": 0.25,
-        "window_size_s": 1,
-        "exclude_ref_period_below_ms": 0.5,
-        "max_ref_period_ms": 10,
-        "contamination_values": None,
-    },
-    "amplitude_cutoff": {
-        "peak_sign": "neg",
-        "num_histogram_bins": 100,
-        "histogram_smoothing_value": 3,
-        "amplitudes_bins_min_ratio": 5,
-    },
-    "amplitude_median": {"peak_sign": "neg"},
-    "nearest_neighbor": {"max_spikes": 10000, "min_spikes": 10, "n_neighbors": 4},
-    "nn_isolation": {"max_spikes": 10000, "min_spikes": 10, "n_neighbors": 4, "n_components": 10, "radius_um": 100},
-    "nn_noise_overlap": {"max_spikes": 10000, "min_spikes": 10, "n_neighbors": 4, "n_components": 10, "radius_um": 100},
-}
-qm_metric_names = [
-    "num_spikes",
-    "firing_rate",
-    "presence_ratio",
-    "snr",
-    "isi_violation",
-    "rp_violation",
-    "sliding_rp_violation",
-    "amplitude_cutoff",
-    "drift",
-    "isolation_distance",
-    "l_ratio",
-    "d_prime",
-]
-
-postprocessing_params = dict(
-    sparsity=dict(method="radius", radius_um=100),
-    waveforms_deduplicate=dict(
-        ms_before=0.5,
-        ms_after=1.5,
-        max_spikes_per_unit=100,
-        return_scaled=False,
-        dtype=None,
-        precompute_template=("average",),
-        use_relative_path=True,
-    ),
-    waveforms=dict(
-        ms_before=3.0,
-        ms_after=4.0,
-        max_spikes_per_unit=500,
-        return_scaled=True,
-        dtype=None,
-        precompute_template=("average", "std"),
-        use_relative_path=True,
-    ),
-    spike_amplitudes=dict(
-        peak_sign="neg",
-        return_scaled=True,
-        outputs="concatenated",
-    ),
-    similarity=dict(method="cosine_similarity"),
-    correlograms=dict(
-        window_ms=100.0,
-        bin_ms=2.0,
-    ),
-    isis=dict(
-        window_ms=100.0,
-        bin_ms=5.0,
-    ),
-    locations=dict(method="monopolar_triangulation"),
-    template_metrics=dict(upsampling_factor=10, sparsity=None),
-    principal_components=dict(n_components=5, mode="by_channel_local", whiten=True),
-    quality_metrics=dict(
-        qm_params=qm_params, 
-        metric_names=qm_metric_names, 
-        n_jobs=1
-    ),
-)
-
-curation_params = dict(
-    duplicate_threshold=0.9,
-    isi_violations_ratio_threshold=0.5,
-    presence_ratio_threshold=0.8,
-    amplitude_cutoff_threshold=0.1,
-)
-
-visualization_params = dict(
-    timeseries=dict(n_snippets_per_segment=2, snippet_duration_s=0.5, skip=False),
-    drift=dict(
-        detection=dict(method="locally_exclusive", peak_sign="neg", detect_threshold=5, exclude_sweep_ms=0.1),
-        localization=dict(ms_before=0.1, ms_after=0.3, local_radius_um=100.0),
-        n_skip=30,
-        alpha=0.15,
-        vmin=-200,
-        vmax=0,
-        cmap="Greys_r",
-        figsize=(10, 10),
-    ),
-)
-
-data_folder = Path("data/")
-scratch_folder = Path("scratch/")
-results_folder = Path("results/")
-
-
 def main(
-    run_identifier: str = None,
-    source: str = None,
-    source_data_type: str = None,
-    source_data_paths: dict = None,
-    recording_kwargs: dict = None,
-    output_destination: str = None,
-    output_path: str = None,
-    sorter_name: str = None,
-    sorter_kwargs: dict = None,
-    concatenate_segments: bool = None,
+    run_at: str,
+    run_identifier: str,
+    run_description: str,
     test_with_toy_recording: bool = None,
     test_with_subrecording: bool = None,
     test_subrecording_n_frames: int = None,
     log_to_file: bool = None,
+    source_name: str = None,
+    source_data_type: str = None,
+    source_data_paths: dict = None,
+    recording_kwargs: dict = None,
+    preprocessing_kwargs: dict = None,
+    sorter_kwargs: dict = None,
+    postprocessing_kwargs: dict = None,
+    curation_kwargs: dict = None,
+    visualization_kwargs: dict = None,
+    output_destination: str = None,
+    output_path: str = None
 ):
     """
     This script should run in an ephemeral Docker container and will:
     1. download a dataset with raw electrophysiology traces from a specfied location
-    2. run a SpikeInterface pipeline on the raw traces
-    3. save the results in a target S3 bucket
-
-    The arguments for this script can be passsed as ENV variables:
-    - RUN_IDENTIFIER : Unique identifier for this run.
-    - SOURCE : Source of input data. Choose from: local, s3, dandi.
-    - SOURCE_DATA_PATHS : Dictionary with paths to source data. Keys are names of data files, values are urls.
-    - SOURCE_DATA_TYPE : Data type to be read. Choose from: nwb, spikeglx.
-    - RECORDING_KWARGS : SpikeInterface extractor keyword arguments, specific to chosen dataset type.
-    - OUTPUT_DESTINATION : Destination for saving results. Choose from: local, s3, dandi.
-    - OUTPUT_PATH : Path for saving results.
-        If S3, should be a valid S3 path, E.g. s3://...
-        If local, should be a valid local path, E.g. /data/results
-        If dandi, should be a valid Dandiset uri, E.g. https://dandiarchive.org/dandiset/000001
-    - SORTERS_NAME : Name of sorter to run on source data.
-    - SORTERS_KWARGS : Parameters for the sorter, stored as a dictionary.
-    - CONCATENATE_SEGMENTS : If True, concatenates all segments of the recording into one.
-    - TEST_WITH_TOY_RECORDING : Runs script with a toy dataset.
-    - TEST_WITH_SUB_RECORDING : Runs script with the first 4 seconds of target dataset.
-    - TEST_SUB_RECORDING_N_FRAMES : Number of frames to use for sub-recording.
-    - LOG_TO_FILE : If True, logs will be saved to a file in /logs folder.
+    2. run a SpikeInterface pipeline, including preprocessing, spike sorting, postprocessing and curation
+    3. save the results in a target S3 bucket or DANDI archive
 
     If running this in any AWS service (e.g. Batch, ECS, EC2...) the access to other AWS services
     such as S3 storage can be given to the container by an IAM role.
@@ -230,58 +78,70 @@ def main(
     If saving results to DANDI archive, or reading from embargoed dandisets, the following ENV variables should be present in the running container:
     - DANDI_API_KEY
     - DANDI_API_KEY_STAGING
+
+    Parameters
+    ----------
+    run_at : str
+        Where to run the sorting job. Choose from: aws, local.
+    run_identifier : str
+        Unique identifier for this run.
+    run_description : str
+        Description for this run.
+    test_with_toy_recording : bool
+        If True, runs script with a toy dataset.
+    test_with_subrecording : bool
+        If True, runs script with a subrecording of the source dataset.
+    test_subrecording_n_frames : int
+        Number of frames to use for sub-recording.
+    log_to_file : bool
+        If True, logs will be saved to a file in /logs folder.
+    source_name : str
+        Source of input data. Choose from: local, s3, dandi.
+    source_data_type : str
+        Data type to be read. Choose from: nwb, spikeglx.
+    source_data_paths : dict
+        Dictionary with paths to source data. Keys are names of data files, values are urls or paths.
+    recording_kwargs : dict
+        SpikeInterface recording keyword arguments, specific to chosen dataset type.
+    preprocessing_kwargs : dict
+        SpikeInterface preprocessing keyword arguments.
+    sorter_kwargs : dict
+        SpikeInterface sorter keyword arguments.
+    postprocessing_kwargs : dict
+        SpikeInterface postprocessing keyword arguments.
+    curation_kwargs : dict
+        SpikeInterface curation keyword arguments.
+    visualization_kwargs : dict
+        SpikeInterface visualization keyword arguments.
+    output_destination : str
+        Destination for saving results. Choose from: local, s3, dandi.
+    output_path : str
+        Path for saving results.
+        If S3, should be a valid S3 path, E.g. s3://...
+        If local, should be a valid local path, E.g. /data/results
+        If dandi, should be a valid Dandiset uri, E.g. https://dandiarchive.org/dandiset/000001
     """
-
-    # Order of priority for definition of running arguments:
-    # 1. passed by function
-    # 2. retrieved from ENV vars
-    # 3. default value
-    if not run_identifier:
-        run_identifier = os.environ.get("RUN_IDENTIFIER", datetime.now().strftime("%Y%m%d%H%M%S"))
-    if not source:
-        source = os.environ.get("SOURCE", None)
-        if source == "None":
-            source = None
-    if not source_data_paths:
-        source_data_paths = eval(os.environ.get("SOURCE_DATA_PATHS", "{}"))
-    if not source_data_type:
-        source_data_type = os.environ.get("SOURCE_DATA_TYPE", "nwb")
-    if not recording_kwargs:
-        recording_kwargs = ast.literal_eval(os.environ.get("RECORDING_KWARGS", "{}"))
-    if not output_destination:
-        output_destination = os.environ.get("OUTPUT_DESTINATION", "s3")
-    if not output_path:
-        output_path = os.environ.get("OUTPUT_PATH", None)
-        if output_path == "None":
-            output_path = None
-    if not sorter_name:
-        sorter_name = os.environ.get("SORTER_NAME", "kilosort2.5")
-    if not sorter_kwargs:
-        sorter_kwargs = eval(os.environ.get("SORTER_KWARGS", "{}"))
-    if not concatenate_segments:
-        concatenate_segments_str = os.environ.get("CONCATENATE_SEGMENTS", "False")
-        concatenate_segments = True if concatenate_segments_str == "True" else False
-    if test_with_toy_recording is None:
-        test_with_toy_recording = os.environ.get("TEST_WITH_TOY_RECORDING", "False").lower() in ("true", "1", "t")
-    if test_with_subrecording is None:
-        test_with_subrecording = os.environ.get("TEST_WITH_SUB_RECORDING", "False").lower() in ("true", "1", "t")
-    if not test_subrecording_n_frames:
-        test_subrecording_n_frames = int(os.environ.get("TEST_SUBRECORDING_N_FRAMES", 300000))
-    if log_to_file is None:
-        log_to_file = os.environ.get("LOG_TO_FILE", "False").lower() in ("true", "1", "t")
-
     # Set up logging
     logger = make_logger(run_identifier=run_identifier, log_to_file=log_to_file)
 
     filterwarnings(action="ignore", message="No cached namespaces found in .*")
     filterwarnings(action="ignore", message="Ignoring cached namespace .*")
 
-    # SET DEFAULT JOB KWARGS
-    si.set_global_job_kwargs(**job_kwargs)
+    # Set SpikeInterface global job kwargs
+    si.set_global_job_kwargs(
+        n_jobs=os.cpu_count(), 
+        chunk_duration="1s", 
+        progress_bar=False
+    )
 
     # Create folders
+    data_folder = Path("data/")
     data_folder.mkdir(exist_ok=True)
+
+    scratch_folder = Path("scratch/")
     scratch_folder.mkdir(exist_ok=True)
+
+    results_folder = Path("results/")
     results_folder.mkdir(exist_ok=True)
     tmp_folder = scratch_folder / "tmp"
     if tmp_folder.is_dir():
@@ -289,9 +149,9 @@ def main(
     tmp_folder.mkdir()
 
     # Checks
-    if source not in ["local", "s3", "dandi"]:
-        logger.error(f"Source {source} not supported. Choose from: local, s3, dandi.")
-        raise ValueError(f"Source {source} not supported. Choose from: local, s3, dandi.")
+    if source_name not in ["local", "s3", "dandi"]:
+        logger.error(f"Source {source_name} not supported. Choose from: local, s3, dandi.")
+        raise ValueError(f"Source {source_name} not supported. Choose from: local, s3, dandi.")
 
     # TODO: here we could leverage spikeinterface and add more options
     if source_data_type not in ["nwb", "spikeglx"]:
@@ -324,7 +184,7 @@ def main(
         recording_name = "toy"
 
     # Load data from S3
-    elif source == "s3":
+    elif source_name == "s3":
         for k, data_url in source_data_paths.items():
             if not data_url.startswith("s3://"):
                 logger.error(f"Data url {data_url} is not a valid S3 path. E.g. s3://...")
@@ -347,7 +207,7 @@ def main(
             recording = se.read_nwb_recording(file_path=f"/data/{file_name}", **recording_kwargs)
         recording_name = "recording_on_s3"
 
-    elif source == "dandi":
+    elif source_name == "dandi":
         dandiset_s3_file_url = source_data_paths["file"]
         if not dandiset_s3_file_url.startswith("https://dandiarchive"):
             raise Exception(
@@ -708,7 +568,67 @@ def main(
 
 
 if __name__ == "__main__":
-    main()
+    # Get run kwargs from ENV variables
+    run_kwargs = json.loads(os.environ.get("SI_RUN_KWARGS", "{}"))
+    run_at = validate_not_none(run_kwargs, "run_at")
+    run_identifier = run_kwargs.get("run_identifier", datetime.now().strftime("%Y%m%d%H%M%S"))
+    run_description = run_kwargs.get("run_description", "")
+    test_with_toy_recording = run_kwargs.get("test_with_toy_recording", "False").lower() in ("true", "1", "t")
+    test_with_subrecording = run_kwargs.get("test_with_subrecording", "False").lower() in ("true", "1", "t")
+    test_subrecording_n_frames = int(run_kwargs.get("test_subrecording_n_frames", 30000))
+    log_to_file = run_kwargs.get("log_to_file", "False").lower() in ("true", "1", "t")
+
+    # Get source data kwargs from ENV variables
+    source_data_kwargs = json.loads(os.environ.get("SI_SOURCE_DATA_KWARGS", "{}"))
+    source_name = validate_not_none(source_data_kwargs, "source_name")
+    source_data_type = validate_not_none(source_data_kwargs, "source_data_type")
+    source_data_paths = validate_not_none(source_data_kwargs, "source_data_paths")
+
+    # Get recording kwargs from ENV variables
+    recording_kwargs = json.loads(os.environ.get("SI_RECORDING_KWARGS", "{}"))
+    
+    # Get preprocessing kwargs from ENV variables
+    preprocessing_kwargs = json.loads(os.environ.get("SI_PREPROCESSING_KWARGS", "{}"))
+
+    # Get sorter kwargs from ENV variables
+    sorter_kwargs = json.loads(os.environ.get("SI_SORTER_KWARGS", "{}"))
+    
+    # Get postprocessing kwargs from ENV variables
+    postprocessing_kwargs = json.loads(os.environ.get("SI_POSTPROCESSING_KWARGS", "{}"))
+
+    # Get curation kwargs from ENV variables
+    curation_kwargs = json.loads(os.environ.get("SI_CURATION_KWARGS", "{}"))
+
+    # Get visualization kwargs from ENV variables
+    visualization_kwargs = json.loads(os.environ.get("SI_VISUALIZATION_KWARGS", "{}"))
+
+    # Get output kwargs from ENV variables
+    output_kwargs = json.loads(os.environ.get("SI_OUTPUT_KWARGS", "{}"))
+    output_destination = validate_not_none(output_kwargs, "output_destination")
+    output_path = validate_not_none(output_kwargs, "output_path")
+
+    # Run main function
+    main(
+        run_at=run_at,
+        run_identifier=run_identifier,
+        run_description=run_description,
+        test_with_toy_recording=test_with_toy_recording,
+        test_with_subrecording=test_with_subrecording,
+        test_subrecording_n_frames=test_subrecording_n_frames,
+        log_to_file=log_to_file,
+        source_name=source_name,
+        source_data_type=source_data_type,
+        source_data_paths=source_data_paths,
+        recording_kwargs=recording_kwargs,
+        preprocessing_kwargs=preprocessing_kwargs,
+        sorter_kwargs=sorter_kwargs,
+        postprocessing_kwargs=postprocessing_kwargs,
+        curation_kwargs=curation_kwargs,
+        visualization_kwargs=visualization_kwargs,
+        output_destination=output_destination,
+        output_path=output_path,
+    )
+
 
 # Known issues:
 #
