@@ -1,5 +1,6 @@
 from pathlib import Path
 import docker
+import uuid
 
 from ..core.logger import logger
 from ..models.sorting import (
@@ -65,7 +66,7 @@ class LocalDockerClient:
         }
 
         container = self.client.containers.run(
-            name=f'si-sorting-run-{run_kwargs.run_identifier}',
+            name=f'si-sorting-run-{run_kwargs.run_identifier}-{uuid.uuid4().hex[:6]}',
             image=map_sorter_to_image[sorter_kwargs.sorter_name],
             command=['python', 'main.py'],
             detach=True,
