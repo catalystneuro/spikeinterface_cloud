@@ -17,6 +17,7 @@ from ..models.sorting import (
     PostprocessingKwargs,
     CurationKwargs,
     VisualizationKwargs,
+    OutputDataKwargs
 )
 
 
@@ -32,6 +33,7 @@ def sorting_background_task(
     postprocessing_kwargs: PostprocessingKwargs,
     curation_kwargs: CurationKwargs,
     visualization_kwargs: VisualizationKwargs,
+    output_data_kwargs: OutputDataKwargs,
 ):
     # Run sorting and update db entry status
     db_client = DatabaseClient(connection_string=settings.DB_CONNECTION_STRING)
@@ -49,6 +51,7 @@ def sorting_background_task(
                 postprocessing_kwargs=postprocessing_kwargs,
                 curation_kwargs=curation_kwargs,
                 visualization_kwargs=visualization_kwargs,
+                output_data_kwargs=output_data_kwargs,
             )
         elif run_at == "aws":
             # TODO: Implement this
@@ -77,12 +80,9 @@ async def route_run_sorting(
     postprocessing_kwargs: PostprocessingKwargs,
     curation_kwargs: CurationKwargs,
     visualization_kwargs: VisualizationKwargs,
+    output_data_kwargs: OutputDataKwargs,
     background_tasks: BackgroundTasks
 ) -> JSONResponse:
-    if not run_kwargs.run_identifier:
-        run_identifier = datetime.now().strftime("%Y%m%d%H%M%S")
-    else:
-        run_identifier = run_kwargs.run_identifier
     try:
         # Create Database entries
         db_client = DatabaseClient(connection_string=settings.DB_CONNECTION_STRING)
@@ -121,6 +121,7 @@ async def route_run_sorting(
             postprocessing_kwargs=postprocessing_kwargs,
             curation_kwargs=curation_kwargs,
             visualization_kwargs=visualization_kwargs,
+            output_data_kwargs=output_data_kwargs,
         )
 
     except Exception as e:

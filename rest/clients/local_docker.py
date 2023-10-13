@@ -11,6 +11,7 @@ from ..models.sorting import (
     PostprocessingKwargs,
     CurationKwargs,
     VisualizationKwargs,
+    OutputDataKwargs
 )
 
 
@@ -30,6 +31,7 @@ class LocalDockerClient:
         postprocessing_kwargs: PostprocessingKwargs,
         curation_kwargs: CurationKwargs,
         visualization_kwargs: VisualizationKwargs,
+        output_data_kwargs: OutputDataKwargs,
     ) -> None:
         # Pass kwargs as environment variables to the container
         env_vars = dict(
@@ -41,6 +43,7 @@ class LocalDockerClient:
             SI_POSTPROCESSING_KWARGS=postprocessing_kwargs.json(),
             SI_CURATION_KWARGS=curation_kwargs.json(),
             SI_VISUALIZATION_KWARGS=visualization_kwargs.json(),
+            SI_OUTPUT_DATA_KWARGS=output_data_kwargs.json(),
         )
         
         # Local volumes to mount

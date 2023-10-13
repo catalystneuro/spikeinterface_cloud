@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field, Extra
 from typing import Optional, Dict, List, Union, Tuple
 from enum import Enum
+from datetime import datetime
 
 
 # ------------------------------
@@ -10,10 +11,13 @@ class RunAt(str, Enum):
     aws = "aws"
     local = "local"
 
+def default_run_identifier():
+    return datetime.now().strftime("%Y%m%d-%H%M%S")
+
 class RunKwargs(BaseModel):
     run_at: RunAt = Field(..., description="Where to run the sorting job. Choose from: aws, local.")
-    run_identifier: str = Field(..., description="Unique identifier for the run.")
-    run_description: str = Field(..., description="Description of the run.")
+    run_identifier: str = Field(default_factory=default_run_identifier, description="Unique identifier for the run.")
+    run_description: str = Field(default="", description="Description of the run.")
     test_with_toy_recording: bool = Field(default=False, description="Whether to test with a toy recording.")
     test_with_subrecording: bool = Field(default=False, description="Whether to test with a subrecording.")
     test_subrecording_n_frames: Optional[int] = Field(default=30000, description="Number of frames to use for the subrecording.")
@@ -277,5 +281,4 @@ class Drift(BaseModel):
 class VisualizationKwargs(BaseModel):
     timeseries: Timeseries
     drift: Drift
-
 
