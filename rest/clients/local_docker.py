@@ -15,6 +15,15 @@ from ..models.sorting import (
 )
 
 
+map_sorter_to_image = {
+    "kilosort2": "ghcr.io/catalystneuro/si-sorting-ks2:latest",
+    "kilosort25": "ghcr.io/catalystneuro/si-sorting-ks25:latest",
+    "kilosort3": "ghcr.io/catalystneuro/si-sorting-ks3:latest",
+    "ironclust": "ghcr.io/catalystneuro/si-sorting-ironclust:latest",
+    "spykingcircus": "ghcr.io/catalystneuro/si-sorting-spyking-circus:latest",
+}
+
+
 class LocalDockerClient:
 
     def __init__(self, base_url: str = "tcp://docker-proxy:2375"):
@@ -57,8 +66,8 @@ class LocalDockerClient:
 
         container = self.client.containers.run(
             name=f'si-sorting-run-{run_kwargs.run_identifier}',
-            image='python:slim',
-            command=['python', '-c', 'import os; print(os.environ.get("SI_RUN_KWARGS"))'],
+            image=map_sorter_to_image[sorter_kwargs.sorter_name],
+            command=['python', 'main.py'],
             detach=True,
             environment=env_vars,
             volumes=volumes,

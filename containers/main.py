@@ -588,10 +588,10 @@ if __name__ == "__main__":
     run_at = validate_not_none(run_kwargs, "run_at")
     run_identifier = run_kwargs.get("run_identifier", datetime.now().strftime("%Y%m%d%H%M%S"))
     run_description = run_kwargs.get("run_description", "")
-    test_with_toy_recording = run_kwargs.get("test_with_toy_recording", "False").lower() in ("true", "1", "t")
-    test_with_subrecording = run_kwargs.get("test_with_subrecording", "False").lower() in ("true", "1", "t")
+    test_with_toy_recording = run_kwargs.get("test_with_toy_recording", "False")
+    test_with_subrecording = run_kwargs.get("test_with_subrecording", "False")
     test_subrecording_n_frames = int(run_kwargs.get("test_subrecording_n_frames", 30000))
-    log_to_file = run_kwargs.get("log_to_file", "False").lower() in ("true", "1", "t")
+    log_to_file = run_kwargs.get("log_to_file", "False")
 
     # Get source data kwargs from ENV variables
     source_data_kwargs = json.loads(os.environ.get("SI_SOURCE_DATA_KWARGS", "{}"))
@@ -622,27 +622,47 @@ if __name__ == "__main__":
     output_destination = validate_not_none(output_kwargs, "output_destination")
     output_path = validate_not_none(output_kwargs, "output_path")
 
-    # Run main function
-    main(
-        run_at=run_at,
-        run_identifier=run_identifier,
-        run_description=run_description,
-        test_with_toy_recording=test_with_toy_recording,
-        test_with_subrecording=test_with_subrecording,
-        test_subrecording_n_frames=test_subrecording_n_frames,
-        log_to_file=log_to_file,
-        source_name=source_name,
-        source_data_type=source_data_type,
-        source_data_paths=source_data_paths,
-        recording_kwargs=recording_kwargs,
-        preprocessing_kwargs=preprocessing_kwargs,
-        sorter_kwargs=sorter_kwargs,
-        postprocessing_kwargs=postprocessing_kwargs,
-        curation_kwargs=curation_kwargs,
-        visualization_kwargs=visualization_kwargs,
-        output_destination=output_destination,
-        output_path=output_path,
-    )
+    # # Run main function
+    # main(
+    #     run_at=run_at,
+    #     run_identifier=run_identifier,
+    #     run_description=run_description,
+    #     test_with_toy_recording=test_with_toy_recording,
+    #     test_with_subrecording=test_with_subrecording,
+    #     test_subrecording_n_frames=test_subrecording_n_frames,
+    #     log_to_file=log_to_file,
+    #     source_name=source_name,
+    #     source_data_type=source_data_type,
+    #     source_data_paths=source_data_paths,
+    #     recording_kwargs=recording_kwargs,
+    #     preprocessing_kwargs=preprocessing_kwargs,
+    #     sorter_kwargs=sorter_kwargs,
+    #     postprocessing_kwargs=postprocessing_kwargs,
+    #     curation_kwargs=curation_kwargs,
+    #     visualization_kwargs=visualization_kwargs,
+    #     output_destination=output_destination,
+    #     output_path=output_path,
+    # )
+
+    print("\nRun at: ", run_at)
+    print("\nRun identifier: ", run_identifier)
+    print("\nRun description: ", run_description)
+    print("\nTest with toy recording: ", test_with_toy_recording)
+    print("\nTest with subrecording: ", test_with_subrecording)
+    print("\nTest subrecording n frames: ", test_subrecording_n_frames)
+    print("\nLog to file: ", log_to_file)
+    print("\nSource name: ", source_name)
+    print("\nSource data type: ", source_data_type)
+    print("\nSource data paths: ", source_data_paths)
+    print("\nRecording kwargs: ", recording_kwargs)
+    print("\nPreprocessing kwargs: ", preprocessing_kwargs)
+    print("\nSorter kwargs: ", sorter_kwargs)
+    print("\nPostprocessing kwargs: ", postprocessing_kwargs)
+    print("\nCuration kwargs: ", curation_kwargs)
+    print("\nVisualization kwargs: ", visualization_kwargs)
+    print("\nOutput destination: ", output_destination)
+    print("\nOutput path: ", output_path)
+
 
 
 # Known issues:

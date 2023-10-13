@@ -1,5 +1,5 @@
 # Spike sorters image
-FROM spikeinterface/kilosort2_5-compiled-base:0.2.0 as ks25base
+FROM spikeinterface/kilosort2_5-compiled-base:0.2.0
 
 # # NVIDIA-ready Image
 # FROM nvidia/cuda:11.6.2-base-ubuntu20.04
