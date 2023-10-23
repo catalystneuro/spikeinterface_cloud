@@ -159,4 +159,5 @@ yarn-error.log*
 # Miscellaneous
 *.fuse_hidden*
 results/
+logs/
 *.nwb

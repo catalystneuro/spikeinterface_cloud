@@ -1,7 +1,7 @@
 import boto3
 import enum
 
-from core import settings
+from ..core import settings
 
 
 class JobStatus(enum.Enum):

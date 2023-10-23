@@ -56,6 +56,13 @@ def make_logger(run_identifier: str, log_to_file: bool):
     return logger
 
 
+def validate_not_none(d, k):
+    v = d.get(k, None)
+    if v is None:
+        raise ValueError(f"{k} not specified.")
+    return v
+
+
 def download_file_from_url(url):
     # ref: https://stackoverflow.com/a/39217788/11483674
     local_filename = "/data/filename.nwb"

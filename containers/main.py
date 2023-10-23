@@ -1,4 +1,5 @@
 import boto3
+import json
 import os
 import ast
 import subprocess
@@ -33,6 +34,7 @@ from dandi.download import download
 
 from utils import (
     make_logger,
+    validate_not_none,
     download_file_from_s3,
     upload_file_to_bucket,
     upload_all_files_to_bucket_folder,
@@ -40,183 +42,31 @@ from utils import (
 )
 
 
-### PARAMS: # TODO: probably we should pass a JSON file
-n_jobs = os.cpu_count()
-job_kwargs = dict(n_jobs=n_jobs, chunk_duration="1s", progress_bar=False)
-
-preprocessing_params = dict(
-    preprocessing_strategy="cmr",  # 'destripe' or 'cmr'
-    highpass_filter=dict(freq_min=300.0, margin_ms=5.0),
-    phase_shift=dict(margin_ms=100.0),
-    detect_bad_channels=dict(
-        method="coherence+psd",
-        dead_channel_threshold=-0.5,
-        noisy_channel_threshold=1.0,
-        outside_channel_threshold=-0.3,
-        n_neighbors=11,
-        seed=0,
-    ),
-    remove_out_channels=False,
-    remove_bad_channels=False,
-    max_bad_channel_fraction_to_remove=1.1,
-    common_reference=dict(reference="global", operator="median"),
-    highpass_spatial_filter=dict(
-        n_channel_pad=60,
-        n_channel_taper=None,
-        direction="y",
-        apply_agc=True,
-        agc_window_length_s=0.01,
-        highpass_butter_order=3,
-        highpass_butter_wn=0.01,
-    ),
-)
-
-qm_params = {
-    "presence_ratio": {"bin_duration_s": 60},
-    "snr": {"peak_sign": "neg", "peak_mode": "extremum", "random_chunk_kwargs_dict": None},
-    "isi_violation": {"isi_threshold_ms": 1.5, "min_isi_ms": 0},
-    "rp_violation": {"refractory_period_ms": 1, "censored_period_ms": 0.0},
-    "sliding_rp_violation": {
-        "bin_size_ms": 0.25,
-        "window_size_s": 1,
-        "exclude_ref_period_below_ms": 0.5,
-        "max_ref_period_ms": 10,
-        "contamination_values": None,
-    },
-    "amplitude_cutoff": {
-        "peak_sign": "neg",
-        "num_histogram_bins": 100,
-        "histogram_smoothing_value": 3,
-        "amplitudes_bins_min_ratio": 5,
-    },
-    "amplitude_median": {"peak_sign": "neg"},
-    "nearest_neighbor": {"max_spikes": 10000, "min_spikes": 10, "n_neighbors": 4},
-    "nn_isolation": {"max_spikes": 10000, "min_spikes": 10, "n_neighbors": 4, "n_components": 10, "radius_um": 100},
-    "nn_noise_overlap": {"max_spikes": 10000, "min_spikes": 10, "n_neighbors": 4, "n_components": 10, "radius_um": 100},
-}
-qm_metric_names = [
-    "num_spikes",
-    "firing_rate",
-    "presence_ratio",
-    "snr",
-    "isi_violation",
-    "rp_violation",
-    "sliding_rp_violation",
-    "amplitude_cutoff",
-    "drift",
-    "isolation_distance",
-    "l_ratio",
-    "d_prime",
-]
-
-sparsity_params = dict(method="radius", radius_um=100)
-
-postprocessing_params = dict(
-    sparsity=sparsity_params,
-    waveforms_deduplicate=dict(
-        ms_before=0.5,
-        ms_after=1.5,
-        max_spikes_per_unit=100,
-        return_scaled=False,
-        dtype=None,
-        precompute_template=("average",),
-        use_relative_path=True,
-    ),
-    waveforms=dict(
-        ms_before=3.0,
-        ms_after=4.0,
-        max_spikes_per_unit=500,
-        return_scaled=True,
-        dtype=None,
-        precompute_template=("average", "std"),
-        use_relative_path=True,
-    ),
-    spike_amplitudes=dict(
-        peak_sign="neg",
-        return_scaled=True,
-        outputs="concatenated",
-    ),
-    similarity=dict(method="cosine_similarity"),
-    correlograms=dict(
-        window_ms=100.0,
-        bin_ms=2.0,
-    ),
-    isis=dict(
-        window_ms=100.0,
-        bin_ms=5.0,
-    ),
-    locations=dict(method="monopolar_triangulation"),
-    template_metrics=dict(upsampling_factor=10, sparsity=None),
-    principal_components=dict(n_components=5, mode="by_channel_local", whiten=True),
-    quality_metrics=dict(qm_params=qm_params, metric_names=qm_metric_names, n_jobs=1),
-)
-
-curation_params = dict(
-    duplicate_threshold=0.9,
-    isi_violations_ratio_threshold=0.5,
-    presence_ratio_threshold=0.8,
-    amplitude_cutoff_threshold=0.1,
-)
-
-visualization_params = dict(
-    timeseries=dict(n_snippets_per_segment=2, snippet_duration_s=0.5, skip=False),
-    drift=dict(
-        detection=dict(method="locally_exclusive", peak_sign="neg", detect_threshold=5, exclude_sweep_ms=0.1),
-        localization=dict(ms_before=0.1, ms_after=0.3, local_radius_um=100.0),
-        n_skip=30,
-        alpha=0.15,
-        vmin=-200,
-        vmax=0,
-        cmap="Greys_r",
-        figsize=(10, 10),
-    ),
-)
-
-data_folder = Path("data/")
-scratch_folder = Path("scratch/")
-results_folder = Path("results/")
-
-
 def main(
-    run_identifier: str = None,
-    source: str = None,
-    source_data_type: str = None,
-    source_data_paths: dict = None,
-    recording_kwargs: dict = None,
-    output_destination: str = None,
-    output_path: str = None,
-    sorter_name: str = None,
-    sorter_kwargs: dict = None,
-    concatenate_segments: bool = None,
+    run_at: str,
+    run_identifier: str,
+    run_description: str,
     test_with_toy_recording: bool = None,
     test_with_subrecording: bool = None,
     test_subrecording_n_frames: int = None,
     log_to_file: bool = None,
+    source_name: str = None,
+    source_data_type: str = None,
+    source_data_paths: dict = None,
+    recording_kwargs: dict = None,
+    preprocessing_kwargs: dict = None,
+    sorter_kwargs: dict = None,
+    postprocessing_kwargs: dict = None,
+    curation_kwargs: dict = None,
+    visualization_kwargs: dict = None,
+    output_destination: str = None,
+    output_path: str = None
 ):
     """
     This script should run in an ephemeral Docker container and will:
     1. download a dataset with raw electrophysiology traces from a specfied location
-    2. run a SpikeInterface pipeline on the raw traces
-    3. save the results in a target S3 bucket
-
-    The arguments for this script can be passsed as ENV variables:
-    - RUN_IDENTIFIER : Unique identifier for this run.
-    - SOURCE : Source of input data. Choose from: local, s3, dandi.
-    - SOURCE_DATA_PATHS : Dictionary with paths to source data. Keys are names of data files, values are urls.
-    - SOURCE_DATA_TYPE : Data type to be read. Choose from: nwb, spikeglx.
-    - RECORDING_KWARGS : SpikeInterface extractor keyword arguments, specific to chosen dataset type.
-    - OUTPUT_DESTINATION : Destination for saving results. Choose from: local, s3, dandi.
-    - OUTPUT_PATH : Path for saving results.
-        If S3, should be a valid S3 path, E.g. s3://...
-        If local, should be a valid local path, E.g. /data/results
-        If dandi, should be a valid Dandiset uri, E.g. https://dandiarchive.org/dandiset/000001
-    - SORTERS_NAME : Name of sorter to run on source data.
-    - SORTERS_KWARGS : Parameters for the sorter, stored as a dictionary.
-    - CONCATENATE_SEGMENTS : If True, concatenates all segments of the recording into one.
-    - TEST_WITH_TOY_RECORDING : Runs script with a toy dataset.
-    - TEST_WITH_SUB_RECORDING : Runs script with the first 4 seconds of target dataset.
-    - TEST_SUB_RECORDING_N_FRAMES : Number of frames to use for sub-recording.
-    - LOG_TO_FILE : If True, logs will be saved to a file in /logs folder.
+    2. run a SpikeInterface pipeline, including preprocessing, spike sorting, postprocessing and curation
+    3. save the results in a target S3 bucket or DANDI archive
 
     If running this in any AWS service (e.g. Batch, ECS, EC2...) the access to other AWS services
     such as S3 storage can be given to the container by an IAM role.
@@ -228,70 +78,61 @@ def main(
     If saving results to DANDI archive, or reading from embargoed dandisets, the following ENV variables should be present in the running container:
     - DANDI_API_KEY
     - DANDI_API_KEY_STAGING
+
+    Parameters
+    ----------
+    run_at : str
+        Where to run the sorting job. Choose from: aws, local.
+    run_identifier : str
+        Unique identifier for this run.
+    run_description : str
+        Description for this run.
+    test_with_toy_recording : bool
+        If True, runs script with a toy dataset.
+    test_with_subrecording : bool
+        If True, runs script with a subrecording of the source dataset.
+    test_subrecording_n_frames : int
+        Number of frames to use for sub-recording.
+    log_to_file : bool
+        If True, logs will be saved to a file in /logs folder.
+    source_name : str
+        Source of input data. Choose from: local, s3, dandi.
+    source_data_type : str
+        Data type to be read. Choose from: nwb, spikeglx.
+    source_data_paths : dict
+        Dictionary with paths to source data. Keys are names of data files, values are urls or paths.
+    recording_kwargs : dict
+        SpikeInterface recording keyword arguments, specific to chosen dataset type.
+    preprocessing_kwargs : dict
+        SpikeInterface preprocessing keyword arguments.
+    sorter_kwargs : dict
+        SpikeInterface sorter keyword arguments.
+    postprocessing_kwargs : dict
+        SpikeInterface postprocessing keyword arguments.
+    curation_kwargs : dict
+        SpikeInterface curation keyword arguments.
+    visualization_kwargs : dict
+        SpikeInterface visualization keyword arguments.
+    output_destination : str
+        Destination for saving results. Choose from: local, s3, dandi.
+    output_path : str
+        Path for saving results.
+        If S3, should be a valid S3 path, E.g. s3://...
+        If local, should be a valid local path, E.g. /data/results
+        If dandi, should be a valid Dandiset uri, E.g. https://dandiarchive.org/dandiset/000001
     """
-
-    # Order of priority for definition of running arguments:
-    # 1. passed by function
-    # 2. retrieved from ENV vars
-    # 3. default value
-    if not run_identifier:
-        run_identifier = os.environ.get("RUN_IDENTIFIER", datetime.now().strftime("%Y%m%d%H%M%S"))
-    if not source:
-        source = os.environ.get("SOURCE", None)
-        if source == "None":
-            source = None
-    if not source_data_paths:
-        source_data_paths = eval(os.environ.get("SOURCE_DATA_PATHS", "{}"))
-    if not source_data_type:
-        source_data_type = os.environ.get("SOURCE_DATA_TYPE", "nwb")
-    if not recording_kwargs:
-        recording_kwargs = ast.literal_eval(os.environ.get("RECORDING_KWARGS", "{}"))
-    if not output_destination:
-        output_destination = os.environ.get("OUTPUT_DESTINATION", "s3")
-    if not output_path:
-        output_path = os.environ.get("OUTPUT_PATH", None)
-        if output_path == "None":
-            output_path = None
-    if not sorter_name:
-        sorter_name = os.environ.get("SORTER_NAME", "kilosort2.5")
-    if not sorter_kwargs:
-        sorter_kwargs = eval(os.environ.get("SORTER_KWARGS", "{}"))
-    if not concatenate_segments:
-        concatenate_segments_str = os.environ.get("CONCATENATE_SEGMENTS", "False")
-        concatenate_segments = True if concatenate_segments_str == "True" else False
-    if test_with_toy_recording is None:
-        test_with_toy_recording = os.environ.get("TEST_WITH_TOY_RECORDING", "False").lower() in ("true", "1", "t")
-    if test_with_subrecording is None:
-        test_with_subrecording = os.environ.get("TEST_WITH_SUB_RECORDING", "False").lower() in ("true", "1", "t")
-    if not test_subrecording_n_frames:
-        test_subrecording_n_frames = int(os.environ.get("TEST_SUBRECORDING_N_FRAMES", 300000))
-    if log_to_file is None:
-        log_to_file = os.environ.get("LOG_TO_FILE", "False").lower() in ("true", "1", "t")
-
     # Set up logging
     logger = make_logger(run_identifier=run_identifier, log_to_file=log_to_file)
 
     filterwarnings(action="ignore", message="No cached namespaces found in .*")
     filterwarnings(action="ignore", message="Ignoring cached namespace .*")
 
-    # SET DEFAULT JOB KWARGS
-    si.set_global_job_kwargs(**job_kwargs)
-
-    # Create folders
-    data_folder.mkdir(exist_ok=True)
-    scratch_folder.mkdir(exist_ok=True)
-    results_folder.mkdir(exist_ok=True)
-    tmp_folder = scratch_folder / "tmp"
-    if tmp_folder.is_dir():
-        shutil.rmtree(tmp_folder)
-    tmp_folder.mkdir()
-
     # Checks
-    if source not in ["local", "s3", "dandi"]:
-        logger.error(f"Source {source} not supported. Choose from: local, s3, dandi.")
-        raise ValueError(f"Source {source} not supported. Choose from: local, s3, dandi.")
+    if source_name not in ["local", "s3", "dandi"]:
+        logger.error(f"Source {source_name} not supported. Choose from: local, s3, dandi.")
+        raise ValueError(f"Source {source_name} not supported. Choose from: local, s3, dandi.")
 
-    # TODO: here we could leverage spikeinterface and add more options
+    # TODO: here we could eventually leverage spikeinterface and add more options
     if source_data_type not in ["nwb", "spikeglx"]:
         logger.error(f"Data type {source_data_type} not supported. Choose from: nwb, spikeglx.")
         raise ValueError(f"Data type {source_data_type} not supported. Choose from: nwb, spikeglx.")
@@ -312,7 +153,28 @@ def main(
         output_s3_bucket = output_path_parsed.split("/")[0]
         output_s3_bucket_folder = "/".join(output_path_parsed.split("/")[1:])
 
-    s3_client = boto3.client("s3")
+    # Set SpikeInterface global job kwargs
+    si.set_global_job_kwargs(
+        n_jobs=os.cpu_count(), 
+        chunk_duration="1s", 
+        progress_bar=False
+    )
+
+    # Create SpikeInterface folders
+    data_folder = Path("data/")
+    data_folder.mkdir(exist_ok=True)
+    scratch_folder = Path("scratch/")
+    scratch_folder.mkdir(exist_ok=True)
+    results_folder = Path("results/")
+    results_folder.mkdir(exist_ok=True)
+    tmp_folder = scratch_folder / "tmp"
+    if tmp_folder.is_dir():
+        shutil.rmtree(tmp_folder)
+    tmp_folder.mkdir()
+
+    # S3 client
+    if source_name == "s3" or output_destination == "s3":
+        s3_client = boto3.client("s3")
 
     # Test with toy recording
     if test_with_toy_recording:
@@ -322,7 +184,7 @@ def main(
         recording_name = "toy"
 
     # Load data from S3
-    elif source == "s3":
+    elif source_name == "s3":
         for k, data_url in source_data_paths.items():
             if not data_url.startswith("s3://"):
                 logger.error(f"Data url {data_url} is not a valid S3 path. E.g. s3://...")
@@ -336,7 +198,6 @@ def main(
                 bucket_name=bucket_name,
                 file_path=file_path,
             )
-
         logger.info("Reading recording...")
         # E.g.: se.read_spikeglx(folder_path="/data", stream_id="imec.ap")
         if source_data_type == "spikeglx":
@@ -345,17 +206,16 @@ def main(
             recording = se.read_nwb_recording(file_path=f"/data/{file_name}", **recording_kwargs)
         recording_name = "recording_on_s3"
 
-    elif source == "dandi":
+    # Load data from DANDI archive
+    elif source_name == "dandi":
         dandiset_s3_file_url = source_data_paths["file"]
         if not dandiset_s3_file_url.startswith("https://dandiarchive"):
             raise Exception(
                 f"DANDISET_S3_FILE_URL should be a valid Dandiset S3 url. Value received was: {dandiset_s3_file_url}"
             )
-
         if not test_with_subrecording:
             logger.info(f"Downloading dataset: {dandiset_s3_file_url}")
             download_file_from_url(dandiset_s3_file_url)
-
             logger.info("Reading recording from NWB...")
             recording = se.read_nwb_recording(file_path="/data/filename.nwb", **recording_kwargs)
         else:
@@ -363,12 +223,18 @@ def main(
             recording = se.read_nwb_recording(file_path=dandiset_s3_file_url, stream_mode="fsspec", **recording_kwargs)
         recording_name = "recording_on_dandi"
 
+    # TODO - Load data from local files
+    elif source_name == "local":
+        pass
+
+    # Run with subrecording
     if test_with_subrecording:
         n_frames = int(min(test_subrecording_n_frames, recording.get_num_frames()))
         recording = recording.frame_slice(start_frame=0, end_frame=n_frames)
 
     # ------------------------------------------------------------------------------------
     # Preprocessing
+    # ------------------------------------------------------------------------------------
     logger.info("Starting preprocessing...")
     preprocessing_notes = ""
     preprocessed_folder = tmp_folder / "preprocessed"
@@ -376,13 +242,13 @@ def main(
     logger.info(f"\tDuration: {np.round(recording.get_total_duration(), 2)} s")
 
     if "inter_sample_shift" in recording.get_property_keys():
-        recording_ps_full = spre.phase_shift(recording, **preprocessing_params["phase_shift"])
+        recording_ps_full = spre.phase_shift(recording, **preprocessing_kwargs["phase_shift"])
     else:
         recording_ps_full = recording
 
-    recording_hp_full = spre.highpass_filter(recording_ps_full, **preprocessing_params["highpass_filter"])
+    recording_hp_full = spre.highpass_filter(recording_ps_full, **preprocessing_kwargs["highpass_filter"])
     # IBL bad channel detection
-    _, channel_labels = spre.detect_bad_channels(recording_hp_full, **preprocessing_params["detect_bad_channels"])
+    _, channel_labels = spre.detect_bad_channels(recording_hp_full, **preprocessing_kwargs["detect_bad_channels"])
     dead_channel_mask = channel_labels == "dead"
     noise_channel_mask = channel_labels == "noise"
     out_channel_mask = channel_labels == "out"
@@ -395,7 +261,7 @@ def main(
     out_channel_ids = recording_hp_full.channel_ids[out_channel_mask]
 
     all_bad_channel_ids = np.concatenate((dead_channel_ids, noise_channel_ids, out_channel_ids))
-    max_bad_channel_fraction_to_remove = preprocessing_params["max_bad_channel_fraction_to_remove"]
+    max_bad_channel_fraction_to_remove = preprocessing_kwargs["max_bad_channel_fraction_to_remove"]
     if len(all_bad_channel_ids) >= int(max_bad_channel_fraction_to_remove * recording.get_num_channels()):
         logger.info(
             f"\tMore than {max_bad_channel_fraction_to_remove * 100}% bad channels ({len(all_bad_channel_ids)}). "
@@ -405,28 +271,28 @@ def main(
         # in this case, we don't bother sorting
         return
     else:
-        if preprocessing_params["remove_out_channels"]:
+        if preprocessing_kwargs["remove_out_channels"]:
             logger.info(f"\tRemoving {len(out_channel_ids)} out channels")
             recording_rm_out = recording_hp_full.remove_channels(out_channel_ids)
             preprocessing_notes += f"\n- Removed {len(out_channel_ids)} outside of the brain."
         else:
             recording_rm_out = recording_hp_full
 
-        recording_processed_cmr = spre.common_reference(recording_rm_out, **preprocessing_params["common_reference"])
+        recording_processed_cmr = spre.common_reference(recording_rm_out, **preprocessing_kwargs["common_reference"])
 
         bad_channel_ids = np.concatenate((dead_channel_ids, noise_channel_ids))
         recording_interp = spre.interpolate_bad_channels(recording_rm_out, bad_channel_ids)
         recording_hp_spatial = spre.highpass_spatial_filter(
-            recording_interp, **preprocessing_params["highpass_spatial_filter"]
+            recording_interp, **preprocessing_kwargs["highpass_spatial_filter"]
         )
 
-        preproc_strategy = preprocessing_params["preprocessing_strategy"]
+        preproc_strategy = preprocessing_kwargs["preprocessing_strategy"]
         if preproc_strategy == "cmr":
             recording_processed = recording_processed_cmr
         else:
             recording_processed = recording_hp_spatial
 
-        if preprocessing_params["remove_bad_channels"]:
+        if preprocessing_kwargs["remove_bad_channels"]:
             logger.info(f"\tRemoving {len(bad_channel_ids)} channels after {preproc_strategy} preprocessing")
             recording_processed = recording_processed.remove_channels(bad_channel_ids)
             preprocessing_notes += f"\n- Removed {len(bad_channel_ids)} bad channels after preprocessing.\n"
@@ -438,6 +304,8 @@ def main(
 
     # ------------------------------------------------------------------------------------
     # Spike Sorting
+    # ------------------------------------------------------------------------------------
+    sorter_name = sorter_kwargs["sorter_name"]
     logger.info(f"\n\nStarting spike sorting with {sorter_name}")
     spikesorting_notes = ""
     sorting_params = None
@@ -451,7 +319,7 @@ def main(
     if recording_processed.get_num_segments() > 1:
         recording_processed = si.concatenate_recordings([recording_processed])
 
-    # run ks2.5
+    # Run sorter
     try:
         sorting = ss.run_sorter(
             sorter_name,
@@ -472,6 +340,7 @@ def main(
 
     # remove empty units
     sorting = sorting.remove_empty_units()
+
     # remove spikes beyond num_samples (if any)
     sorting = sc.remove_excess_spikes(sorting=sorting, recording=recording_processed)
     logger.info(f"\tSorting output without empty units: {sorting}")
@@ -491,6 +360,7 @@ def main(
 
     # ------------------------------------------------------------------------------------
     # Postprocessing
+    # ------------------------------------------------------------------------------------
     logger.info("\n\Starting postprocessing...")
     postprocessing_notes = ""
     t_postprocessing_start = time.perf_counter()
@@ -498,10 +368,10 @@ def main(
     # first extract some raw waveforms in memory to deduplicate based on peak alignment
     wf_dedup_folder = tmp_folder / "postprocessed" / recording_name
     we_raw = si.extract_waveforms(
-        recording_processed, sorting, folder=wf_dedup_folder, **postprocessing_params["waveforms_deduplicate"]
+        recording_processed, sorting, folder=wf_dedup_folder, **postprocessing_kwargs["waveforms_deduplicate"]
     )
     # de-duplication
-    sorting_deduplicated = sc.remove_redundant_units(we_raw, duplicate_threshold=curation_params["duplicate_threshold"])
+    sorting_deduplicated = sc.remove_redundant_units(we_raw, duplicate_threshold=curation_kwargs["duplicate_threshold"])
     logger.info(
         f"\tNumber of original units: {len(we_raw.sorting.unit_ids)} -- Number of units after de-duplication: {len(sorting_deduplicated.unit_ids)}"
     )
@@ -510,7 +380,7 @@ def main(
     )
     deduplicated_unit_ids = sorting_deduplicated.unit_ids
     # use existing deduplicated waveforms to compute sparsity
-    sparsity_raw = si.compute_sparsity(we_raw, **sparsity_params)
+    sparsity_raw = si.compute_sparsity(we_raw, **postprocessing_kwargs["sparsity"])
     sparsity_mask = sparsity_raw.mask[sorting.ids_to_indices(deduplicated_unit_ids), :]
     sparsity = si.ChannelSparsity(mask=sparsity_mask, unit_ids=deduplicated_unit_ids, channel_ids=recording.channel_ids)
     shutil.rmtree(wf_dedup_folder)
@@ -527,40 +397,42 @@ def main(
         sparsity=sparsity,
         sparse=True,
         overwrite=True,
-        **postprocessing_params["waveforms"],
+        **postprocessing_kwargs["waveforms"],
     )
     logger.info("\tComputing spike amplitides")
-    spike_amplitudes = spost.compute_spike_amplitudes(we, **postprocessing_params["spike_amplitudes"])
+    spike_amplitudes = spost.compute_spike_amplitudes(we, **postprocessing_kwargs["spike_amplitudes"])
     logger.info("\tComputing unit locations")
-    unit_locations = spost.compute_unit_locations(we, **postprocessing_params["locations"])
+    unit_locations = spost.compute_unit_locations(we, **postprocessing_kwargs["locations"])
     logger.info("\tComputing spike locations")
-    spike_locations = spost.compute_spike_locations(we, **postprocessing_params["locations"])
+    spike_locations = spost.compute_spike_locations(we, **postprocessing_kwargs["locations"])
     logger.info("\tComputing correlograms")
-    ccg, bins = spost.compute_correlograms(we, **postprocessing_params["correlograms"])
+    ccg, bins = spost.compute_correlograms(we, **postprocessing_kwargs["correlograms"])
     logger.info("\tComputing ISI histograms")
-    isi, bins = spost.compute_isi_histograms(we, **postprocessing_params["isis"])
+    isi, bins = spost.compute_isi_histograms(we, **postprocessing_kwargs["isis"])
     logger.info("\tComputing template similarity")
-    sim = spost.compute_template_similarity(we, **postprocessing_params["similarity"])
+    sim = spost.compute_template_similarity(we, **postprocessing_kwargs["similarity"])
     logger.info("\tComputing template metrics")
-    tm = spost.compute_template_metrics(we, **postprocessing_params["template_metrics"])
+    tm = spost.compute_template_metrics(we, **postprocessing_kwargs["template_metrics"])
     logger.info("\tComputing PCA")
-    pca = spost.compute_principal_components(we, **postprocessing_params["principal_components"])
+    pca = spost.compute_principal_components(we, **postprocessing_kwargs["principal_components"])
     logger.info("\tComputing quality metrics")
-    qm = sqm.compute_quality_metrics(we, **postprocessing_params["quality_metrics"])
+    qm = sqm.compute_quality_metrics(we, **postprocessing_kwargs["quality_metrics"])
 
     t_postprocessing_end = time.perf_counter()
     elapsed_time_postprocessing = np.round(t_postprocessing_end - t_postprocessing_start, 2)
     logger.info(f"Postprocessing time: {elapsed_time_postprocessing}s")
 
-    ###### CURATION ##############
+    # ------------------------------------------------------------------------------------
+    # Curation
+    # ------------------------------------------------------------------------------------
     logger.info("\n\Starting curation...")
     curation_notes = ""
     t_curation_start = time.perf_counter()
 
     # curation query
-    isi_violations_ratio_thr = curation_params["isi_violations_ratio_threshold"]
-    presence_ratio_thr = curation_params["presence_ratio_threshold"]
-    amplitude_cutoff_thr = curation_params["amplitude_cutoff_threshold"]
+    isi_violations_ratio_thr = curation_kwargs["isi_violations_ratio_threshold"]
+    presence_ratio_thr = curation_kwargs["presence_ratio_threshold"]
+    amplitude_cutoff_thr = curation_kwargs["amplitude_cutoff_threshold"]
 
     curation_query = f"isi_violations_ratio < {isi_violations_ratio_thr} and presence_ratio > {presence_ratio_thr} and amplitude_cutoff < {amplitude_cutoff_thr}"
     logger.info(f"Curation query: {curation_query}")
@@ -590,10 +462,15 @@ def main(
     elapsed_time_curation = np.round(t_curation_end - t_curation_start, 2)
     logger.info(f"Curation time: {elapsed_time_curation}s")
 
+    # ------------------------------------------------------------------------------------
     # TODO: Visualization with FIGURL (needs credentials)
+    # ------------------------------------------------------------------------------------
+
+
 
     # ------------------------------------------------------------------------------------
     # Conversion and upload
+    # ------------------------------------------------------------------------------------
     logger.info("Writing sorting results to NWB...")
     metadata = {
         "NWBFile": {
@@ -612,7 +489,7 @@ def main(
     results_nwb_folder.mkdir(parents=True, exist_ok=True)
     output_nwbfile_path = results_nwb_folder / f"{run_identifier}.nwb"
 
-    # TODO: Condider writing waveforms instead of sorting
+    # TODO: Consider writing waveforms instead of sorting
     # add sorting properties
     # unit locations
     sorting.set_property("unit_locations", unit_locations)
@@ -706,7 +583,88 @@ def main(
 
 
 if __name__ == "__main__":
-    main()
+    # Get run kwargs from ENV variables
+    run_kwargs = json.loads(os.environ.get("SI_RUN_KWARGS", "{}"))
+    run_at = validate_not_none(run_kwargs, "run_at")
+    run_identifier = run_kwargs.get("run_identifier", datetime.now().strftime("%Y%m%d%H%M%S"))
+    run_description = run_kwargs.get("run_description", "")
+    test_with_toy_recording = run_kwargs.get("test_with_toy_recording", "False")
+    test_with_subrecording = run_kwargs.get("test_with_subrecording", "False")
+    test_subrecording_n_frames = int(run_kwargs.get("test_subrecording_n_frames", 30000))
+    log_to_file = run_kwargs.get("log_to_file", "False")
+
+    # Get source data kwargs from ENV variables
+    source_data_kwargs = json.loads(os.environ.get("SI_SOURCE_DATA_KWARGS", "{}"))
+    source_name = validate_not_none(source_data_kwargs, "source_name")
+    source_data_type = validate_not_none(source_data_kwargs, "source_data_type")
+    source_data_paths = validate_not_none(source_data_kwargs, "source_data_paths")
+
+    # Get recording kwargs from ENV variables
+    recording_kwargs = json.loads(os.environ.get("SI_RECORDING_KWARGS", "{}"))
+    
+    # Get preprocessing kwargs from ENV variables
+    preprocessing_kwargs = json.loads(os.environ.get("SI_PREPROCESSING_KWARGS", "{}"))
+
+    # Get sorter kwargs from ENV variables
+    sorter_kwargs = json.loads(os.environ.get("SI_SORTER_KWARGS", "{}"))
+    
+    # Get postprocessing kwargs from ENV variables
+    postprocessing_kwargs = json.loads(os.environ.get("SI_POSTPROCESSING_KWARGS", "{}"))
+
+    # Get curation kwargs from ENV variables
+    curation_kwargs = json.loads(os.environ.get("SI_CURATION_KWARGS", "{}"))
+
+    # Get visualization kwargs from ENV variables
+    visualization_kwargs = json.loads(os.environ.get("SI_VISUALIZATION_KWARGS", "{}"))
+
+    # Get output kwargs from ENV variables
+    output_kwargs = json.loads(os.environ.get("SI_OUTPUT_DATA_KWARGS", "{}"))
+    output_destination = validate_not_none(output_kwargs, "output_destination")
+    output_path = validate_not_none(output_kwargs, "output_path")
+
+    # Just for checking for now - REMOVE LATER
+    print("\nRun at: ", run_at)
+    print("\nRun identifier: ", run_identifier)
+    print("\nRun description: ", run_description)
+    print("\nTest with toy recording: ", test_with_toy_recording)
+    print("\nTest with subrecording: ", test_with_subrecording)
+    print("\nTest subrecording n frames: ", test_subrecording_n_frames)
+    print("\nLog to file: ", log_to_file)
+    print("\nSource name: ", source_name)
+    print("\nSource data type: ", source_data_type)
+    print("\nSource data paths: ", source_data_paths)
+    print("\nRecording kwargs: ", recording_kwargs)
+    print("\nPreprocessing kwargs: ", preprocessing_kwargs)
+    print("\nSorter kwargs: ", sorter_kwargs)
+    print("\nPostprocessing kwargs: ", postprocessing_kwargs)
+    print("\nCuration kwargs: ", curation_kwargs)
+    print("\nVisualization kwargs: ", visualization_kwargs)
+    print("\nOutput destination: ", output_destination)
+    print("\nOutput path: ", output_path)
+
+    # Run main function
+    main(
+        run_at=run_at,
+        run_identifier=run_identifier,
+        run_description=run_description,
+        test_with_toy_recording=test_with_toy_recording,
+        test_with_subrecording=test_with_subrecording,
+        test_subrecording_n_frames=test_subrecording_n_frames,
+        log_to_file=log_to_file,
+        source_name=source_name,
+        source_data_type=source_data_type,
+        source_data_paths=source_data_paths,
+        recording_kwargs=recording_kwargs,
+        preprocessing_kwargs=preprocessing_kwargs,
+        sorter_kwargs=sorter_kwargs,
+        postprocessing_kwargs=postprocessing_kwargs,
+        curation_kwargs=curation_kwargs,
+        visualization_kwargs=visualization_kwargs,
+        output_destination=output_destination,
+        output_path=output_path,
+    )
+
+
 
 # Known issues:
 #

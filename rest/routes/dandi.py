@@ -2,8 +2,8 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 from typing import List
 
-from clients.dandi import DandiClient
-from core.settings import settings
+from ..clients.dandi import DandiClient
+from ..core.settings import settings
 
 
 router = APIRouter()

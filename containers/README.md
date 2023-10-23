@@ -16,7 +16,8 @@ Basic infrastructure makes use of the following AWS services:
 
 Build docker image:
 ```bash
-$ DOCKER_BUILDKIT=1 docker build -t <image-name:version> -f <Dockerfile_name> .
+$ DOCKER_BUILDKIT=1 docker build -t ghcr.io/catalystneuro/si-sorting-ks25:latest -f Dockerfile.ks2_5 .
+$ DOCKER_BUILDKIT=1 docker build -t ghcr.io/catalystneuro/si-sorting-ks3:latest -f Dockerfile.ks3 .
 ```
 
 Run locally:

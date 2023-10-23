@@ -1,8 +1,11 @@
-fastapi[all]==0.95.0
-dandi==0.56.0
+fastapi==0.103.2
+uvicorn==0.23.2
+pydantic==1.10.13
+dandi==0.56.2
 fsspec==2023.3.0
 requests==2.28.2
 aiohttp==3.8.4
 boto3==1.26.102
 SQLAlchemy==2.0.8
 psycopg2==2.9.5
+docker==6.1.3

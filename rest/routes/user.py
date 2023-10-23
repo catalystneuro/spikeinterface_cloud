@@ -2,9 +2,9 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-from core.logger import logger
-from core.settings import settings
-from clients.database import DatabaseClient
+from ..core.logger import logger
+from ..core.settings import settings
+from ..clients.database import DatabaseClient
 
 
 router = APIRouter()
