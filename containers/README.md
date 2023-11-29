@@ -105,6 +105,18 @@ If having difficulties pushing the image to ECR:
 The job submission must include the function arguments, which are passed and ENV vars to the running container.
 See [examples](https://github.com/catalystneuro/spikeinterface_cloud/tree/main/examples) of how to submit jobs with Python scripts.
 
+If the job requires GPU, make sure to pass this extra pair of ENV variables:
+```
+environment_variables.append({
+    'name': 'NVIDIA_DRIVER_CAPABILITIES',
+    'value': 'all'
+})
+environment_variables.append({
+    'name': 'NVIDIA_REQUIRE_CUDA',
+    'value': 'cuda>=11.0'
+})
+```
+
 
 # Debugging AWS Batch
 
