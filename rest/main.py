@@ -5,13 +5,13 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pathlib import Path
 
-from core.settings import settings
-from routes.user import router as router_user
-from routes.dandi import router as router_dandi
-from routes.sorting import router as router_sorting
-from routes.runs import router as router_runs
-from clients.dandi import DandiClient
-from db.utils import initialize_db
+from .core.settings import settings
+from .routes.user import router as router_user
+from .routes.dandi import router as router_dandi
+from .routes.sorting import router as router_sorting
+from .routes.runs import router as router_runs
+from .clients.dandi import DandiClient
+from .db.utils import initialize_db
 import logging
 
 

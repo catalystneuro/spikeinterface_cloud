@@ -43,9 +43,13 @@ services:
     volumes:
       - ./results:/results
       - ./logs:/logs
-    runtime: nvidia
-    devices:
-      - "/dev/nvidia0:/dev/nvidia0"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
 
   database:
     image: postgres:latest

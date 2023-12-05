@@ -2,11 +2,11 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-from core.logger import logger
-from core.settings import settings
-from clients.database import DatabaseClient
-from clients.aws import AWSClient
-from clients.local_worker import LocalWorkerClient
+from ..core.logger import logger
+from ..core.settings import settings
+from ..clients.database import DatabaseClient
+from ..clients.aws import AWSClient
+from ..clients.local_docker import LocalDockerClient
 
 
 router = APIRouter()
@@ -37,7 +37,8 @@ def get_run_info(run_id: str):
                     if "Error running sorter" in run_logs:
                         status = "fail"
             elif run_info["run_at"] == "local":
-                local_worker_client = LocalWorkerClient()
+                # TODO: Implement this
+                local_worker_client = LocalDockerClient()
                 status, run_logs = local_worker_client.get_run_logs(run_identifier=run_info['identifier'])
             else:
                 status = "running"

@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Enum,
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 
-from db.models import Base, User, DataSource, Run
+from .models import Base, User, DataSource, Run
 
 
 def initialize_db(db: str):
